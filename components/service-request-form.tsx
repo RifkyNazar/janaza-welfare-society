@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useActionState, useState } from "react";
+import Link from "next/link";
 import { submitServiceRequest, type ServiceRequestActionState } from "@/app/actions/service-request";
+import { CopyRequestCode } from "@/components/copy-request-code";
 
 type RequestFormData = {
   fullName: string;
@@ -107,8 +109,10 @@ export function ServiceRequestForm() {
           <svg viewBox="0 0 24 24" fill="none" className="size-8"><path d="m6 12 4 4 8-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </span>
         <h2 className="mt-5 text-2xl font-semibold text-foreground">Your service request has been submitted successfully.</h2>
-        <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">Please keep your request code for reference.</p>
+        <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">Keep your request code and use the same mobile number you submitted to check the status.</p>
         <p className="mt-5 text-lg font-semibold tracking-wide text-foreground">{submission.requestCode}</p>
+        <div className="mx-auto mt-5 max-w-sm rounded-2xl border border-border bg-light-background p-4"><p className="text-xs font-semibold uppercase tracking-wider text-muted">Current Status</p><p className="mt-2 font-semibold text-foreground">Request Received</p></div>
+        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><CopyRequestCode requestCode={submission.requestCode} /><Link href="/track-request" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transform-none motion-reduce:transition-none">View Full Tracking</Link></div>
       </div>
     );
   }

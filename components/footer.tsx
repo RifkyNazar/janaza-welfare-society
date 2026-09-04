@@ -9,6 +9,7 @@ export function Footer() {
         <div className="flex gap-5 text-muted">
           <Link href="/services" className="hover:text-foreground">Services</Link>
           <Link href="/contact" className="hover:text-foreground">Contact</Link>
+          <Link href="/admin/login" className="text-muted/80 hover:text-foreground">Admin Login</Link>
         </div>
       </div>
     </footer>

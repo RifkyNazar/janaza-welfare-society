@@ -40,4 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# private local-development task photo storage
+/.data/task-photos/
+
 /app/generated/prisma

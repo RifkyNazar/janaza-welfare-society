@@ -54,7 +54,10 @@ export const ModelName = {
   User: 'User',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
-  TaskAssignment: 'TaskAssignment'
+  TaskAssignment: 'TaskAssignment',
+  TaskPhoto: 'TaskPhoto',
+  Operation: 'Operation',
+  OperationPhoto: 'OperationPhoto'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -135,11 +138,54 @@ export const TaskAssignmentScalarFieldEnum = {
   acceptedAt: 'acceptedAt',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
+  photosSubmittedAt: 'photosSubmittedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TaskAssignmentScalarFieldEnum = (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum]
+
+
+export const TaskPhotoScalarFieldEnum = {
+  id: 'id',
+  taskAssignmentId: 'taskAssignmentId',
+  imageUrl: 'imageUrl',
+  caption: 'caption',
+  isApprovedForPublic: 'isApprovedForPublic',
+  uploadedAt: 'uploadedAt',
+  reviewedAt: 'reviewedAt',
+  reviewedByAdminId: 'reviewedByAdminId'
+} as const
+
+export type TaskPhotoScalarFieldEnum = (typeof TaskPhotoScalarFieldEnum)[keyof typeof TaskPhotoScalarFieldEnum]
+
+
+export const OperationScalarFieldEnum = {
+  id: 'id',
+  taskAssignmentId: 'taskAssignmentId',
+  title: 'title',
+  shortDescription: 'shortDescription',
+  description: 'description',
+  serviceType: 'serviceType',
+  area: 'area',
+  operationDate: 'operationDate',
+  isPublished: 'isPublished',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationScalarFieldEnum = (typeof OperationScalarFieldEnum)[keyof typeof OperationScalarFieldEnum]
+
+
+export const OperationPhotoScalarFieldEnum = {
+  id: 'id',
+  operationId: 'operationId',
+  taskPhotoId: 'taskPhotoId',
+  displayOrder: 'displayOrder'
+} as const
+
+export type OperationPhotoScalarFieldEnum = (typeof OperationPhotoScalarFieldEnum)[keyof typeof OperationPhotoScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -194,4 +240,23 @@ export const ServiceRequestOrderByRelevanceFieldEnum = {
 } as const
 
 export type ServiceRequestOrderByRelevanceFieldEnum = (typeof ServiceRequestOrderByRelevanceFieldEnum)[keyof typeof ServiceRequestOrderByRelevanceFieldEnum]
+
+
+export const TaskPhotoOrderByRelevanceFieldEnum = {
+  imageUrl: 'imageUrl',
+  caption: 'caption'
+} as const
+
+export type TaskPhotoOrderByRelevanceFieldEnum = (typeof TaskPhotoOrderByRelevanceFieldEnum)[keyof typeof TaskPhotoOrderByRelevanceFieldEnum]
+
+
+export const OperationOrderByRelevanceFieldEnum = {
+  title: 'title',
+  shortDescription: 'shortDescription',
+  description: 'description',
+  serviceType: 'serviceType',
+  area: 'area'
+} as const
+
+export type OperationOrderByRelevanceFieldEnum = (typeof OperationOrderByRelevanceFieldEnum)[keyof typeof OperationOrderByRelevanceFieldEnum]
 

@@ -46,6 +46,7 @@ export type TaskAssignmentMinAggregateOutputType = {
   acceptedAt: Date | null
   startedAt: Date | null
   completedAt: Date | null
+  photosSubmittedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type TaskAssignmentMaxAggregateOutputType = {
   acceptedAt: Date | null
   startedAt: Date | null
   completedAt: Date | null
+  photosSubmittedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -70,6 +72,7 @@ export type TaskAssignmentCountAggregateOutputType = {
   acceptedAt: number
   startedAt: number
   completedAt: number
+  photosSubmittedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type TaskAssignmentMinAggregateInputType = {
   acceptedAt?: true
   startedAt?: true
   completedAt?: true
+  photosSubmittedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -108,6 +112,7 @@ export type TaskAssignmentMaxAggregateInputType = {
   acceptedAt?: true
   startedAt?: true
   completedAt?: true
+  photosSubmittedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -120,6 +125,7 @@ export type TaskAssignmentCountAggregateInputType = {
   acceptedAt?: true
   startedAt?: true
   completedAt?: true
+  photosSubmittedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -219,6 +225,7 @@ export type TaskAssignmentGroupByOutputType = {
   acceptedAt: Date
   startedAt: Date | null
   completedAt: Date | null
+  photosSubmittedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: TaskAssignmentCountAggregateOutputType | null
@@ -254,10 +261,13 @@ export type TaskAssignmentWhereInput = {
   acceptedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   startedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
+  photosSubmittedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   request?: Prisma.XOR<Prisma.ServiceRequestScalarRelationFilter, Prisma.ServiceRequestWhereInput>
   employee?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
+  photos?: Prisma.TaskPhotoListRelationFilter
+  operation?: Prisma.XOR<Prisma.OperationNullableScalarRelationFilter, Prisma.OperationWhereInput> | null
 }
 
 export type TaskAssignmentOrderByWithRelationInput = {
@@ -268,10 +278,13 @@ export type TaskAssignmentOrderByWithRelationInput = {
   acceptedAt?: Prisma.SortOrder
   startedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  photosSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   request?: Prisma.ServiceRequestOrderByWithRelationInput
   employee?: Prisma.EmployeeProfileOrderByWithRelationInput
+  photos?: Prisma.TaskPhotoOrderByRelationAggregateInput
+  operation?: Prisma.OperationOrderByWithRelationInput
 }
 
 export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
@@ -285,10 +298,13 @@ export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
   acceptedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   startedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
+  photosSubmittedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   request?: Prisma.XOR<Prisma.ServiceRequestScalarRelationFilter, Prisma.ServiceRequestWhereInput>
   employee?: Prisma.XOR<Prisma.EmployeeProfileScalarRelationFilter, Prisma.EmployeeProfileWhereInput>
+  photos?: Prisma.TaskPhotoListRelationFilter
+  operation?: Prisma.XOR<Prisma.OperationNullableScalarRelationFilter, Prisma.OperationWhereInput> | null
 }, "id" | "requestId">
 
 export type TaskAssignmentOrderByWithAggregationInput = {
@@ -299,6 +315,7 @@ export type TaskAssignmentOrderByWithAggregationInput = {
   acceptedAt?: Prisma.SortOrder
   startedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  photosSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TaskAssignmentCountOrderByAggregateInput
@@ -319,6 +336,7 @@ export type TaskAssignmentScalarWhereWithAggregatesInput = {
   acceptedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
   startedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
+  photosSubmittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskAssignment"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
 }
@@ -328,10 +346,13 @@ export type TaskAssignmentCreateInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   request: Prisma.ServiceRequestCreateNestedOneWithoutTaskAssignmentInput
   employee: Prisma.EmployeeProfileCreateNestedOneWithoutTaskAssignmentsInput
+  photos?: Prisma.TaskPhotoCreateNestedManyWithoutTaskAssignmentInput
+  operation?: Prisma.OperationCreateNestedOneWithoutTaskAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateInput = {
@@ -342,8 +363,11 @@ export type TaskAssignmentUncheckedCreateInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutTaskAssignmentInput
+  operation?: Prisma.OperationUncheckedCreateNestedOneWithoutTaskAssignmentInput
 }
 
 export type TaskAssignmentUpdateInput = {
@@ -351,10 +375,13 @@ export type TaskAssignmentUpdateInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   request?: Prisma.ServiceRequestUpdateOneRequiredWithoutTaskAssignmentNestedInput
   employee?: Prisma.EmployeeProfileUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  photos?: Prisma.TaskPhotoUpdateManyWithoutTaskAssignmentNestedInput
+  operation?: Prisma.OperationUpdateOneWithoutTaskAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateInput = {
@@ -365,8 +392,11 @@ export type TaskAssignmentUncheckedUpdateInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.TaskPhotoUncheckedUpdateManyWithoutTaskAssignmentNestedInput
+  operation?: Prisma.OperationUncheckedUpdateOneWithoutTaskAssignmentNestedInput
 }
 
 export type TaskAssignmentCreateManyInput = {
@@ -377,6 +407,7 @@ export type TaskAssignmentCreateManyInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -386,6 +417,7 @@ export type TaskAssignmentUpdateManyMutationInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -398,6 +430,7 @@ export type TaskAssignmentUncheckedUpdateManyInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -425,6 +458,7 @@ export type TaskAssignmentCountOrderByAggregateInput = {
   acceptedAt?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  photosSubmittedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -443,6 +477,7 @@ export type TaskAssignmentMaxOrderByAggregateInput = {
   acceptedAt?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  photosSubmittedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -455,6 +490,7 @@ export type TaskAssignmentMinOrderByAggregateInput = {
   acceptedAt?: Prisma.SortOrder
   startedAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
+  photosSubmittedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -463,6 +499,11 @@ export type TaskAssignmentSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   requestId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
+}
+
+export type TaskAssignmentScalarRelationFilter = {
+  is?: Prisma.TaskAssignmentWhereInput
+  isNot?: Prisma.TaskAssignmentWhereInput
 }
 
 export type TaskAssignmentCreateNestedManyWithoutEmployeeInput = {
@@ -547,14 +588,47 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type TaskAssignmentCreateNestedOneWithoutPhotosInput = {
+  create?: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutPhotosInput, Prisma.TaskAssignmentUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.TaskAssignmentCreateOrConnectWithoutPhotosInput
+  connect?: Prisma.TaskAssignmentWhereUniqueInput
+}
+
+export type TaskAssignmentUpdateOneRequiredWithoutPhotosNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutPhotosInput, Prisma.TaskAssignmentUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.TaskAssignmentCreateOrConnectWithoutPhotosInput
+  upsert?: Prisma.TaskAssignmentUpsertWithoutPhotosInput
+  connect?: Prisma.TaskAssignmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaskAssignmentUpdateToOneWithWhereWithoutPhotosInput, Prisma.TaskAssignmentUpdateWithoutPhotosInput>, Prisma.TaskAssignmentUncheckedUpdateWithoutPhotosInput>
+}
+
+export type TaskAssignmentCreateNestedOneWithoutOperationInput = {
+  create?: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutOperationInput, Prisma.TaskAssignmentUncheckedCreateWithoutOperationInput>
+  connectOrCreate?: Prisma.TaskAssignmentCreateOrConnectWithoutOperationInput
+  connect?: Prisma.TaskAssignmentWhereUniqueInput
+}
+
+export type TaskAssignmentUpdateOneWithoutOperationNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutOperationInput, Prisma.TaskAssignmentUncheckedCreateWithoutOperationInput>
+  connectOrCreate?: Prisma.TaskAssignmentCreateOrConnectWithoutOperationInput
+  upsert?: Prisma.TaskAssignmentUpsertWithoutOperationInput
+  disconnect?: Prisma.TaskAssignmentWhereInput | boolean
+  delete?: Prisma.TaskAssignmentWhereInput | boolean
+  connect?: Prisma.TaskAssignmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaskAssignmentUpdateToOneWithWhereWithoutOperationInput, Prisma.TaskAssignmentUpdateWithoutOperationInput>, Prisma.TaskAssignmentUncheckedUpdateWithoutOperationInput>
+}
+
 export type TaskAssignmentCreateWithoutEmployeeInput = {
   status?: $Enums.TaskStatus
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   request: Prisma.ServiceRequestCreateNestedOneWithoutTaskAssignmentInput
+  photos?: Prisma.TaskPhotoCreateNestedManyWithoutTaskAssignmentInput
+  operation?: Prisma.OperationCreateNestedOneWithoutTaskAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutEmployeeInput = {
@@ -564,8 +638,11 @@ export type TaskAssignmentUncheckedCreateWithoutEmployeeInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutTaskAssignmentInput
+  operation?: Prisma.OperationUncheckedCreateNestedOneWithoutTaskAssignmentInput
 }
 
 export type TaskAssignmentCreateOrConnectWithoutEmployeeInput = {
@@ -605,6 +682,7 @@ export type TaskAssignmentScalarWhereInput = {
   acceptedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   startedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
+  photosSubmittedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
 }
@@ -614,9 +692,12 @@ export type TaskAssignmentCreateWithoutRequestInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   employee: Prisma.EmployeeProfileCreateNestedOneWithoutTaskAssignmentsInput
+  photos?: Prisma.TaskPhotoCreateNestedManyWithoutTaskAssignmentInput
+  operation?: Prisma.OperationCreateNestedOneWithoutTaskAssignmentInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutRequestInput = {
@@ -626,8 +707,11 @@ export type TaskAssignmentUncheckedCreateWithoutRequestInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutTaskAssignmentInput
+  operation?: Prisma.OperationUncheckedCreateNestedOneWithoutTaskAssignmentInput
 }
 
 export type TaskAssignmentCreateOrConnectWithoutRequestInput = {
@@ -651,9 +735,12 @@ export type TaskAssignmentUpdateWithoutRequestInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employee?: Prisma.EmployeeProfileUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  photos?: Prisma.TaskPhotoUpdateManyWithoutTaskAssignmentNestedInput
+  operation?: Prisma.OperationUpdateOneWithoutTaskAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutRequestInput = {
@@ -663,8 +750,151 @@ export type TaskAssignmentUncheckedUpdateWithoutRequestInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.TaskPhotoUncheckedUpdateManyWithoutTaskAssignmentNestedInput
+  operation?: Prisma.OperationUncheckedUpdateOneWithoutTaskAssignmentNestedInput
+}
+
+export type TaskAssignmentCreateWithoutPhotosInput = {
+  status?: $Enums.TaskStatus
+  acceptedAt?: Date | string
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  request: Prisma.ServiceRequestCreateNestedOneWithoutTaskAssignmentInput
+  employee: Prisma.EmployeeProfileCreateNestedOneWithoutTaskAssignmentsInput
+  operation?: Prisma.OperationCreateNestedOneWithoutTaskAssignmentInput
+}
+
+export type TaskAssignmentUncheckedCreateWithoutPhotosInput = {
+  id?: number
+  requestId: number
+  employeeId: number
+  status?: $Enums.TaskStatus
+  acceptedAt?: Date | string
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  operation?: Prisma.OperationUncheckedCreateNestedOneWithoutTaskAssignmentInput
+}
+
+export type TaskAssignmentCreateOrConnectWithoutPhotosInput = {
+  where: Prisma.TaskAssignmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutPhotosInput, Prisma.TaskAssignmentUncheckedCreateWithoutPhotosInput>
+}
+
+export type TaskAssignmentUpsertWithoutPhotosInput = {
+  update: Prisma.XOR<Prisma.TaskAssignmentUpdateWithoutPhotosInput, Prisma.TaskAssignmentUncheckedUpdateWithoutPhotosInput>
+  create: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutPhotosInput, Prisma.TaskAssignmentUncheckedCreateWithoutPhotosInput>
+  where?: Prisma.TaskAssignmentWhereInput
+}
+
+export type TaskAssignmentUpdateToOneWithWhereWithoutPhotosInput = {
+  where?: Prisma.TaskAssignmentWhereInput
+  data: Prisma.XOR<Prisma.TaskAssignmentUpdateWithoutPhotosInput, Prisma.TaskAssignmentUncheckedUpdateWithoutPhotosInput>
+}
+
+export type TaskAssignmentUpdateWithoutPhotosInput = {
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  request?: Prisma.ServiceRequestUpdateOneRequiredWithoutTaskAssignmentNestedInput
+  employee?: Prisma.EmployeeProfileUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  operation?: Prisma.OperationUpdateOneWithoutTaskAssignmentNestedInput
+}
+
+export type TaskAssignmentUncheckedUpdateWithoutPhotosInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  requestId?: Prisma.IntFieldUpdateOperationsInput | number
+  employeeId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  operation?: Prisma.OperationUncheckedUpdateOneWithoutTaskAssignmentNestedInput
+}
+
+export type TaskAssignmentCreateWithoutOperationInput = {
+  status?: $Enums.TaskStatus
+  acceptedAt?: Date | string
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  request: Prisma.ServiceRequestCreateNestedOneWithoutTaskAssignmentInput
+  employee: Prisma.EmployeeProfileCreateNestedOneWithoutTaskAssignmentsInput
+  photos?: Prisma.TaskPhotoCreateNestedManyWithoutTaskAssignmentInput
+}
+
+export type TaskAssignmentUncheckedCreateWithoutOperationInput = {
+  id?: number
+  requestId: number
+  employeeId: number
+  status?: $Enums.TaskStatus
+  acceptedAt?: Date | string
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  photos?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutTaskAssignmentInput
+}
+
+export type TaskAssignmentCreateOrConnectWithoutOperationInput = {
+  where: Prisma.TaskAssignmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutOperationInput, Prisma.TaskAssignmentUncheckedCreateWithoutOperationInput>
+}
+
+export type TaskAssignmentUpsertWithoutOperationInput = {
+  update: Prisma.XOR<Prisma.TaskAssignmentUpdateWithoutOperationInput, Prisma.TaskAssignmentUncheckedUpdateWithoutOperationInput>
+  create: Prisma.XOR<Prisma.TaskAssignmentCreateWithoutOperationInput, Prisma.TaskAssignmentUncheckedCreateWithoutOperationInput>
+  where?: Prisma.TaskAssignmentWhereInput
+}
+
+export type TaskAssignmentUpdateToOneWithWhereWithoutOperationInput = {
+  where?: Prisma.TaskAssignmentWhereInput
+  data: Prisma.XOR<Prisma.TaskAssignmentUpdateWithoutOperationInput, Prisma.TaskAssignmentUncheckedUpdateWithoutOperationInput>
+}
+
+export type TaskAssignmentUpdateWithoutOperationInput = {
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  request?: Prisma.ServiceRequestUpdateOneRequiredWithoutTaskAssignmentNestedInput
+  employee?: Prisma.EmployeeProfileUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  photos?: Prisma.TaskPhotoUpdateManyWithoutTaskAssignmentNestedInput
+}
+
+export type TaskAssignmentUncheckedUpdateWithoutOperationInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  requestId?: Prisma.IntFieldUpdateOperationsInput | number
+  employeeId?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.TaskPhotoUncheckedUpdateManyWithoutTaskAssignmentNestedInput
 }
 
 export type TaskAssignmentCreateManyEmployeeInput = {
@@ -674,6 +904,7 @@ export type TaskAssignmentCreateManyEmployeeInput = {
   acceptedAt?: Date | string
   startedAt?: Date | string | null
   completedAt?: Date | string | null
+  photosSubmittedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -683,9 +914,12 @@ export type TaskAssignmentUpdateWithoutEmployeeInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   request?: Prisma.ServiceRequestUpdateOneRequiredWithoutTaskAssignmentNestedInput
+  photos?: Prisma.TaskPhotoUpdateManyWithoutTaskAssignmentNestedInput
+  operation?: Prisma.OperationUpdateOneWithoutTaskAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutEmployeeInput = {
@@ -695,8 +929,11 @@ export type TaskAssignmentUncheckedUpdateWithoutEmployeeInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.TaskPhotoUncheckedUpdateManyWithoutTaskAssignmentNestedInput
+  operation?: Prisma.OperationUncheckedUpdateOneWithoutTaskAssignmentNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateManyWithoutEmployeeInput = {
@@ -706,10 +943,40 @@ export type TaskAssignmentUncheckedUpdateManyWithoutEmployeeInput = {
   acceptedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  photosSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type TaskAssignmentCountOutputType
+ */
+
+export type TaskAssignmentCountOutputType = {
+  photos: number
+}
+
+export type TaskAssignmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  photos?: boolean | TaskAssignmentCountOutputTypeCountPhotosArgs
+}
+
+/**
+ * TaskAssignmentCountOutputType without action
+ */
+export type TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskAssignmentCountOutputType
+   */
+  select?: Prisma.TaskAssignmentCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TaskAssignmentCountOutputType without action
+ */
+export type TaskAssignmentCountOutputTypeCountPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskPhotoWhereInput
+}
 
 
 export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -720,10 +987,14 @@ export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   acceptedAt?: boolean
   startedAt?: boolean
   completedAt?: boolean
+  photosSubmittedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>
   employee?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  photos?: boolean | Prisma.TaskAssignment$photosArgs<ExtArgs>
+  operation?: boolean | Prisma.TaskAssignment$operationArgs<ExtArgs>
+  _count?: boolean | Prisma.TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
 
@@ -736,14 +1007,18 @@ export type TaskAssignmentSelectScalar = {
   acceptedAt?: boolean
   startedAt?: boolean
   completedAt?: boolean
+  photosSubmittedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestId" | "employeeId" | "status" | "acceptedAt" | "startedAt" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["taskAssignment"]>
+export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestId" | "employeeId" | "status" | "acceptedAt" | "startedAt" | "completedAt" | "photosSubmittedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["taskAssignment"]>
 export type TaskAssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>
   employee?: boolean | Prisma.EmployeeProfileDefaultArgs<ExtArgs>
+  photos?: boolean | Prisma.TaskAssignment$photosArgs<ExtArgs>
+  operation?: boolean | Prisma.TaskAssignment$operationArgs<ExtArgs>
+  _count?: boolean | Prisma.TaskAssignmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 
 export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -751,6 +1026,8 @@ export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     request: Prisma.$ServiceRequestPayload<ExtArgs>
     employee: Prisma.$EmployeeProfilePayload<ExtArgs>
+    photos: Prisma.$TaskPhotoPayload<ExtArgs>[]
+    operation: Prisma.$OperationPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -760,6 +1037,7 @@ export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
     acceptedAt: Date
     startedAt: Date | null
     completedAt: Date | null
+    photosSubmittedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["taskAssignment"]>
@@ -1104,6 +1382,8 @@ export interface Prisma__TaskAssignmentClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   request<T extends Prisma.ServiceRequestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceRequestDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceRequestClient<runtime.Types.Result.GetResult<Prisma.$ServiceRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   employee<T extends Prisma.EmployeeProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__EmployeeProfileClient<runtime.Types.Result.GetResult<Prisma.$EmployeeProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  photos<T extends Prisma.TaskAssignment$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  operation<T extends Prisma.TaskAssignment$operationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$operationArgs<ExtArgs>>): Prisma.Prisma__OperationClient<runtime.Types.Result.GetResult<Prisma.$OperationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1140,6 +1420,7 @@ export interface TaskAssignmentFieldRefs {
   readonly acceptedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly startedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
+  readonly photosSubmittedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskAssignment", 'DateTime'>
 }
@@ -1487,6 +1768,49 @@ export type TaskAssignmentDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many TaskAssignments to delete.
    */
   limit?: number
+}
+
+/**
+ * TaskAssignment.photos
+ */
+export type TaskAssignment$photosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskPhoto
+   */
+  select?: Prisma.TaskPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskPhoto
+   */
+  omit?: Prisma.TaskPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskPhotoInclude<ExtArgs> | null
+  where?: Prisma.TaskPhotoWhereInput
+  orderBy?: Prisma.TaskPhotoOrderByWithRelationInput | Prisma.TaskPhotoOrderByWithRelationInput[]
+  cursor?: Prisma.TaskPhotoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskPhotoScalarFieldEnum | Prisma.TaskPhotoScalarFieldEnum[]
+}
+
+/**
+ * TaskAssignment.operation
+ */
+export type TaskAssignment$operationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Operation
+   */
+  select?: Prisma.OperationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Operation
+   */
+  omit?: Prisma.OperationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OperationInclude<ExtArgs> | null
+  where?: Prisma.OperationWhereInput
 }
 
 /**

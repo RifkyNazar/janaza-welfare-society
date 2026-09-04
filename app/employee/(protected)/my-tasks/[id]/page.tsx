@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { completeTask, startTask } from "@/app/employee/(protected)/actions";
 import { TaskAction } from "@/components/employee/task-action";
 import { TaskStatusBadge } from "@/components/employee/task-status-badge";
+import { TaskPhotoUpload } from "@/components/employee/task-photo-upload";
+import { submitPhotosForReview, uploadTaskPhoto } from "./photo-actions";
 import { prisma } from "@/lib/prisma";
 import { requireEmployee } from "@/lib/permissions";
 
@@ -30,7 +33,7 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
 
   const task = await prisma.taskAssignment.findFirst({
     where: { id, employeeId: profileId },
-    include: { request: true },
+    include: { request: true, photos: { select: { id: true, caption: true, uploadedAt: true, isApprovedForPublic: true }, orderBy: { uploadedAt: "desc" } } },
   });
   if (!task) notFound();
   const request = task.request;
@@ -47,6 +50,13 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Location</h2><Details items={[["Address", request.address], ["Area", request.area], ["Location Link", locationUrl ? <a key="map" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold underline decoration-primary decoration-2 underline-offset-4">Open location</a> : null], ["Hospital Name", request.hospitalName]]} /></section>
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Task</h2><Details items={[["Task Status", task.status.replaceAll("_", " ")], ["Accepted At", dateTimeFormatter.format(task.acceptedAt)], ["Started At", task.startedAt ? dateTimeFormatter.format(task.startedAt) : null], ["Completed At", task.completedAt ? dateTimeFormatter.format(task.completedAt) : null]]} /></section>
       </div>
+      <section className="mt-6 rounded-2xl border border-border bg-white p-6">
+        <h2 className="text-lg font-semibold">Task Photos</h2>
+        <p className="mt-2 text-sm text-muted">Photos are private while awaiting admin review.</p>
+        {task.photos.length ? <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{task.photos.map((photo) => <article key={photo.id} className="overflow-hidden rounded-2xl border border-border"><Image unoptimized src={`/task-photos/${photo.id}`} alt={photo.caption || "Task photo"} width={640} height={480} className="aspect-[4/3] w-full object-cover" /><div className="p-4"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${photo.isApprovedForPublic ? "bg-primary/25 text-foreground" : "bg-light-background text-muted"}`}>{photo.isApprovedForPublic ? "Approved for Public Use" : "Pending Review"}</span><p className="mt-3 text-sm text-foreground">{photo.caption || "No caption"}</p><p className="mt-2 text-xs text-muted">Uploaded {dateTimeFormatter.format(photo.uploadedAt)}</p></div></article>)}</div> : <p className="mt-5 rounded-xl bg-light-background p-5 text-sm text-muted">No task photos uploaded yet.</p>}
+        {task.photosSubmittedAt ? <div className="mt-5 rounded-xl border border-primary/40 bg-primary/10 p-4"><p className="font-semibold">Photos Submitted for Review</p><p className="mt-1 text-sm text-muted">Confirmed {dateTimeFormatter.format(task.photosSubmittedAt)}. Photos remain private unless an admin approves them individually.</p></div> : task.photos.length > 0 ? <div className="mt-5"><TaskAction action={submitPhotosForReview.bind(null, task.id)} label="Submit Photos for Review" confirmation="Confirm that this photo set is ready for Admin review? This does not publish or approve any photo." /></div> : null}
+        <TaskPhotoUpload action={uploadTaskPhoto.bind(null, task.id)} />
+      </section>
     </div>
   );
 }

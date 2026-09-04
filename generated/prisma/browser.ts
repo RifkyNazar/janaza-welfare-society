@@ -37,3 +37,18 @@ export type ServiceRequest = Prisma.ServiceRequestModel
  * 
  */
 export type TaskAssignment = Prisma.TaskAssignmentModel
+/**
+ * Model TaskPhoto
+ * 
+ */
+export type TaskPhoto = Prisma.TaskPhotoModel
+/**
+ * Model Operation
+ * 
+ */
+export type Operation = Prisma.OperationModel
+/**
+ * Model OperationPhoto
+ * 
+ */
+export type OperationPhoto = Prisma.OperationPhotoModel

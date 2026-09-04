@@ -5,6 +5,7 @@ const items = [
   { label: "Employees", href: "/admin/employees", available: true },
   { label: "Service Requests", href: "/admin/service-requests", available: true },
   { label: "Task Assignments", href: "/admin/task-assignments", available: true },
+  { label: "Operations", href: "/admin/operations", available: true },
 ] as const;
 
 export function AdminNavigation({ mobile = false }: { mobile?: boolean }) {

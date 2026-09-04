@@ -12,11 +12,11 @@ export default async function EmployeeDashboardPage() {
   const profileId = session.user.employeeProfileId;
 
   const [availableRequests, activeTasks, completedTasks, recentRequests] = await Promise.all([
-    prisma.serviceRequest.count({ where: { status: "NEW" } }),
+    prisma.serviceRequest.count({ where: { status: "NEW", taskAssignment: null } }),
     profileId ? prisma.taskAssignment.count({ where: { employeeId: profileId, status: { in: ["ASSIGNED", "IN_PROGRESS"] } } }) : 0,
     profileId ? prisma.taskAssignment.count({ where: { employeeId: profileId, status: "COMPLETED" } }) : 0,
     prisma.serviceRequest.findMany({
-      where: { status: "NEW" },
+      where: { status: "NEW", taskAssignment: null },
       take: 5,
       orderBy: { createdAt: "desc" },
       select: { id: true, requestCode: true, serviceType: true, area: true, requiredDate: true },
@@ -34,6 +34,7 @@ export default async function EmployeeDashboardPage() {
       <p className="text-sm font-semibold text-primary">Overview</p>
       <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Employee Dashboard</h1>
       <p className="mt-2 text-sm text-muted">Available service work and your current task progress.</p>
+      {availableRequests > 0 && <Link href="/employee/tasks" className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-primary/40 bg-primary/10 px-5 py-4"><span className="font-semibold">New service requests are available.</span><span className="rounded-full bg-primary px-3 py-1 text-sm font-semibold tabular-nums">{availableRequests}</span></Link>}
 
       <section aria-label="Task summary" className="mt-8 grid gap-4 sm:grid-cols-3">
         {summaries.map(([label, count, href]) => (

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ServiceRequestForm } from "@/components/service-request-form";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RequestServicePage() {
           <p className="mt-4 text-sm leading-6 text-muted sm:text-base">
             Share the details below so our team can understand the support you need.
           </p>
+          <p className="mt-4 text-sm text-muted">Already submitted a request? <Link href="/track-request" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-muted">Track Request</Link></p>
         </div>
         <ServiceRequestForm />
       </div>

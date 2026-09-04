@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 export type ServiceRequestActionState = {
   error?: string;
   requestCode?: string;
+  status?: "NEW";
 };
 
 const limits = {
@@ -135,7 +136,7 @@ export async function submitServiceRequest(
           status: "NEW",
         },
       });
-      return { requestCode: code };
+      return { requestCode: code, status: "NEW" };
     } catch (error) {
       const isRequestCodeCollision =
         error instanceof Prisma.PrismaClientKnownRequestError &&

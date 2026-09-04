@@ -41,14 +41,15 @@ enum TaskStatus {
 }
 
 model User {
-  id              Int              @id @default(autoincrement())
-  email           String           @unique
-  passwordHash    String
-  role            UserRole         @default(EMPLOYEE)
-  status          AccountStatus    @default(PENDING)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  employeeProfile EmployeeProfile?
+  id                 Int              @id @default(autoincrement())
+  email              String           @unique
+  passwordHash       String
+  role               UserRole         @default(EMPLOYEE)
+  status             AccountStatus    @default(PENDING)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  employeeProfile    EmployeeProfile?
+  taskPhotosReviewed TaskPhoto[]      @relation("TaskPhotoReviewer")
 }
 
 model EmployeeProfile {
@@ -94,18 +95,72 @@ model ServiceRequest {
 }
 
 model TaskAssignment {
-  id          Int             @id @default(autoincrement())
-  requestId   Int             @unique
-  employeeId  Int
-  status      TaskStatus      @default(ASSIGNED)
-  acceptedAt  DateTime        @default(now())
-  startedAt   DateTime?
-  completedAt DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  request     ServiceRequest  @relation(fields: [requestId], references: [id], onDelete: Restrict)
-  employee    EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  id                Int             @id @default(autoincrement())
+  requestId         Int             @unique
+  employeeId        Int
+  status            TaskStatus      @default(ASSIGNED)
+  acceptedAt        DateTime        @default(now())
+  startedAt         DateTime?
+  completedAt       DateTime?
+  photosSubmittedAt DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  request           ServiceRequest  @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  employee          EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  photos            TaskPhoto[]
+  operation         Operation?
 
   @@index([employeeId])
   @@index([status])
+}
+
+model TaskPhoto {
+  id                  Int              @id @default(autoincrement())
+  taskAssignmentId    Int
+  imageUrl            String
+  caption             String?
+  isApprovedForPublic Boolean          @default(false)
+  uploadedAt          DateTime         @default(now())
+  reviewedAt          DateTime?
+  reviewedByAdminId   Int?
+  taskAssignment      TaskAssignment   @relation(fields: [taskAssignmentId], references: [id], onDelete: Restrict)
+  reviewedByAdmin     User?            @relation("TaskPhotoReviewer", fields: [reviewedByAdminId], references: [id], onDelete: SetNull)
+  operationPhotos     OperationPhoto[]
+
+  @@index([taskAssignmentId, uploadedAt])
+  @@index([isApprovedForPublic])
+  @@index([reviewedByAdminId])
+}
+
+model Operation {
+  id               Int              @id @default(autoincrement())
+  taskAssignmentId Int?             @unique
+  title            String
+  shortDescription String           @db.VarChar(500)
+  description      String?          @db.Text
+  serviceType      String
+  area             String
+  operationDate    DateTime
+  isPublished      Boolean          @default(false)
+  publishedAt      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  taskAssignment   TaskAssignment?  @relation(fields: [taskAssignmentId], references: [id], onDelete: Restrict)
+  photos           OperationPhoto[]
+
+  @@index([isPublished, operationDate])
+  @@index([createdAt])
+}
+
+model OperationPhoto {
+  id           Int       @id @default(autoincrement())
+  operationId  Int
+  taskPhotoId  Int
+  displayOrder Int       @default(0)
+  operation    Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  taskPhoto    TaskPhoto @relation(fields: [taskPhotoId], references: [id], onDelete: Restrict)
+
+  @@unique([operationId, taskPhotoId])
+  @@index([operationId, displayOrder])
+  @@index([taskPhotoId])
 }

@@ -103,6 +103,10 @@ export function HomeHero() {
               <span className="cta-gem" aria-hidden="true" />
               <ArrowIcon />
             </Link>
+            <Link href="/track-request" className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-primary/50 bg-white px-7 py-3 font-semibold text-foreground transition duration-300 ease-out hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_10px_25px_rgba(16,42,42,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transform-none motion-reduce:transition-none">
+              Track Request
+              <ArrowIcon />
+            </Link>
             <Link href="/employee-access" className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-primary/50 bg-white px-7 py-3 font-semibold text-foreground transition duration-300 ease-out hover:-translate-y-0.5 hover:border-primary hover:shadow-[0_10px_25px_rgba(16,42,42,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transform-none motion-reduce:transition-none">
               Employee Access
               <span className="cta-gem" aria-hidden="true" />

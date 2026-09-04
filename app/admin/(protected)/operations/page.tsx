@@ -1,0 +1,16 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/permissions";
+
+export const metadata: Metadata = { title: "Operations" };
+const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });
+
+export default async function AdminOperationsPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string }> }) {
+  await requireAdmin();
+  const parameters = await searchParams;
+  const status = parameters.status === "draft" || parameters.status === "published" ? parameters.status : "all";
+  const q = parameters.q?.trim().slice(0, 100) ?? "";
+  const operations = await prisma.operation.findMany({ where: { ...(status === "draft" ? { isPublished: false } : status === "published" ? { isPublished: true } : {}), ...(q ? { OR: [{ title: { contains: q } }, { area: { contains: q } }, { serviceType: { contains: q } }] } : {}) }, orderBy: { createdAt: "desc" }, select: { id: true, title: true, serviceType: true, area: true, operationDate: true, isPublished: true, createdAt: true } });
+  return <div className="mx-auto max-w-7xl"><p className="text-sm font-semibold text-primary">Public content</p><h1 className="mt-1 text-3xl font-semibold">Operations</h1><p className="mt-2 text-sm text-muted">Review drafts and manage published impact stories.</p><div className="mt-7 rounded-2xl border border-border bg-white p-4"><div className="flex flex-wrap gap-2">{[["all","All"],["draft","Draft"],["published","Published"]].map(([key,label]) => <Link key={key} href={`/admin/operations?status=${key}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className={`rounded-full px-4 py-2 text-sm font-semibold ${status === key ? "bg-primary" : "border border-border"}`}>{label}</Link>)}</div><form className="mt-4 flex gap-2"><input type="hidden" name="status" value={status} /><input name="q" type="search" defaultValue={q} placeholder="Search title, area, or service type" className="min-w-0 flex-1 rounded-xl border border-border px-4 py-3 outline-none focus:border-primary" /><button className="rounded-xl bg-foreground px-5 text-sm font-semibold text-white">Search</button></form></div><div className="mt-6 space-y-4">{operations.length ? operations.map((operation) => <article key={operation.id} className="grid gap-4 rounded-2xl border border-border bg-white p-5 lg:grid-cols-[1.4fr_1fr_1fr_auto] lg:items-center"><div><span className={`rounded-full px-3 py-1 text-xs font-semibold ${operation.isPublished ? "bg-primary/25" : "bg-light-background text-muted"}`}>{operation.isPublished ? "Published" : "Draft"}</span><h2 className="mt-3 text-lg font-semibold">{operation.title}</h2><p className="mt-1 text-sm text-muted">{operation.serviceType}</p></div><div className="text-sm"><p>{operation.area}</p><p className="mt-1 text-muted">Operation: {date.format(operation.operationDate)}</p></div><p className="text-sm text-muted">Created {date.format(operation.createdAt)}</p><Link href={`/admin/operations/${operation.id}`} className="rounded-xl border border-border px-5 py-3 text-center text-sm font-semibold hover:border-primary">Manage</Link></article>) : <p className="rounded-2xl border border-border bg-white p-10 text-center text-muted">No operations found.</p>}</div></div>;
+}
