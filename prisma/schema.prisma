@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+}
+
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DISABLED
+}
+
+enum ServiceRequestStatus {
+  NEW
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PlaceType {
+  HOME
+  HOSPITAL
+  OTHER
+}
+
+enum TaskStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  passwordHash    String
+  role            UserRole         @default(EMPLOYEE)
+  status          AccountStatus    @default(PENDING)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  employeeProfile EmployeeProfile?
+}
+
+model EmployeeProfile {
+  id              Int              @id @default(autoincrement())
+  userId          Int              @unique
+  employeeCode    String           @unique
+  fullName        String
+  phone           String
+  position        String
+  duty            String?
+  photoUrl        String?
+  isPublicProfile Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  taskAssignments TaskAssignment[]
+}
+
+model ServiceRequest {
+  id                     Int                  @id @default(autoincrement())
+  requestCode            String               @unique
+  requesterName          String
+  mobileNumber           String
+  alternativeNumber      String?
+  relationshipToDeceased String?
+  serviceType            String
+  requiredDate           DateTime
+  requiredTime           String?
+  placeType              PlaceType
+  address                String
+  area                   String
+  locationLink           String?
+  hospitalName           String?
+  note                   String?
+  status                 ServiceRequestStatus @default(NEW)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  taskAssignment         TaskAssignment?
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([area])
+}
+
+model TaskAssignment {
+  id          Int             @id @default(autoincrement())
+  requestId   Int             @unique
+  employeeId  Int
+  status      TaskStatus      @default(ASSIGNED)
+  acceptedAt  DateTime        @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  request     ServiceRequest  @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  employee    EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+
+  @@index([employeeId])
+  @@index([status])
+}

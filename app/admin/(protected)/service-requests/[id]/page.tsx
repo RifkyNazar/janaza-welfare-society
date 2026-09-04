@@ -1,0 +1,111 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { RequestActions } from "@/components/admin/request-actions";
+import { RequestStatusBadge } from "@/components/admin/request-status-badge";
+import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/permissions";
+
+export const metadata: Metadata = { title: "Service Request Details" };
+
+const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+function safeLocationUrl(value: string | null) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function Details({ items }: { items: Array<[string, React.ReactNode]> }) {
+  return (
+    <dl className="mt-5 divide-y divide-border">
+      {items.map(([label, value]) => (
+        <div key={label} className="grid gap-1 py-3 sm:grid-cols-[10rem_1fr]">
+          <dt className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</dt>
+          <dd className="break-words text-sm">{value || "—"}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+export default async function ServiceRequestDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin();
+
+  const { id: idParameter } = await params;
+  if (!/^\d+$/.test(idParameter)) notFound();
+  const id = Number(idParameter);
+  if (!Number.isSafeInteger(id) || id <= 0) notFound();
+
+  const request = await prisma.serviceRequest.findUnique({
+    where: { id },
+    include: {
+      taskAssignment: {
+        select: {
+          status: true,
+          employee: { select: { fullName: true, employeeCode: true } },
+        },
+      },
+    },
+  });
+
+  if (!request) notFound();
+  const locationUrl = safeLocationUrl(request.locationLink);
+
+  return (
+    <div className="mx-auto max-w-6xl">
+      <Link href="/admin/service-requests" className="text-sm font-semibold text-muted underline decoration-primary decoration-2 underline-offset-4 hover:text-foreground">Back to Service Requests</Link>
+
+      <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+        <div>
+          <p className="text-sm font-semibold text-primary">{request.requestCode}</p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight">Service Request</h1>
+          <div className="mt-3"><RequestStatusBadge status={request.status} /></div>
+        </div>
+        <RequestActions requestId={request.id} status={request.status} />
+      </div>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
+          <h2 className="text-lg font-semibold">Request Information</h2>
+          <Details items={[["Request Code", request.requestCode], ["Status", request.status.replaceAll("_", " ")], ["Created", dateTimeFormatter.format(request.createdAt)], ["Updated", dateTimeFormatter.format(request.updatedAt)]]} />
+        </section>
+
+        <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
+          <h2 className="text-lg font-semibold">Requester</h2>
+          <Details items={[["Name", request.requesterName], ["Mobile", request.mobileNumber], ["Alternative Number", request.alternativeNumber], ["Relationship", request.relationshipToDeceased]]} />
+        </section>
+
+        <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
+          <h2 className="text-lg font-semibold">Service</h2>
+          <Details items={[["Service Type", request.serviceType], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType]]} />
+        </section>
+
+        <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
+          <h2 className="text-lg font-semibold">Location</h2>
+          <Details items={[["Address", request.address], ["Area", request.area], ["Location Link", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open location</a> : null], ["Hospital Name", request.hospitalName]]} />
+        </section>
+      </div>
+
+      <section className="mt-6 rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
+        <h2 className="text-lg font-semibold">Additional Note</h2>
+        <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-muted">{request.note || "No additional note provided."}</p>
+      </section>
+
+      <section className="mt-6 rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
+        <h2 className="text-lg font-semibold">Task Assignment</h2>
+        {request.taskAssignment ? (
+          <div className="mt-4 rounded-xl border border-border bg-light-background p-4 text-sm">
+            <p className="font-semibold">{request.taskAssignment.employee.fullName}</p>
+            <p className="mt-1 text-muted">{request.taskAssignment.employee.employeeCode} · {request.taskAssignment.status.replaceAll("_", " ")}</p>
+          </div>
+        ) : <p className="mt-4 text-sm text-muted">Not assigned yet</p>}
+      </section>
+    </div>
+  );
+}
