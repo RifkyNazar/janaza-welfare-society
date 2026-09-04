@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BackButton } from "@/components/back-button";
 import { acceptTask } from "@/app/employee/(protected)/actions";
 import { TaskAction } from "@/components/employee/task-action";
 import { prisma } from "@/lib/prisma";
@@ -24,7 +24,7 @@ export default async function AvailableTaskDetailsPage({ params }: { params: Pro
 
   return (
     <div className="mx-auto max-w-4xl">
-      <Link href="/employee/tasks" className="text-sm font-semibold text-muted underline decoration-primary decoration-2 underline-offset-4 hover:text-foreground">Back to Available Tasks</Link>
+      <BackButton fallbackHref="/employee/tasks" />
       <div className="mt-6 rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)] sm:p-8">
         <p className="text-sm font-semibold text-primary">{request.requestCode}</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">{request.serviceType}</h1>

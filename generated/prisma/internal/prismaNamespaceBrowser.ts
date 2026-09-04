@@ -120,6 +120,8 @@ export const ServiceRequestScalarFieldEnum = {
   address: 'address',
   area: 'area',
   locationLink: 'locationLink',
+  latitude: 'latitude',
+  longitude: 'longitude',
   hospitalName: 'hospitalName',
   note: 'note',
   status: 'status',

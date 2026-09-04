@@ -3,11 +3,13 @@
 import { randomBytes } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { createRequestConfirmationPdf } from "@/lib/request-confirmation-pdf";
 
 export type ServiceRequestActionState = {
   error?: string;
   requestCode?: string;
   status?: "NEW";
+  pdfBase64?: string;
 };
 
 const limits = {
@@ -19,7 +21,6 @@ const limits = {
   requiredTime: 20,
   address: 1000,
   area: 150,
-  locationLink: 2048,
   hospitalName: 200,
   note: 2000,
 } as const;
@@ -58,7 +59,8 @@ export async function submitServiceRequest(
   const placeTypeInput = text(formData, "placeType").toUpperCase();
   const address = text(formData, "address");
   const area = text(formData, "area");
-  const locationLink = text(formData, "locationLink");
+  const latitudeInput = text(formData, "latitude");
+  const longitudeInput = text(formData, "longitude");
   const hospitalName = text(formData, "hospitalName");
   const note = text(formData, "note");
 
@@ -75,7 +77,6 @@ export async function submitServiceRequest(
     exceeds(requiredTime, "requiredTime") ||
     exceeds(address, "address") ||
     exceeds(area, "area") ||
-    exceeds(locationLink, "locationLink") ||
     exceeds(hospitalName, "hospitalName") ||
     exceeds(note, "note")
   ) {
@@ -105,19 +106,21 @@ export async function submitServiceRequest(
     return { error: "Please enter a valid required time." };
   }
 
-  if (locationLink) {
-    try {
-      const url = new URL(locationLink);
-      if (url.protocol !== "https:" && url.protocol !== "http:") throw new Error();
-    } catch {
-      return { error: "Please enter a valid location link." };
-    }
-  }
+  if ((latitudeInput && !longitudeInput) || (!latitudeInput && longitudeInput)) return { error: "Please select a valid map location." };
+  const latitude = latitudeInput ? Number(latitudeInput) : null;
+  const longitude = longitudeInput ? Number(longitudeInput) : null;
+  if (
+    (latitude !== null && (!Number.isFinite(latitude) || latitude < -90 || latitude > 90)) ||
+    (longitude !== null && (!Number.isFinite(longitude) || longitude < -180 || longitude > 180))
+  ) return { error: "Please select a valid map location." };
+  const locationLink = latitude !== null && longitude !== null
+    ? `https://www.google.com/maps?q=${latitude},${longitude}`
+    : null;
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const code = requestCode();
     try {
-      await prisma.serviceRequest.create({
+      const created = await prisma.serviceRequest.create({
         data: {
           requestCode: code,
           requesterName,
@@ -130,13 +133,21 @@ export async function submitServiceRequest(
           placeType,
           address,
           area,
-          locationLink: optional(locationLink),
+          locationLink,
+          latitude,
+          longitude,
           hospitalName: optional(hospitalName),
           note: optional(note),
           status: "NEW",
         },
       });
-      return { requestCode: code, status: "NEW" };
+      try {
+        const pdf = await createRequestConfirmationPdf(created);
+        return { requestCode: code, status: "NEW", pdfBase64: Buffer.from(pdf).toString("base64") };
+      } catch (pdfError) {
+        console.error("Unable to generate request confirmation PDF", pdfError);
+        return { requestCode: code, status: "NEW" };
+      }
     } catch (error) {
       const isRequestCodeCollision =
         error instanceof Prisma.PrismaClientKnownRequestError &&

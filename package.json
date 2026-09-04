@@ -12,13 +12,16 @@
     "@prisma/adapter-mariadb": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "bcryptjs": "^3.0.3",
+    "leaflet": "^1.9.4",
     "next": "16.3.4",
     "next-auth": "^5.0.0-beta.32",
+    "pdf-lib": "^1.17.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

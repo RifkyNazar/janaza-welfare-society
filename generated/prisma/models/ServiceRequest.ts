@@ -28,10 +28,14 @@ export type AggregateServiceRequest = {
 
 export type ServiceRequestAvgAggregateOutputType = {
   id: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type ServiceRequestSumAggregateOutputType = {
   id: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type ServiceRequestMinAggregateOutputType = {
@@ -48,6 +52,8 @@ export type ServiceRequestMinAggregateOutputType = {
   address: string | null
   area: string | null
   locationLink: string | null
+  latitude: number | null
+  longitude: number | null
   hospitalName: string | null
   note: string | null
   status: $Enums.ServiceRequestStatus | null
@@ -69,6 +75,8 @@ export type ServiceRequestMaxAggregateOutputType = {
   address: string | null
   area: string | null
   locationLink: string | null
+  latitude: number | null
+  longitude: number | null
   hospitalName: string | null
   note: string | null
   status: $Enums.ServiceRequestStatus | null
@@ -90,6 +98,8 @@ export type ServiceRequestCountAggregateOutputType = {
   address: number
   area: number
   locationLink: number
+  latitude: number
+  longitude: number
   hospitalName: number
   note: number
   status: number
@@ -101,10 +111,14 @@ export type ServiceRequestCountAggregateOutputType = {
 
 export type ServiceRequestAvgAggregateInputType = {
   id?: true
+  latitude?: true
+  longitude?: true
 }
 
 export type ServiceRequestSumAggregateInputType = {
   id?: true
+  latitude?: true
+  longitude?: true
 }
 
 export type ServiceRequestMinAggregateInputType = {
@@ -121,6 +135,8 @@ export type ServiceRequestMinAggregateInputType = {
   address?: true
   area?: true
   locationLink?: true
+  latitude?: true
+  longitude?: true
   hospitalName?: true
   note?: true
   status?: true
@@ -142,6 +158,8 @@ export type ServiceRequestMaxAggregateInputType = {
   address?: true
   area?: true
   locationLink?: true
+  latitude?: true
+  longitude?: true
   hospitalName?: true
   note?: true
   status?: true
@@ -163,6 +181,8 @@ export type ServiceRequestCountAggregateInputType = {
   address?: true
   area?: true
   locationLink?: true
+  latitude?: true
+  longitude?: true
   hospitalName?: true
   note?: true
   status?: true
@@ -271,6 +291,8 @@ export type ServiceRequestGroupByOutputType = {
   address: string
   area: string
   locationLink: string | null
+  latitude: number | null
+  longitude: number | null
   hospitalName: string | null
   note: string | null
   status: $Enums.ServiceRequestStatus
@@ -315,6 +337,8 @@ export type ServiceRequestWhereInput = {
   address?: Prisma.StringFilter<"ServiceRequest"> | string
   area?: Prisma.StringFilter<"ServiceRequest"> | string
   locationLink?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
+  latitude?: Prisma.FloatNullableFilter<"ServiceRequest"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"ServiceRequest"> | number | null
   hospitalName?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   note?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   status?: Prisma.EnumServiceRequestStatusFilter<"ServiceRequest"> | $Enums.ServiceRequestStatus
@@ -337,6 +361,8 @@ export type ServiceRequestOrderByWithRelationInput = {
   address?: Prisma.SortOrder
   area?: Prisma.SortOrder
   locationLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   hospitalName?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -363,6 +389,8 @@ export type ServiceRequestWhereUniqueInput = Prisma.AtLeast<{
   address?: Prisma.StringFilter<"ServiceRequest"> | string
   area?: Prisma.StringFilter<"ServiceRequest"> | string
   locationLink?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
+  latitude?: Prisma.FloatNullableFilter<"ServiceRequest"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"ServiceRequest"> | number | null
   hospitalName?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   note?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   status?: Prisma.EnumServiceRequestStatusFilter<"ServiceRequest"> | $Enums.ServiceRequestStatus
@@ -385,6 +413,8 @@ export type ServiceRequestOrderByWithAggregationInput = {
   address?: Prisma.SortOrder
   area?: Prisma.SortOrder
   locationLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   hospitalName?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -414,6 +444,8 @@ export type ServiceRequestScalarWhereWithAggregatesInput = {
   address?: Prisma.StringWithAggregatesFilter<"ServiceRequest"> | string
   area?: Prisma.StringWithAggregatesFilter<"ServiceRequest"> | string
   locationLink?: Prisma.StringNullableWithAggregatesFilter<"ServiceRequest"> | string | null
+  latitude?: Prisma.FloatNullableWithAggregatesFilter<"ServiceRequest"> | number | null
+  longitude?: Prisma.FloatNullableWithAggregatesFilter<"ServiceRequest"> | number | null
   hospitalName?: Prisma.StringNullableWithAggregatesFilter<"ServiceRequest"> | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"ServiceRequest"> | string | null
   status?: Prisma.EnumServiceRequestStatusWithAggregatesFilter<"ServiceRequest"> | $Enums.ServiceRequestStatus
@@ -434,6 +466,8 @@ export type ServiceRequestCreateInput = {
   address: string
   area: string
   locationLink?: string | null
+  latitude?: number | null
+  longitude?: number | null
   hospitalName?: string | null
   note?: string | null
   status?: $Enums.ServiceRequestStatus
@@ -456,6 +490,8 @@ export type ServiceRequestUncheckedCreateInput = {
   address: string
   area: string
   locationLink?: string | null
+  latitude?: number | null
+  longitude?: number | null
   hospitalName?: string | null
   note?: string | null
   status?: $Enums.ServiceRequestStatus
@@ -477,6 +513,8 @@ export type ServiceRequestUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   area?: Prisma.StringFieldUpdateOperationsInput | string
   locationLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   hospitalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServiceRequestStatusFieldUpdateOperationsInput | $Enums.ServiceRequestStatus
@@ -499,6 +537,8 @@ export type ServiceRequestUncheckedUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   area?: Prisma.StringFieldUpdateOperationsInput | string
   locationLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   hospitalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServiceRequestStatusFieldUpdateOperationsInput | $Enums.ServiceRequestStatus
@@ -521,6 +561,8 @@ export type ServiceRequestCreateManyInput = {
   address: string
   area: string
   locationLink?: string | null
+  latitude?: number | null
+  longitude?: number | null
   hospitalName?: string | null
   note?: string | null
   status?: $Enums.ServiceRequestStatus
@@ -541,6 +583,8 @@ export type ServiceRequestUpdateManyMutationInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   area?: Prisma.StringFieldUpdateOperationsInput | string
   locationLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   hospitalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServiceRequestStatusFieldUpdateOperationsInput | $Enums.ServiceRequestStatus
@@ -562,6 +606,8 @@ export type ServiceRequestUncheckedUpdateManyInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   area?: Prisma.StringFieldUpdateOperationsInput | string
   locationLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   hospitalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServiceRequestStatusFieldUpdateOperationsInput | $Enums.ServiceRequestStatus
@@ -589,6 +635,8 @@ export type ServiceRequestCountOrderByAggregateInput = {
   address?: Prisma.SortOrder
   area?: Prisma.SortOrder
   locationLink?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   hospitalName?: Prisma.SortOrder
   note?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -598,6 +646,8 @@ export type ServiceRequestCountOrderByAggregateInput = {
 
 export type ServiceRequestAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type ServiceRequestMaxOrderByAggregateInput = {
@@ -614,6 +664,8 @@ export type ServiceRequestMaxOrderByAggregateInput = {
   address?: Prisma.SortOrder
   area?: Prisma.SortOrder
   locationLink?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   hospitalName?: Prisma.SortOrder
   note?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -635,6 +687,8 @@ export type ServiceRequestMinOrderByAggregateInput = {
   address?: Prisma.SortOrder
   area?: Prisma.SortOrder
   locationLink?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   hospitalName?: Prisma.SortOrder
   note?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -644,6 +698,8 @@ export type ServiceRequestMinOrderByAggregateInput = {
 
 export type ServiceRequestSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type ServiceRequestScalarRelationFilter = {
@@ -653,6 +709,14 @@ export type ServiceRequestScalarRelationFilter = {
 
 export type EnumPlaceTypeFieldUpdateOperationsInput = {
   set?: $Enums.PlaceType
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type EnumServiceRequestStatusFieldUpdateOperationsInput = {
@@ -686,6 +750,8 @@ export type ServiceRequestCreateWithoutTaskAssignmentInput = {
   address: string
   area: string
   locationLink?: string | null
+  latitude?: number | null
+  longitude?: number | null
   hospitalName?: string | null
   note?: string | null
   status?: $Enums.ServiceRequestStatus
@@ -707,6 +773,8 @@ export type ServiceRequestUncheckedCreateWithoutTaskAssignmentInput = {
   address: string
   area: string
   locationLink?: string | null
+  latitude?: number | null
+  longitude?: number | null
   hospitalName?: string | null
   note?: string | null
   status?: $Enums.ServiceRequestStatus
@@ -743,6 +811,8 @@ export type ServiceRequestUpdateWithoutTaskAssignmentInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   area?: Prisma.StringFieldUpdateOperationsInput | string
   locationLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   hospitalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServiceRequestStatusFieldUpdateOperationsInput | $Enums.ServiceRequestStatus
@@ -764,6 +834,8 @@ export type ServiceRequestUncheckedUpdateWithoutTaskAssignmentInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   area?: Prisma.StringFieldUpdateOperationsInput | string
   locationLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   hospitalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServiceRequestStatusFieldUpdateOperationsInput | $Enums.ServiceRequestStatus
@@ -787,6 +859,8 @@ export type ServiceRequestSelect<ExtArgs extends runtime.Types.Extensions.Intern
   address?: boolean
   area?: boolean
   locationLink?: boolean
+  latitude?: boolean
+  longitude?: boolean
   hospitalName?: boolean
   note?: boolean
   status?: boolean
@@ -811,6 +885,8 @@ export type ServiceRequestSelectScalar = {
   address?: boolean
   area?: boolean
   locationLink?: boolean
+  latitude?: boolean
+  longitude?: boolean
   hospitalName?: boolean
   note?: boolean
   status?: boolean
@@ -818,7 +894,7 @@ export type ServiceRequestSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ServiceRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestCode" | "requesterName" | "mobileNumber" | "alternativeNumber" | "relationshipToDeceased" | "serviceType" | "requiredDate" | "requiredTime" | "placeType" | "address" | "area" | "locationLink" | "hospitalName" | "note" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceRequest"]>
+export type ServiceRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestCode" | "requesterName" | "mobileNumber" | "alternativeNumber" | "relationshipToDeceased" | "serviceType" | "requiredDate" | "requiredTime" | "placeType" | "address" | "area" | "locationLink" | "latitude" | "longitude" | "hospitalName" | "note" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceRequest"]>
 export type ServiceRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   taskAssignment?: boolean | Prisma.ServiceRequest$taskAssignmentArgs<ExtArgs>
 }
@@ -842,6 +918,8 @@ export type $ServiceRequestPayload<ExtArgs extends runtime.Types.Extensions.Inte
     address: string
     area: string
     locationLink: string | null
+    latitude: number | null
+    longitude: number | null
     hospitalName: string | null
     note: string | null
     status: $Enums.ServiceRequestStatus
@@ -1230,6 +1308,8 @@ export interface ServiceRequestFieldRefs {
   readonly address: Prisma.FieldRef<"ServiceRequest", 'String'>
   readonly area: Prisma.FieldRef<"ServiceRequest", 'String'>
   readonly locationLink: Prisma.FieldRef<"ServiceRequest", 'String'>
+  readonly latitude: Prisma.FieldRef<"ServiceRequest", 'Float'>
+  readonly longitude: Prisma.FieldRef<"ServiceRequest", 'Float'>
   readonly hospitalName: Prisma.FieldRef<"ServiceRequest", 'String'>
   readonly note: Prisma.FieldRef<"ServiceRequest", 'String'>
   readonly status: Prisma.FieldRef<"ServiceRequest", 'ServiceRequestStatus'>

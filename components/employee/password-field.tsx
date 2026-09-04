@@ -21,6 +21,7 @@ export function PasswordField({ id, name, label, autoComplete }: PasswordFieldPr
           name={name}
           type={isVisible ? "text" : "password"}
           autoComplete={autoComplete}
+          required
           className="employee-form-input pr-20"
         />
         <button
@@ -36,4 +37,3 @@ export function PasswordField({ id, name, label, autoComplete }: PasswordFieldPr
     </div>
   );
 }
-

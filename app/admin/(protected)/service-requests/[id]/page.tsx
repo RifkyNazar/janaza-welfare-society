@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BackButton } from "@/components/back-button";
 import { RequestActions } from "@/components/admin/request-actions";
 import { RequestStatusBadge } from "@/components/admin/request-status-badge";
 import { prisma } from "@/lib/prisma";
@@ -59,7 +59,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
   return (
     <div className="mx-auto max-w-6xl">
-      <Link href="/admin/service-requests" className="text-sm font-semibold text-muted underline decoration-primary decoration-2 underline-offset-4 hover:text-foreground">Back to Service Requests</Link>
+      <BackButton fallbackHref="/admin/service-requests" />
 
       <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>
@@ -88,7 +88,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Location</h2>
-          <Details items={[["Address", request.address], ["Area", request.area], ["Location Link", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open location</a> : null], ["Hospital Name", request.hospitalName]]} />
+          <Details items={[["Address", request.address], ["Area", request.area], ["Selected Location", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open in Maps</a> : null], ["Hospital Name", request.hospitalName]]} />
         </section>
       </div>
 

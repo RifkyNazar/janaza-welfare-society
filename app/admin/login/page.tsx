@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
+import { BackButton } from "@/components/back-button";
 
 export const metadata: Metadata = { title: "Admin Login" };
 
@@ -24,9 +24,7 @@ export default function AdminLoginPage() {
           <AdminLoginForm />
         </div>
 
-        <p className="mt-6 text-center text-sm text-muted">
-          <Link href="/" className="font-semibold underline decoration-primary decoration-2 underline-offset-4 hover:text-foreground">Return to public website</Link>
-        </p>
+        <div className="mt-6 text-center"><BackButton fallbackHref="/" /></div>
       </div>
     </main>
   );

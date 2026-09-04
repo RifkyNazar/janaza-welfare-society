@@ -4,6 +4,8 @@ import { FormEvent, useActionState, useState } from "react";
 import Link from "next/link";
 import { submitServiceRequest, type ServiceRequestActionState } from "@/app/actions/service-request";
 import { CopyRequestCode } from "@/components/copy-request-code";
+import { DownloadRequestPdf } from "@/components/download-request-pdf";
+import { LocationPicker } from "@/components/location-picker";
 
 type RequestFormData = {
   fullName: string;
@@ -17,7 +19,6 @@ type RequestFormData = {
   note: string;
   address: string;
   area: string;
-  location: string;
   hospitalName: string;
 };
 
@@ -27,7 +28,7 @@ type Errors = Partial<Record<FieldName, string>>;
 const initialData: RequestFormData = {
   fullName: "", mobile: "", alternative: "", relationship: "",
   serviceType: "", requiredDate: "", requiredTime: "", placeType: "",
-  note: "", address: "", area: "", location: "", hospitalName: "",
+  note: "", address: "", area: "", hospitalName: "",
 };
 
 const steps = ["Contact", "Service", "Location", "Review"] as const;
@@ -49,6 +50,7 @@ export function ServiceRequestForm() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<RequestFormData>(initialData);
   const [errors, setErrors] = useState<Errors>({});
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [submission, formAction, isPending] = useActionState<ServiceRequestActionState, FormData>(submitServiceRequest, {});
 
   const update = (field: FieldName, value: string) => {
@@ -109,10 +111,12 @@ export function ServiceRequestForm() {
           <svg viewBox="0 0 24 24" fill="none" className="size-8"><path d="m6 12 4 4 8-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </span>
         <h2 className="mt-5 text-2xl font-semibold text-foreground">Your service request has been submitted successfully.</h2>
-        <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-muted">Keep your request code and use the same mobile number you submitted to check the status.</p>
-        <p className="mt-5 text-lg font-semibold tracking-wide text-foreground">{submission.requestCode}</p>
+        <h3 className="mt-6 text-lg font-semibold text-foreground">Keep this code safe</h3>
+        <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted">You will need this request code together with your registered mobile number to track your request.</p>
+        <div className="mx-auto mt-5 max-w-lg rounded-2xl border border-primary/50 bg-light-background px-4 py-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">Request Code</p><p className="mt-2 break-all text-xl font-semibold tracking-wide text-foreground sm:text-2xl">{submission.requestCode}</p></div>
         <div className="mx-auto mt-5 max-w-sm rounded-2xl border border-border bg-light-background p-4"><p className="text-xs font-semibold uppercase tracking-wider text-muted">Current Status</p><p className="mt-2 font-semibold text-foreground">Request Received</p></div>
-        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><CopyRequestCode requestCode={submission.requestCode} /><Link href="/track-request" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground motion-reduce:transform-none motion-reduce:transition-none">View Full Tracking</Link></div>
+        <p className="mx-auto mt-5 max-w-lg text-sm font-medium leading-6 text-muted">This PDF contains your request details. Keep it private.</p>
+        <div className="mt-7 grid gap-3 sm:grid-cols-3"><CopyRequestCode requestCode={submission.requestCode} /><DownloadRequestPdf requestCode={submission.requestCode} pdfBase64={submission.pdfBase64} /><Link href="/track-request" className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition-colors hover:bg-[#35d8bd] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">Track Request</Link></div>
       </div>
     );
   }
@@ -163,12 +167,12 @@ export function ServiceRequestForm() {
         {step === 3 && <div className="grid gap-6 sm:grid-cols-2">
           <div className="sm:col-span-2"><label className={labelClass} htmlFor="address">Address <span className="text-red-700" aria-hidden="true">*</span></label><textarea className={`${inputClass} min-h-28 resize-y`} id="address" name="address" rows={3} autoComplete="street-address" value={data.address} onChange={(e) => update("address", e.target.value)} aria-required="true" aria-invalid={!!errors.address} aria-describedby={errors.address ? "address-error" : undefined} /><FieldError id="address-error" message={errors.address} /></div>
           <div><label className={labelClass} htmlFor="area">Area / Town <span className="text-red-700" aria-hidden="true">*</span></label><input className={inputClass} id="area" name="area" autoComplete="address-level2" value={data.area} onChange={(e) => update("area", e.target.value)} aria-required="true" aria-invalid={!!errors.area} aria-describedby={errors.area ? "area-error" : undefined} /><FieldError id="area-error" message={errors.area} /></div>
-          <div><label className={labelClass} htmlFor="location">Google Maps Location Link <span className="font-normal text-muted">(optional)</span></label><input className={inputClass} id="location" name="location" type="url" inputMode="url" placeholder="Paste a shared location link" value={data.location} onChange={(e) => update("location", e.target.value)} /><p className="mt-2 text-xs text-muted">No live tracking or location permission is used.</p></div>
+          <LocationPicker value={coordinates} onChange={setCoordinates} />
           {data.placeType === "Hospital" && <div className="sm:col-span-2"><label className={labelClass} htmlFor="hospitalName">Hospital Name <span className="font-normal text-muted">(optional)</span></label><input className={inputClass} id="hospitalName" name="hospitalName" value={data.hospitalName} onChange={(e) => update("hospitalName", e.target.value)} /></div>}
         </div>}
 
         {step === 4 && <>
-          <Review data={data} />
+          <Review data={data} coordinates={coordinates} />
           <input type="hidden" name="requesterName" value={data.fullName} />
           <input type="hidden" name="mobileNumber" value={data.mobile} />
           <input type="hidden" name="alternativeNumber" value={data.alternative} />
@@ -179,7 +183,8 @@ export function ServiceRequestForm() {
           <input type="hidden" name="placeType" value={data.placeType} />
           <input type="hidden" name="address" value={data.address} />
           <input type="hidden" name="area" value={data.area} />
-          <input type="hidden" name="locationLink" value={data.location} />
+          <input type="hidden" name="latitude" value={coordinates?.latitude ?? ""} />
+          <input type="hidden" name="longitude" value={coordinates?.longitude ?? ""} />
           <input type="hidden" name="hospitalName" value={data.hospitalName} />
           <input type="hidden" name="note" value={data.note} />
           {submission.error && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{submission.error}</p>}
@@ -194,12 +199,13 @@ export function ServiceRequestForm() {
   );
 }
 
-function Review({ data }: { data: RequestFormData }) {
+function Review({ data, coordinates }: { data: RequestFormData; coordinates: { latitude: number; longitude: number } | null }) {
   const serviceLabel = serviceOptions.find((item) => item.value === data.serviceType)?.label ?? data.serviceType;
   const items = [
     ["Name", data.fullName], ["Phone", data.mobile], ["Service Type", serviceLabel],
     ["Date", data.requiredDate], ["Time", data.requiredTime || "Not specified"], ["Place Type", data.placeType],
     ["Address", data.address], ["Area", data.area],
+    ...(coordinates ? [["Map Location", `${coordinates.latitude.toFixed(6)}, ${coordinates.longitude.toFixed(6)}`]] : []),
     ...(data.placeType === "Hospital" ? [["Hospital", data.hospitalName || "Not specified"]] : []),
     ["Note", data.note || "Not provided"],
   ];

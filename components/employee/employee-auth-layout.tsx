@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { BackButton } from "@/components/back-button";
 
 type EmployeeAuthLayoutProps = {
   title: string;
@@ -36,14 +36,10 @@ export function EmployeeAuthLayout({
 
         {backHref && backLabel && (
           <div className="mt-7 text-center">
-            <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
-              <span aria-hidden="true">←</span>
-              {backLabel}
-            </Link>
+            <BackButton fallbackHref={backHref} label={backLabel} />
           </div>
         )}
       </div>
     </section>
   );
 }
-

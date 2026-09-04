@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  if (pathname === "/") return null;
+
   return (
     <footer className="relative border-t border-border bg-light-background text-foreground">
       <div className="footer-geometric-separator" aria-hidden="true" />
@@ -9,7 +15,6 @@ export function Footer() {
         <div className="flex gap-5 text-muted">
           <Link href="/services" className="hover:text-foreground">Services</Link>
           <Link href="/contact" className="hover:text-foreground">Contact</Link>
-          <Link href="/admin/login" className="text-muted/80 hover:text-foreground">Admin Login</Link>
         </div>
       </div>
     </footer>

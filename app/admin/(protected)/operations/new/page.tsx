@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { OperationForm } from "@/components/admin/operation-form";
+import { BackButton } from "@/components/back-button";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 import { createOperation } from "../actions";
@@ -21,5 +21,5 @@ export default async function NewOperationPage({ searchParams }: { searchParams:
   if (!task) notFound();
   if (task.operation) redirect(`/admin/operations/${task.operation.id}`);
   const operationDate = (task.completedAt ?? task.request.requiredDate).toISOString().slice(0, 10);
-  return <div className="mx-auto max-w-5xl"><Link href={`/admin/task-assignments/${taskId}`} className="text-sm font-semibold text-muted underline decoration-primary decoration-2 underline-offset-4">Back to Task Assignment</Link><div className="mt-6"><p className="text-sm font-semibold text-primary">Draft workflow</p><h1 className="mt-1 text-3xl font-semibold">Create Public Operation</h1><p className="mt-2 text-sm text-muted">Review and write only information suitable for public viewing. Saving creates a private draft.</p></div><OperationForm action={createOperation.bind(null, taskId)} submitLabel="Create Draft" initial={{ title: "", shortDescription: "", description: "", serviceType: task.request.serviceType, area: task.request.area, operationDate }} photos={task.photos} /></div>;
+  return <div className="mx-auto max-w-5xl"><BackButton fallbackHref="/admin/task-assignments" /><div className="mt-6"><p className="text-sm font-semibold text-primary">Draft workflow</p><h1 className="mt-1 text-3xl font-semibold">Create Public Operation</h1><p className="mt-2 text-sm text-muted">Review and write only information suitable for public viewing. Saving creates a private draft.</p></div><OperationForm action={createOperation.bind(null, taskId)} submitLabel="Create Draft" initial={{ title: "", shortDescription: "", description: "", serviceType: task.request.serviceType, area: task.request.area, operationDate }} photos={task.photos} /></div>;
 }

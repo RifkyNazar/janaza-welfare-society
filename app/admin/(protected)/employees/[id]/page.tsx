@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BackButton } from "@/components/back-button";
 import { EmployeeActions } from "@/components/admin/employee-actions";
 import { EmployeeStatusBadge } from "@/components/admin/employee-status-badge";
 import { prisma } from "@/lib/prisma";
@@ -74,7 +74,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
 
   return (
     <div className="mx-auto max-w-6xl">
-      <Link href="/admin/employees" className="text-sm font-semibold text-muted underline decoration-primary decoration-2 underline-offset-4 hover:text-foreground">Back to Employees</Link>
+      <BackButton fallbackHref="/admin/employees" />
 
       <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>

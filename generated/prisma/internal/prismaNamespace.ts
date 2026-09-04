@@ -968,6 +968,8 @@ export const ServiceRequestScalarFieldEnum = {
   address: 'address',
   area: 'area',
   locationLink: 'locationLink',
+  latitude: 'latitude',
+  longitude: 'longitude',
   hospitalName: 'hospitalName',
   note: 'note',
   status: 'status',
@@ -1165,6 +1167,13 @@ export type EnumPlaceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceRequestStatus'
  */
 export type EnumServiceRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceRequestStatus'>
@@ -1175,13 +1184,6 @@ export type EnumServiceRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputT
  * Reference to a field of type 'TaskStatus'
  */
 export type EnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskStatus'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 /**

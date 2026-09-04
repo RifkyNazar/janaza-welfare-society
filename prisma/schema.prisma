@@ -82,6 +82,8 @@ model ServiceRequest {
   address                String
   area                   String
   locationLink           String?
+  latitude               Float?
+  longitude              Float?
   hospitalName           String?
   note                   String?
   status                 ServiceRequestStatus @default(NEW)
