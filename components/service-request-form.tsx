@@ -13,6 +13,7 @@ type RequestFormData = {
   alternative: string;
   relationship: string;
   serviceType: string;
+  preferredVehicleId: string;
   requiredDate: string;
   requiredTime: string;
   placeType: string;
@@ -27,7 +28,7 @@ type Errors = Partial<Record<FieldName, string>>;
 
 const initialData: RequestFormData = {
   fullName: "", mobile: "", alternative: "", relationship: "",
-  serviceType: "", requiredDate: "", requiredTime: "", placeType: "",
+  serviceType: "", preferredVehicleId: "", requiredDate: "", requiredTime: "", placeType: "",
   note: "", address: "", area: "", hospitalName: "",
 };
 
@@ -46,7 +47,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   return <p id={id} className="mt-2 text-sm font-medium text-red-700" role="alert">{message}</p>;
 }
 
-export function ServiceRequestForm() {
+export function ServiceRequestForm({ vehicles }: { vehicles: Array<{ id: string; name: string; vehicleType: string }> }) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<RequestFormData>(initialData);
   const [errors, setErrors] = useState<Errors>({});
@@ -158,6 +159,7 @@ export function ServiceRequestForm() {
 
         {step === 2 && <div className="grid gap-6 sm:grid-cols-2">
           <div className="sm:col-span-2"><label className={labelClass} htmlFor="serviceType">Service Type <span className="text-red-700" aria-hidden="true">*</span></label><select className={inputClass} id="serviceType" name="serviceType" value={data.serviceType} onChange={(e) => update("serviceType", e.target.value)} aria-required="true" aria-invalid={!!errors.serviceType} aria-describedby={errors.serviceType ? "serviceType-error" : undefined}><option value="">Select a service</option>{serviceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select><FieldError id="serviceType-error" message={errors.serviceType} /><p className="mt-2 text-xs text-muted">Temporary service options — to be replaced with the society&apos;s service list.</p></div>
+          <div className="sm:col-span-2"><label className={labelClass} htmlFor="preferredVehicleId">Preferred Vehicle <span className="font-normal text-muted">(optional)</span></label><select className={inputClass} id="preferredVehicleId" name="preferredVehicleId" value={data.preferredVehicleId} onChange={(e) => update("preferredVehicleId", e.target.value)}><option value="">No Preference</option>{vehicles.map((vehicle) => <option key={vehicle.id} value={vehicle.id}>{vehicle.name} — {vehicle.vehicleType}</option>)}</select><p className="mt-2 text-xs text-muted">This is a preference only and is not a guaranteed vehicle assignment.</p></div>
           <div><label className={labelClass} htmlFor="requiredDate">Required Date <span className="text-red-700" aria-hidden="true">*</span></label><input className={inputClass} id="requiredDate" name="requiredDate" type="date" value={data.requiredDate} onChange={(e) => update("requiredDate", e.target.value)} aria-required="true" aria-invalid={!!errors.requiredDate} aria-describedby={errors.requiredDate ? "requiredDate-error" : undefined} /><FieldError id="requiredDate-error" message={errors.requiredDate} /></div>
           <div><label className={labelClass} htmlFor="requiredTime">Required Time <span className="font-normal text-muted">(optional)</span></label><input className={inputClass} id="requiredTime" name="requiredTime" type="time" value={data.requiredTime} onChange={(e) => update("requiredTime", e.target.value)} /></div>
           <fieldset className="sm:col-span-2" aria-invalid={!!errors.placeType} aria-describedby={errors.placeType ? "placeType-error" : undefined}><legend className={labelClass}>Place Type <span className="text-red-700" aria-hidden="true">*</span></legend><div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">{["Home", "Hospital", "Other"].map((place) => <label key={place} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 font-medium transition focus-within:ring-4 focus-within:ring-primary/20 ${data.placeType === place ? "border-primary bg-primary/10" : "border-border bg-white hover:border-primary"}`}><input type="radio" name="placeType" value={place} checked={data.placeType === place} onChange={(e) => update("placeType", e.target.value)} className="size-5 accent-[#45E8CD]" />{place}</label>)}</div><FieldError id="placeType-error" message={errors.placeType} /></fieldset>
@@ -172,12 +174,13 @@ export function ServiceRequestForm() {
         </div>}
 
         {step === 4 && <>
-          <Review data={data} coordinates={coordinates} />
+          <Review data={data} coordinates={coordinates} vehicles={vehicles} />
           <input type="hidden" name="requesterName" value={data.fullName} />
           <input type="hidden" name="mobileNumber" value={data.mobile} />
           <input type="hidden" name="alternativeNumber" value={data.alternative} />
           <input type="hidden" name="relationshipToDeceased" value={data.relationship} />
           <input type="hidden" name="serviceType" value={data.serviceType} />
+          <input type="hidden" name="preferredVehicleId" value={data.preferredVehicleId} />
           <input type="hidden" name="requiredDate" value={data.requiredDate} />
           <input type="hidden" name="requiredTime" value={data.requiredTime} />
           <input type="hidden" name="placeType" value={data.placeType} />
@@ -199,10 +202,10 @@ export function ServiceRequestForm() {
   );
 }
 
-function Review({ data, coordinates }: { data: RequestFormData; coordinates: { latitude: number; longitude: number } | null }) {
+function Review({ data, coordinates, vehicles }: { data: RequestFormData; coordinates: { latitude: number; longitude: number } | null; vehicles: Array<{ id: string; name: string; vehicleType: string }> }) {
   const serviceLabel = serviceOptions.find((item) => item.value === data.serviceType)?.label ?? data.serviceType;
   const items = [
-    ["Name", data.fullName], ["Phone", data.mobile], ["Service Type", serviceLabel],
+    ["Name", data.fullName], ["Phone", data.mobile], ["Service Type", serviceLabel], ["Preferred Vehicle", vehicles.find((vehicle) => vehicle.id === data.preferredVehicleId)?.name ?? "No Preference"],
     ["Date", data.requiredDate], ["Time", data.requiredTime || "Not specified"], ["Place Type", data.placeType],
     ["Address", data.address], ["Area", data.area],
     ...(coordinates ? [["Map Location", `${coordinates.latitude.toFixed(6)}, ${coordinates.longitude.toFixed(6)}`]] : []),

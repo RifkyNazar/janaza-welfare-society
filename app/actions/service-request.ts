@@ -54,6 +54,7 @@ export async function submitServiceRequest(
   const alternativeNumber = text(formData, "alternativeNumber");
   const relationshipToDeceased = text(formData, "relationshipToDeceased");
   const serviceType = text(formData, "serviceType");
+  const preferredVehicleId = text(formData, "preferredVehicleId");
   const requiredDateInput = text(formData, "requiredDate");
   const requiredTime = text(formData, "requiredTime");
   const placeTypeInput = text(formData, "placeType").toUpperCase();
@@ -117,6 +118,12 @@ export async function submitServiceRequest(
     ? `https://www.google.com/maps?q=${latitude},${longitude}`
     : null;
 
+  if (preferredVehicleId.length > 191) return { error: "Please select a valid preferred vehicle." };
+  const preferredVehicle = preferredVehicleId
+    ? await prisma.vehicle.findFirst({ where: { id: preferredVehicleId, isActive: true, isPublic: true }, select: { id: true, name: true, vehicleNumber: true, vehicleType: true } })
+    : null;
+  if (preferredVehicleId && !preferredVehicle) return { error: "The preferred vehicle selected is no longer available. Please choose another vehicle or No Preference." };
+
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const code = requestCode();
     try {
@@ -128,6 +135,7 @@ export async function submitServiceRequest(
           alternativeNumber: optional(alternativeNumber),
           relationshipToDeceased: optional(relationshipToDeceased),
           serviceType,
+          preferredVehicleId: preferredVehicle?.id ?? null,
           requiredDate,
           requiredTime: optional(requiredTime),
           placeType,
@@ -140,6 +148,7 @@ export async function submitServiceRequest(
           note: optional(note),
           status: "NEW",
         },
+        include: { preferredVehicle: { select: { name: true, vehicleNumber: true, vehicleType: true } } },
       });
       try {
         const pdf = await createRequestConfirmationPdf(created);

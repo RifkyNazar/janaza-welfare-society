@@ -541,14 +541,6 @@ export type TaskPhotoUncheckedUpdateManyWithoutTaskAssignmentNestedInput = {
   deleteMany?: Prisma.TaskPhotoScalarWhereInput | Prisma.TaskPhotoScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type TaskPhotoCreateNestedOneWithoutOperationPhotosInput = {
   create?: Prisma.XOR<Prisma.TaskPhotoCreateWithoutOperationPhotosInput, Prisma.TaskPhotoUncheckedCreateWithoutOperationPhotosInput>
   connectOrCreate?: Prisma.TaskPhotoCreateOrConnectWithoutOperationPhotosInput

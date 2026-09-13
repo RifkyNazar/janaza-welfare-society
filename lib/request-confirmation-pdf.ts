@@ -7,6 +7,7 @@ export type RequestConfirmationData = {
   alternativeNumber: string | null;
   relationshipToDeceased: string | null;
   serviceType: string;
+  preferredVehicle: { name: string; vehicleNumber: string; vehicleType: string } | null;
   requiredDate: Date;
   requiredTime: string | null;
   placeType: string;
@@ -120,6 +121,7 @@ export async function createRequestConfirmationPdf(data: RequestConfirmationData
   row("Relationship", data.relationshipToDeceased);
   section("SERVICE DETAILS");
   row("Service Type", data.serviceType);
+  row("Preferred Vehicle", data.preferredVehicle ? `${data.preferredVehicle.name} / ${data.preferredVehicle.vehicleNumber} / ${data.preferredVehicle.vehicleType}` : "No Preference");
   row("Required Date", new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeZone: "UTC" }).format(data.requiredDate));
   row("Required Time", data.requiredTime);
   row("Place Type", data.placeType.replaceAll("_", " "));

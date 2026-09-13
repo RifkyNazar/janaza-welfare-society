@@ -54,6 +54,8 @@ export const ModelName = {
   User: 'User',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
+  Vehicle: 'Vehicle',
+  Donation: 'Donation',
   TaskAssignment: 'TaskAssignment',
   TaskPhoto: 'TaskPhoto',
   Operation: 'Operation',
@@ -126,10 +128,51 @@ export const ServiceRequestScalarFieldEnum = {
   note: 'note',
   status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  preferredVehicleId: 'preferredVehicleId'
 } as const
 
 export type ServiceRequestScalarFieldEnum = (typeof ServiceRequestScalarFieldEnum)[keyof typeof ServiceRequestScalarFieldEnum]
+
+
+export const VehicleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  vehicleNumber: 'vehicleNumber',
+  vehicleType: 'vehicleType',
+  description: 'description',
+  imageUrl: 'imageUrl',
+  isActive: 'isActive',
+  isPublic: 'isPublic',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VehicleScalarFieldEnum = (typeof VehicleScalarFieldEnum)[keyof typeof VehicleScalarFieldEnum]
+
+
+export const DonationScalarFieldEnum = {
+  id: 'id',
+  referenceCode: 'referenceCode',
+  fullName: 'fullName',
+  mobileNumber: 'mobileNumber',
+  amount: 'amount',
+  transferDate: 'transferDate',
+  bankReference: 'bankReference',
+  note: 'note',
+  receiptFileName: 'receiptFileName',
+  receiptStorageKey: 'receiptStorageKey',
+  receiptMimeType: 'receiptMimeType',
+  status: 'status',
+  reviewedAt: 'reviewedAt',
+  reviewedByUserId: 'reviewedByUserId',
+  reviewNote: 'reviewNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
 
 
 export const TaskAssignmentScalarFieldEnum = {
@@ -238,10 +281,38 @@ export const ServiceRequestOrderByRelevanceFieldEnum = {
   area: 'area',
   locationLink: 'locationLink',
   hospitalName: 'hospitalName',
-  note: 'note'
+  note: 'note',
+  preferredVehicleId: 'preferredVehicleId'
 } as const
 
 export type ServiceRequestOrderByRelevanceFieldEnum = (typeof ServiceRequestOrderByRelevanceFieldEnum)[keyof typeof ServiceRequestOrderByRelevanceFieldEnum]
+
+
+export const VehicleOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  vehicleNumber: 'vehicleNumber',
+  vehicleType: 'vehicleType',
+  description: 'description',
+  imageUrl: 'imageUrl'
+} as const
+
+export type VehicleOrderByRelevanceFieldEnum = (typeof VehicleOrderByRelevanceFieldEnum)[keyof typeof VehicleOrderByRelevanceFieldEnum]
+
+
+export const DonationOrderByRelevanceFieldEnum = {
+  referenceCode: 'referenceCode',
+  fullName: 'fullName',
+  mobileNumber: 'mobileNumber',
+  bankReference: 'bankReference',
+  note: 'note',
+  receiptFileName: 'receiptFileName',
+  receiptStorageKey: 'receiptStorageKey',
+  receiptMimeType: 'receiptMimeType',
+  reviewNote: 'reviewNote'
+} as const
+
+export type DonationOrderByRelevanceFieldEnum = (typeof DonationOrderByRelevanceFieldEnum)[keyof typeof DonationOrderByRelevanceFieldEnum]
 
 
 export const TaskPhotoOrderByRelevanceFieldEnum = {

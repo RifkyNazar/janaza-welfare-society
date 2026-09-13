@@ -45,6 +45,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
   const request = await prisma.serviceRequest.findUnique({
     where: { id },
     include: {
+      preferredVehicle: { select: { name: true, vehicleNumber: true, vehicleType: true } },
       taskAssignment: {
         select: {
           status: true,
@@ -83,7 +84,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Service</h2>
-          <Details items={[["Service Type", request.serviceType], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType]]} />
+          <Details items={[["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType]]} />
         </section>
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">

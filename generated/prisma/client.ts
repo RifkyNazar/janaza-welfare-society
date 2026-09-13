@@ -57,6 +57,16 @@ export type EmployeeProfile = Prisma.EmployeeProfileModel
  */
 export type ServiceRequest = Prisma.ServiceRequestModel
 /**
+ * Model Vehicle
+ * 
+ */
+export type Vehicle = Prisma.VehicleModel
+/**
+ * Model Donation
+ * 
+ */
+export type Donation = Prisma.DonationModel
+/**
  * Model TaskAssignment
  * 
  */

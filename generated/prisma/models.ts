@@ -11,6 +11,8 @@
 export type * from './models/User'
 export type * from './models/EmployeeProfile'
 export type * from './models/ServiceRequest'
+export type * from './models/Vehicle'
+export type * from './models/Donation'
 export type * from './models/TaskAssignment'
 export type * from './models/TaskPhoto'
 export type * from './models/Operation'
