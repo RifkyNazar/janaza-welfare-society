@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
+  RequestServiceSelection: 'RequestServiceSelection',
   Vehicle: 'Vehicle',
   Donation: 'Donation',
   TaskAssignment: 'TaskAssignment',
@@ -129,10 +130,22 @@ export const ServiceRequestScalarFieldEnum = {
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  preferredVehicleId: 'preferredVehicleId'
+  preferredVehicleId: 'preferredVehicleId',
+  serviceCategory: 'serviceCategory'
 } as const
 
 export type ServiceRequestScalarFieldEnum = (typeof ServiceRequestScalarFieldEnum)[keyof typeof ServiceRequestScalarFieldEnum]
+
+
+export const RequestServiceSelectionScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  serviceCode: 'serviceCode',
+  serviceLabel: 'serviceLabel',
+  createdAt: 'createdAt'
+} as const
+
+export type RequestServiceSelectionScalarFieldEnum = (typeof RequestServiceSelectionScalarFieldEnum)[keyof typeof RequestServiceSelectionScalarFieldEnum]
 
 
 export const VehicleScalarFieldEnum = {
@@ -286,6 +299,14 @@ export const ServiceRequestOrderByRelevanceFieldEnum = {
 } as const
 
 export type ServiceRequestOrderByRelevanceFieldEnum = (typeof ServiceRequestOrderByRelevanceFieldEnum)[keyof typeof ServiceRequestOrderByRelevanceFieldEnum]
+
+
+export const RequestServiceSelectionOrderByRelevanceFieldEnum = {
+  serviceCode: 'serviceCode',
+  serviceLabel: 'serviceLabel'
+} as const
+
+export type RequestServiceSelectionOrderByRelevanceFieldEnum = (typeof RequestServiceSelectionOrderByRelevanceFieldEnum)[keyof typeof RequestServiceSelectionOrderByRelevanceFieldEnum]
 
 
 export const VehicleOrderByRelevanceFieldEnum = {

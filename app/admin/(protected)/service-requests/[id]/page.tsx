@@ -5,6 +5,7 @@ import { RequestActions } from "@/components/admin/request-actions";
 import { RequestStatusBadge } from "@/components/admin/request-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { categoryLabel, serviceSummary } from "@/lib/service-options";
 
 export const metadata: Metadata = { title: "Service Request Details" };
 
@@ -46,6 +47,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
     where: { id },
     include: {
       preferredVehicle: { select: { name: true, vehicleNumber: true, vehicleType: true } },
+      serviceSelections: { select: { serviceLabel: true }, orderBy: { id: "asc" } },
       taskAssignment: {
         select: {
           status: true,
@@ -79,17 +81,17 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Requester</h2>
-          <Details items={[["Name", request.requesterName], ["Mobile", request.mobileNumber], ["Alternative Number", request.alternativeNumber], ["Relationship", request.relationshipToDeceased]]} />
+          <Details items={request.serviceCategory ? [["Name", request.requesterName], ["Contact Number", request.mobileNumber]] : [["Name", request.requesterName], ["Mobile", request.mobileNumber], ["Alternative Number", request.alternativeNumber], ["Relationship", request.relationshipToDeceased]]} />
         </section>
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Service</h2>
-          <Details items={[["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType]]} />
+          <Details items={request.serviceCategory ? [["Category", categoryLabel(request.serviceCategory)], ["Selected Services", serviceSummary(request.serviceType, request.serviceSelections)]] : [["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType]]} />
         </section>
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Location</h2>
-          <Details items={[["Address", request.address], ["Area", request.area], ["Selected Location", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open in Maps</a> : null], ["Hospital Name", request.hospitalName]]} />
+          <Details items={request.serviceCategory ? [["Location / Area", request.area], ["Selected Location", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open in Maps</a> : null]] : [["Address", request.address], ["Area", request.area], ["Selected Location", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open in Maps</a> : null], ["Hospital Name", request.hospitalName]]} />
         </section>
       </div>
 

@@ -38,6 +38,14 @@ export const ServiceRequestStatus = {
 export type ServiceRequestStatus = (typeof ServiceRequestStatus)[keyof typeof ServiceRequestStatus]
 
 
+export const ServiceCategory = {
+  JANAZAH: 'JANAZAH',
+  VEHICLE: 'VEHICLE'
+} as const
+
+export type ServiceCategory = (typeof ServiceCategory)[keyof typeof ServiceCategory]
+
+
 export const PlaceType = {
   HOME: 'HOME',
   HOSPITAL: 'HOSPITAL',

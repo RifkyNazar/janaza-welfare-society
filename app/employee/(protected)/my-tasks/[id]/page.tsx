@@ -9,6 +9,7 @@ import { TaskPhotoUpload } from "@/components/employee/task-photo-upload";
 import { submitPhotosForReview, uploadTaskPhoto } from "./photo-actions";
 import { prisma } from "@/lib/prisma";
 import { requireEmployee } from "@/lib/permissions";
+import { categoryLabel, serviceSummary } from "@/lib/service-options";
 
 export const metadata: Metadata = { title: "Task Details" };
 const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
@@ -33,7 +34,15 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
 
   const task = await prisma.taskAssignment.findFirst({
     where: { id, employeeId: profileId },
-    include: { request: { include: { preferredVehicle: { select: { name: true, vehicleNumber: true, vehicleType: true } } } }, photos: { select: { id: true, caption: true, uploadedAt: true, isApprovedForPublic: true }, orderBy: { uploadedAt: "desc" } } },
+    include: {
+      request: {
+        include: {
+          preferredVehicle: { select: { name: true, vehicleNumber: true, vehicleType: true } },
+          serviceSelections: { select: { serviceLabel: true }, orderBy: { id: "asc" } },
+        },
+      },
+      photos: { select: { id: true, caption: true, uploadedAt: true, isApprovedForPublic: true }, orderBy: { uploadedAt: "desc" } },
+    },
   });
   if (!task) notFound();
   const request = task.request;
@@ -42,11 +51,11 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
   return (
     <div className="mx-auto max-w-6xl">
       <BackButton fallbackHref={task.status === "COMPLETED" ? "/employee/completed" : "/employee/my-tasks"} />
-      <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="text-sm font-semibold text-primary">{request.requestCode}</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{request.serviceType}</h1><div className="mt-3"><TaskStatusBadge status={task.status} /></div></div><div>{task.status === "ASSIGNED" && <TaskAction action={startTask.bind(null, task.id)} label="Start Task" />}{task.status === "IN_PROGRESS" && <TaskAction action={completeTask.bind(null, task.id)} label="Complete Task" confirmation="Complete this task? This will mark the service request as completed." />}</div></div>
+      <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="text-sm font-semibold text-primary">{request.requestCode}</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{serviceSummary(request.serviceType, request.serviceSelections)}</h1><div className="mt-3"><TaskStatusBadge status={task.status} /></div></div><div>{task.status === "ASSIGNED" && <TaskAction action={startTask.bind(null, task.id)} label="Start Task" />}{task.status === "IN_PROGRESS" && <TaskAction action={completeTask.bind(null, task.id)} label="Complete Task" confirmation="Complete this task? This will mark the service request as completed." />}</div></div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Request</h2><Details items={[["Request Code", request.requestCode], ["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType], ["Note", request.note]]} /></section>
-        <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Requester</h2><Details items={[["Name", request.requesterName], ["Mobile Number", request.mobileNumber], ["Alternative Number", request.alternativeNumber], ["Relationship", request.relationshipToDeceased]]} /></section>
+        <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Request</h2><Details items={request.serviceCategory ? [["Request Code", request.requestCode], ["Category", categoryLabel(request.serviceCategory)], ["Selected Services", serviceSummary(request.serviceType, request.serviceSelections)], ["Additional Note", request.note]] : [["Request Code", request.requestCode], ["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType], ["Note", request.note]]} /></section>
+        <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Requester</h2><Details items={request.serviceCategory ? [["Name", request.requesterName], ["Contact Number", request.mobileNumber]] : [["Name", request.requesterName], ["Mobile Number", request.mobileNumber], ["Alternative Number", request.alternativeNumber], ["Relationship", request.relationshipToDeceased]]} /></section>
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Location</h2><Details items={[["Address", request.address], ["Area", request.area], ["Selected Location", locationUrl ? <a key="map" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold underline decoration-primary decoration-2 underline-offset-4">Open Location in Maps</a> : null], ["Hospital Name", request.hospitalName]]} /></section>
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Task</h2><Details items={[["Task Status", task.status.replaceAll("_", " ")], ["Accepted At", dateTimeFormatter.format(task.acceptedAt)], ["Started At", task.startedAt ? dateTimeFormatter.format(task.startedAt) : null], ["Completed At", task.completedAt ? dateTimeFormatter.format(task.completedAt) : null]]} /></section>
       </div>

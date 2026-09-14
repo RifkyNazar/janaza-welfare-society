@@ -27,6 +27,11 @@ enum ServiceRequestStatus {
   CANCELLED
 }
 
+enum ServiceCategory {
+  JANAZAH
+  VEHICLE
+}
+
 enum PlaceType {
   HOME
   HOSPITAL
@@ -99,11 +104,26 @@ model ServiceRequest {
   taskAssignment         TaskAssignment?
   preferredVehicleId     String?
   preferredVehicle       Vehicle?              @relation(fields: [preferredVehicleId], references: [id], onDelete: SetNull)
+  serviceCategory        ServiceCategory?
+  serviceSelections      RequestServiceSelection[]
 
   @@index([status])
   @@index([createdAt])
   @@index([area])
   @@index([preferredVehicleId])
+}
+
+model RequestServiceSelection {
+  id           Int            @id @default(autoincrement())
+  requestId    Int
+  serviceCode  String         @db.VarChar(64)
+  serviceLabel String         @db.VarChar(120)
+  createdAt    DateTime       @default(now())
+  request      ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+
+  @@unique([requestId, serviceCode])
+  @@index([requestId])
+  @@index([serviceCode])
 }
 
 model Vehicle {

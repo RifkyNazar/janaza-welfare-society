@@ -209,6 +209,13 @@ export type EnumServiceRequestStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumServiceRequestStatusFilter<$PrismaModel> | $Enums.ServiceRequestStatus
 }
 
+export type EnumServiceCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceCategory[] | null
+  notIn?: $Enums.ServiceCategory[] | null
+  not?: Prisma.NestedEnumServiceCategoryNullableFilter<$PrismaModel> | $Enums.ServiceCategory | null
+}
+
 export type EnumPlaceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.PlaceType | Prisma.EnumPlaceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.PlaceType[]
@@ -243,6 +250,16 @@ export type EnumServiceRequestStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumServiceRequestStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumServiceRequestStatusFilter<$PrismaModel>
+}
+
+export type EnumServiceCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceCategory[] | null
+  notIn?: $Enums.ServiceCategory[] | null
+  not?: Prisma.NestedEnumServiceCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.ServiceCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceCategoryNullableFilter<$PrismaModel>
 }
 
 export type DecimalFilter<$PrismaModel = never> = {
@@ -570,6 +587,13 @@ export type NestedEnumServiceRequestStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumServiceRequestStatusFilter<$PrismaModel> | $Enums.ServiceRequestStatus
 }
 
+export type NestedEnumServiceCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceCategory[] | null
+  notIn?: $Enums.ServiceCategory[] | null
+  not?: Prisma.NestedEnumServiceCategoryNullableFilter<$PrismaModel> | $Enums.ServiceCategory | null
+}
+
 export type NestedEnumPlaceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.PlaceType | Prisma.EnumPlaceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.PlaceType[]
@@ -604,6 +628,16 @@ export type NestedEnumServiceRequestStatusWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumServiceRequestStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumServiceRequestStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumServiceCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceCategory[] | null
+  notIn?: $Enums.ServiceCategory[] | null
+  not?: Prisma.NestedEnumServiceCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.ServiceCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceCategoryNullableFilter<$PrismaModel>
 }
 
 export type NestedDecimalFilter<$PrismaModel = never> = {

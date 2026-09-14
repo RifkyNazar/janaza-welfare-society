@@ -6,8 +6,8 @@ import { prisma } from "@/lib/prisma";
 export type PublicTrackingResult = {
   requestCode: string;
   serviceType: string;
-  requiredDate: string;
-  requiredTime: string | null;
+  category: string;
+  selectedServices: string;
   area: string;
   status: ServiceRequestStatus;
   submittedDate: string;
@@ -54,8 +54,8 @@ export async function trackServiceRequest(
     select: {
       requestCode: true,
       serviceType: true,
-      requiredDate: true,
-      requiredTime: true,
+      serviceCategory: true,
+      serviceSelections: { select: { serviceLabel: true }, orderBy: { id: "asc" } },
       area: true,
       status: true,
       createdAt: true,
@@ -68,8 +68,8 @@ export async function trackServiceRequest(
     result: {
       requestCode: request.requestCode,
       serviceType: request.serviceType,
-      requiredDate: request.requiredDate.toISOString(),
-      requiredTime: request.requiredTime,
+      category: request.serviceCategory === "JANAZAH" ? "Janazah Service" : request.serviceCategory === "VEHICLE" ? "Vehicle Service" : "Legacy Request",
+      selectedServices: request.serviceSelections.length ? request.serviceSelections.map((selection) => selection.serviceLabel).join(", ") : request.serviceType,
       area: request.area,
       status: request.status,
       submittedDate: request.createdAt.toISOString(),

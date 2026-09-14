@@ -41,9 +41,8 @@ function TrackingResult({ result }: { result: NonNullable<TrackRequestActionStat
   const date = (value: string) => new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(value));
   const details = [
     ["Request Code", result.requestCode],
-    ["Service Type", result.serviceType],
-    ["Required Date", date(result.requiredDate)],
-    ...(result.requiredTime ? [["Required Time", result.requiredTime]] : []),
+    ["Category", result.category],
+    ["Selected Services", result.selectedServices],
     ["Area", result.area],
     ["Current Status", statusLabel(result.status)],
     ["Submitted Date", date(result.submittedDate)],

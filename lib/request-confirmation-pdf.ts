@@ -7,7 +7,7 @@ export type RequestConfirmationData = {
   alternativeNumber: string | null;
   relationshipToDeceased: string | null;
   serviceType: string;
-  preferredVehicle: { name: string; vehicleNumber: string; vehicleType: string } | null;
+  preferredVehicle?: { name: string; vehicleNumber: string; vehicleType: string } | null;
   requiredDate: Date;
   requiredTime: string | null;
   placeType: string;
@@ -18,6 +18,8 @@ export type RequestConfirmationData = {
   note: string | null;
   status: string;
   createdAt: Date;
+  serviceCategory?: "JANAZAH" | "VEHICLE" | null;
+  serviceSelections?: Array<{ serviceLabel: string }>;
 };
 
 const PAGE_WIDTH = 595.28;
@@ -103,7 +105,7 @@ export async function createRequestConfirmationPdf(data: RequestConfirmationData
   y -= 20;
   text("Kattankudy, Sri Lanka", MARGIN, 10, regular, muted);
   y -= 38;
-  text("JANAZA SERVICE REQUEST CONFIRMATION", MARGIN, 19, bold);
+  text("REQUEST CONFIRMATION", MARGIN, 19, bold);
   y -= 27;
   page.drawRectangle({ x: MARGIN, y: y - 15, width: CONTENT_WIDTH, height: 28, color: dark });
   page.drawText("PRIVATE REQUEST CONFIRMATION", { x: MARGIN + 12, y: y - 5, size: 9, font: bold, color: mint });
@@ -114,21 +116,28 @@ export async function createRequestConfirmationPdf(data: RequestConfirmationData
   page.drawText("KEEP THIS CODE SAFE", { x: MARGIN + 18, y: y - 57, size: 9, font: bold, color: dark });
   y -= 92;
 
+  const isSimplifiedRequest = Boolean(data.serviceCategory && data.serviceSelections?.length);
+  const selectedServices = data.serviceSelections?.map((selection) => selection.serviceLabel).join(", ") || data.serviceType;
   section("REQUESTER DETAILS");
   row("Requester Name", data.requesterName);
   row("Mobile Number", data.mobileNumber);
-  row("Alternative Number", data.alternativeNumber);
-  row("Relationship", data.relationshipToDeceased);
+  if (!isSimplifiedRequest) {
+    row("Alternative Number", data.alternativeNumber);
+    row("Relationship", data.relationshipToDeceased);
+  }
   section("SERVICE DETAILS");
-  row("Service Type", data.serviceType);
-  row("Preferred Vehicle", data.preferredVehicle ? `${data.preferredVehicle.name} / ${data.preferredVehicle.vehicleNumber} / ${data.preferredVehicle.vehicleType}` : "No Preference");
-  row("Required Date", new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeZone: "UTC" }).format(data.requiredDate));
-  row("Required Time", data.requiredTime);
-  row("Place Type", data.placeType.replaceAll("_", " "));
+  row("Category", data.serviceCategory === "JANAZAH" ? "Janazah Service" : data.serviceCategory === "VEHICLE" ? "Vehicle Service" : null);
+  row("Selected Service(s)", selectedServices);
+  if (!isSimplifiedRequest) {
+    row("Preferred Vehicle", data.preferredVehicle ? `${data.preferredVehicle.name} / ${data.preferredVehicle.vehicleNumber} / ${data.preferredVehicle.vehicleType}` : "No Preference");
+    row("Required Date", new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeZone: "UTC" }).format(data.requiredDate));
+    row("Required Time", data.requiredTime);
+    row("Place Type", data.placeType.replaceAll("_", " "));
+  }
   section("LOCATION DETAILS");
-  row("Full Address", data.address);
-  row("Area", data.area);
-  row("Hospital Name", data.hospitalName);
+  if (!isSimplifiedRequest) row("Full Address", data.address);
+  row("Location / Area", data.area);
+  if (!isSimplifiedRequest) row("Hospital Name", data.hospitalName);
   row("Location Link", data.locationLink);
   if (data.note) { section("ADDITIONAL INFORMATION"); row("Notes", data.note); }
   section("REQUEST STATUS");

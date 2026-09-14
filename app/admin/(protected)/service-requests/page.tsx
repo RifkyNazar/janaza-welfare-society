@@ -5,6 +5,7 @@ import { RequestActions } from "@/components/admin/request-actions";
 import { RequestStatusBadge } from "@/components/admin/request-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { categoryLabel, serviceSummary } from "@/lib/service-options";
 
 export const metadata: Metadata = { title: "Service Requests" };
 
@@ -43,6 +44,8 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
       requesterName: true,
       mobileNumber: true,
       serviceType: true,
+      serviceCategory: true,
+      serviceSelections: { select: { serviceLabel: true }, orderBy: { id: "asc" } },
       area: true,
       requiredDate: true,
       placeType: true,
@@ -94,9 +97,8 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
                 <p className="mt-1 text-sm text-muted">{request.mobileNumber}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Service</p>
-                <p className="mt-1 text-sm">{request.serviceType}</p>
-                <p className="mt-1 text-xs text-muted">{request.placeType}</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">{categoryLabel(request.serviceCategory)}</p>
+                <p className="mt-1 text-sm">{serviceSummary(request.serviceType, request.serviceSelections)}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted">Location</p>
@@ -104,8 +106,7 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
               </div>
               <div>
                 <RequestStatusBadge status={request.status} />
-                <p className="mt-2 text-xs text-muted">Required {dateFormatter.format(request.requiredDate)}</p>
-                <p className="mt-1 text-xs text-muted">Created {dateFormatter.format(request.createdAt)}</p>
+                <p className="mt-2 text-xs text-muted">Submitted {dateFormatter.format(request.createdAt)}</p>
               </div>
               <RequestActions requestId={request.id} status={request.status} />
             </div>

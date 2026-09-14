@@ -33,6 +33,11 @@ export type EmployeeProfile = Prisma.EmployeeProfileModel
  */
 export type ServiceRequest = Prisma.ServiceRequestModel
 /**
+ * Model RequestServiceSelection
+ * 
+ */
+export type RequestServiceSelection = Prisma.RequestServiceSelectionModel
+/**
  * Model Vehicle
  * 
  */

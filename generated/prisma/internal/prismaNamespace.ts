@@ -400,6 +400,7 @@ export const ModelName = {
   User: 'User',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
+  RequestServiceSelection: 'RequestServiceSelection',
   Vehicle: 'Vehicle',
   Donation: 'Donation',
   TaskAssignment: 'TaskAssignment',
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "employeeProfile" | "serviceRequest" | "vehicle" | "donation" | "taskAssignment" | "taskPhoto" | "operation" | "operationPhoto"
+    modelProps: "user" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "taskPhoto" | "operation" | "operationPhoto"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -620,6 +621,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ServiceRequestCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ServiceRequestCountAggregateOutputType> | number
+        }
+      }
+    }
+    RequestServiceSelection: {
+      payload: Prisma.$RequestServiceSelectionPayload<ExtArgs>
+      fields: Prisma.RequestServiceSelectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RequestServiceSelectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RequestServiceSelectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>
+        }
+        findFirst: {
+          args: Prisma.RequestServiceSelectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RequestServiceSelectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>
+        }
+        findMany: {
+          args: Prisma.RequestServiceSelectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>[]
+        }
+        create: {
+          args: Prisma.RequestServiceSelectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>
+        }
+        createMany: {
+          args: Prisma.RequestServiceSelectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.RequestServiceSelectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>
+        }
+        update: {
+          args: Prisma.RequestServiceSelectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.RequestServiceSelectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RequestServiceSelectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.RequestServiceSelectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RequestServiceSelectionPayload>
+        }
+        aggregate: {
+          args: Prisma.RequestServiceSelectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRequestServiceSelection>
+        }
+        groupBy: {
+          args: Prisma.RequestServiceSelectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RequestServiceSelectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RequestServiceSelectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RequestServiceSelectionCountAggregateOutputType> | number
         }
       }
     }
@@ -1109,10 +1176,22 @@ export const ServiceRequestScalarFieldEnum = {
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  preferredVehicleId: 'preferredVehicleId'
+  preferredVehicleId: 'preferredVehicleId',
+  serviceCategory: 'serviceCategory'
 } as const
 
 export type ServiceRequestScalarFieldEnum = (typeof ServiceRequestScalarFieldEnum)[keyof typeof ServiceRequestScalarFieldEnum]
+
+
+export const RequestServiceSelectionScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  serviceCode: 'serviceCode',
+  serviceLabel: 'serviceLabel',
+  createdAt: 'createdAt'
+} as const
+
+export type RequestServiceSelectionScalarFieldEnum = (typeof RequestServiceSelectionScalarFieldEnum)[keyof typeof RequestServiceSelectionScalarFieldEnum]
 
 
 export const VehicleScalarFieldEnum = {
@@ -1268,6 +1347,14 @@ export const ServiceRequestOrderByRelevanceFieldEnum = {
 export type ServiceRequestOrderByRelevanceFieldEnum = (typeof ServiceRequestOrderByRelevanceFieldEnum)[keyof typeof ServiceRequestOrderByRelevanceFieldEnum]
 
 
+export const RequestServiceSelectionOrderByRelevanceFieldEnum = {
+  serviceCode: 'serviceCode',
+  serviceLabel: 'serviceLabel'
+} as const
+
+export type RequestServiceSelectionOrderByRelevanceFieldEnum = (typeof RequestServiceSelectionOrderByRelevanceFieldEnum)[keyof typeof RequestServiceSelectionOrderByRelevanceFieldEnum]
+
+
 export const VehicleOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1380,6 +1467,13 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'ServiceRequestStatus'
  */
 export type EnumServiceRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ServiceCategory'
+ */
+export type EnumServiceCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceCategory'>
     
 
 
@@ -1557,6 +1651,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   employeeProfile?: Prisma.EmployeeProfileOmit
   serviceRequest?: Prisma.ServiceRequestOmit
+  requestServiceSelection?: Prisma.RequestServiceSelectionOmit
   vehicle?: Prisma.VehicleOmit
   donation?: Prisma.DonationOmit
   taskAssignment?: Prisma.TaskAssignmentOmit
