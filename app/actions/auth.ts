@@ -5,6 +5,7 @@ import { compare, hash } from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { notifyAdminsOfEmployeeRegistration } from "@/lib/notifications";
 
 export type AuthActionState = {
   error?: string;
@@ -57,8 +58,8 @@ export async function registerEmployee(
   const passwordHash = await hash(password, 12);
 
   try {
-    await prisma.$transaction(async (transaction) => {
-      await transaction.user.create({
+    const employee = await prisma.$transaction(async (transaction) => {
+      return transaction.user.create({
         data: {
           email,
           passwordHash,
@@ -74,8 +75,25 @@ export async function registerEmployee(
             },
           },
         },
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+          employeeProfile: { select: { fullName: true, employeeCode: true } },
+        },
       });
     });
+    try {
+      await notifyAdminsOfEmployeeRegistration({
+        employeeId: employee.id,
+        fullName: employee.employeeProfile?.fullName ?? fullName,
+        email: employee.email,
+        employeeCode: employee.employeeProfile?.employeeCode,
+        registeredAt: employee.createdAt,
+      });
+    } catch {
+      console.error("[email] Employee registration notification failed after registration completed.");
+    }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return { error: "That email or employee ID is already registered." };

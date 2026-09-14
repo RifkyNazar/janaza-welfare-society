@@ -5,6 +5,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createRequestConfirmationPdf } from "@/lib/request-confirmation-pdf";
 import { validateServiceSelection } from "@/lib/service-options";
+import { notifyStaffOfNewServiceRequest } from "@/lib/notifications";
 
 export type ServiceRequestActionState = { error?: string; requestCode?: string; status?: "NEW"; pdfBase64?: string; selectedServices?: string[] };
 
@@ -48,6 +49,18 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
         },
         include: { serviceSelections: { orderBy: { id: "asc" } } },
       }));
+      try {
+        await notifyStaffOfNewServiceRequest({
+          requestId: created.id,
+          requestCode: created.requestCode,
+          category: category === "JANAZAH" ? "Janazah Services" : "Vehicle Services",
+          services: created.serviceSelections.map((service) => service.serviceLabel),
+          area: created.area,
+          submittedAt: created.createdAt,
+        });
+      } catch {
+        console.error("[email] Service request notification failed after request creation completed.");
+      }
       try {
         const pdf = await createRequestConfirmationPdf(created);
         return { requestCode: code, status: "NEW", selectedServices: labels, pdfBase64: Buffer.from(pdf).toString("base64") };
