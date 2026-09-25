@@ -3,7 +3,7 @@ export type LeadershipMember = {
   name: string;
   contact: string;
   responsibility: string;
-  photoSrc: string;
+  photoSrc: string | null;
 };
 
 export const leadershipTeam: LeadershipMember[] = [
@@ -13,7 +13,7 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0777378753",
     responsibility:
       "Leads all administrative and service activities of the organization and guides the organization toward achieving its objectives and plans.",
-    photoSrc: "/images/team/president.jpg",
+    photoSrc: null,
   },
   {
     position: "Secretary",
@@ -21,7 +21,7 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0774203109",
     responsibility:
       "Handles administrative and coordination activities, including meetings, documentation, and official communications.",
-    photoSrc: "/images/team/secretary.jpg",
+    photoSrc: null,
   },
   {
     position: "Treasurer",
@@ -29,6 +29,6 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0775525806",
     responsibility:
       "Manages the organization's income and expenses, maintains financial records and documents, and ensures financial transparency.",
-    photoSrc: "/images/team/treasurer.jpg",
+    photoSrc: null,
   },
 ];

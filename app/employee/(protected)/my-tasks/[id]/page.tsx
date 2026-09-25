@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
-import { completeTask, startTask } from "@/app/employee/(protected)/actions";
+import { acknowledgeTask, completeTask, startTask } from "@/app/employee/(protected)/actions";
 import { TaskAction } from "@/components/employee/task-action";
 import { TaskStatusBadge } from "@/components/employee/task-status-badge";
 import { TaskPhotoUpload } from "@/components/employee/task-photo-upload";
@@ -33,7 +34,7 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
   if (!Number.isSafeInteger(id) || id <= 0) notFound();
 
   const task = await prisma.taskAssignment.findFirst({
-    where: { id, employeeId: profileId },
+    where: { id, employeeId: profileId, OR: [{ isActive: true }, { status: "COMPLETED" }] },
     include: {
       request: {
         include: {
@@ -50,8 +51,8 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
 
   return (
     <div className="mx-auto max-w-6xl">
-      <BackButton fallbackHref={task.status === "COMPLETED" ? "/employee/completed" : "/employee/my-tasks"} />
-      <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="text-sm font-semibold text-primary">{request.requestCode}</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{serviceSummary(request.serviceType, request.serviceSelections)}</h1><div className="mt-3"><TaskStatusBadge status={task.status} /></div></div><div>{task.status === "ASSIGNED" && <TaskAction action={startTask.bind(null, task.id)} label="Start Task" />}{task.status === "IN_PROGRESS" && <TaskAction action={completeTask.bind(null, task.id)} label="Complete Task" confirmation="Complete this task? This will mark the service request as completed." />}</div></div>
+      <BackButton fallbackHref={task.status === "COMPLETED" ? "/employee/completed" : "/employee/my-tasks"} label={task.status === "COMPLETED" ? "Back to Completed Tasks" : "Back to My Tasks"} />
+      <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="text-sm font-semibold text-primary">{request.requestCode}</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">{serviceSummary(request.serviceType, request.serviceSelections)}</h1><div className="mt-3"><TaskStatusBadge status={task.status} /></div></div><div>{task.status === "ASSIGNED" && <TaskAction action={acknowledgeTask.bind(null, task.id)} label="Acknowledge Task" />}{task.status === "ACKNOWLEDGED" && <TaskAction action={startTask.bind(null, task.id)} label="Start Task" />}{task.status === "IN_PROGRESS" && <TaskAction action={completeTask.bind(null, task.id)} label="Complete Task" confirmation="Complete this task? This will mark the service request as completed." />}</div></div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Request</h2><Details items={request.serviceCategory ? [["Request Code", request.requestCode], ["Category", categoryLabel(request.serviceCategory)], ["Selected Services", serviceSummary(request.serviceType, request.serviceSelections)], ["Additional Note", request.note]] : [["Request Code", request.requestCode], ["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType], ["Note", request.note]]} /></section>
@@ -65,6 +66,7 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
         {task.photos.length ? <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{task.photos.map((photo) => <article key={photo.id} className="overflow-hidden rounded-2xl border border-border"><Image unoptimized src={`/task-photos/${photo.id}`} alt={photo.caption || "Task photo"} width={640} height={480} className="aspect-[4/3] w-full object-cover" /><div className="p-4"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${photo.isApprovedForPublic ? "bg-primary/25 text-foreground" : "bg-light-background text-muted"}`}>{photo.isApprovedForPublic ? "Approved for Public Use" : "Pending Review"}</span><p className="mt-3 text-sm text-foreground">{photo.caption || "No caption"}</p><p className="mt-2 text-xs text-muted">Uploaded {dateTimeFormatter.format(photo.uploadedAt)}</p></div></article>)}</div> : <p className="mt-5 rounded-xl bg-light-background p-5 text-sm text-muted">No task photos uploaded yet.</p>}
         {task.photosSubmittedAt ? <div className="mt-5 rounded-xl border border-primary/40 bg-primary/10 p-4"><p className="font-semibold">Photos Submitted for Review</p><p className="mt-1 text-sm text-muted">Confirmed {dateTimeFormatter.format(task.photosSubmittedAt)}. Photos remain private unless an admin approves them individually.</p></div> : task.photos.length > 0 ? <div className="mt-5"><TaskAction action={submitPhotosForReview.bind(null, task.id)} label="Submit Photos for Review" confirmation="Confirm that this photo set is ready for Admin review? This does not publish or approve any photo." /></div> : null}
         <TaskPhotoUpload action={uploadTaskPhoto.bind(null, task.id)} />
+        <div className="mt-5 flex flex-wrap gap-3"><Link href="/employee/my-tasks" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:border-primary">Back to My Tasks</Link><Link href="/employee" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:border-primary">Back to Dashboard</Link></div>
       </section>
     </div>
   );

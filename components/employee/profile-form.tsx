@@ -1,0 +1,21 @@
+"use client";
+import Image from "next/image";
+import { useActionState, useEffect, useRef, useState } from "react";
+import type { ProfileActionState, ProfileValues } from "@/app/employee/(protected)/profile/actions";
+const input = "mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-base outline-none focus:border-primary focus:ring-4 focus:ring-primary/20";
+
+export function ProfileForm({ action, initial, photoSrc, initials }: { action: (s: ProfileActionState, d: FormData) => Promise<ProfileActionState>; initial: ProfileValues; photoSrc: string | null; initials: string }) {
+  const [state, formAction, pending] = useActionState(action, {}); const [preview, setPreview] = useState<string | null>(null); const fileRef = useRef<HTMLInputElement>(null);
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]); const values = state.values ?? initial;
+  return <form action={formAction} className="mt-8 grid gap-6 lg:grid-cols-[14rem_1fr]">
+    <section className="rounded-2xl border border-border bg-white p-5 text-center"><div className="relative mx-auto size-32 overflow-hidden rounded-full border-4 border-light-background bg-primary/15">{preview || photoSrc ? <Image unoptimized src={preview ?? photoSrc!} alt={`${initial.fullName} profile photo`} fill sizes="128px" className="object-cover" /> : <span className="flex size-full items-center justify-center text-3xl font-semibold">{initials}</span>}</div>
+      <label htmlFor="profile-photo" className="mt-5 block text-sm font-semibold">Profile photo</label><input ref={fileRef} id="profile-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" className="mt-3 block w-full text-xs file:mr-2 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-2 file:font-semibold" onChange={(e) => { if (preview) URL.revokeObjectURL(preview); const file=e.target.files?.[0]; setPreview(file ? URL.createObjectURL(file) : null); }}/>
+      {preview && <button type="button" className="mt-3 min-h-11 text-sm font-semibold underline decoration-primary decoration-2 underline-offset-4" onClick={() => { if (preview) URL.revokeObjectURL(preview); setPreview(null); if (fileRef.current) fileRef.current.value=""; }}>Remove selected photo</button>}<p className="mt-3 text-xs leading-5 text-muted">JPEG, PNG, or WEBP. Maximum 5 MB.</p></section>
+    <section className="rounded-2xl border border-border bg-white p-5 sm:p-7"><div className="grid gap-5 sm:grid-cols-2">
+      <div><label htmlFor="profile-name" className="text-sm font-semibold">Full name</label><input key={`n-${values.fullName}`} id="profile-name" name="fullName" autoComplete="name" required maxLength={150} defaultValue={values.fullName} className={input}/></div>
+      <div><label htmlFor="profile-email" className="text-sm font-semibold">Email</label><input key={`e-${values.email}`} id="profile-email" name="email" type="email" autoComplete="email" required maxLength={191} defaultValue={values.email} className={input}/></div>
+      <div className="sm:col-span-2"><label htmlFor="profile-phone" className="text-sm font-semibold">Phone number</label><input key={`p-${values.phone}`} id="profile-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={30} defaultValue={values.phone} className={input}/></div>
+      <div className="sm:col-span-2"><label htmlFor="profile-duty" className="text-sm font-semibold">Duty description <span className="font-normal text-muted">(optional)</span></label><textarea key={`d-${values.duty}`} id="profile-duty" name="duty" rows={4} maxLength={2000} defaultValue={values.duty} className={input}/></div>
+    </div>{state.error && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{state.error}</p>}{state.success && <p role="status" aria-live="polite" className="mt-5 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm font-semibold">{state.success}</p>}<button disabled={pending} className="mt-6 min-h-12 w-full rounded-full bg-primary px-6 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">{pending ? "Saving..." : "Save Profile"}</button></section>
+  </form>;
+}

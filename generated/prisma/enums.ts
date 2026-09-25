@@ -11,10 +11,19 @@
 
 export const UserRole = {
   ADMIN: 'ADMIN',
+  SUPERVISOR: 'SUPERVISOR',
   EMPLOYEE: 'EMPLOYEE'
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const EmployeeAvailability = {
+  AVAILABLE: 'AVAILABLE',
+  UNAVAILABLE: 'UNAVAILABLE'
+} as const
+
+export type EmployeeAvailability = (typeof EmployeeAvailability)[keyof typeof EmployeeAvailability]
 
 
 export const AccountStatus = {
@@ -57,6 +66,7 @@ export type PlaceType = (typeof PlaceType)[keyof typeof PlaceType]
 
 export const TaskStatus = {
   ASSIGNED: 'ASSIGNED',
+  ACKNOWLEDGED: 'ACKNOWLEDGED',
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'

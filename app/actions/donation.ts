@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { createDonationConfirmationPdf } from "@/lib/donation-confirmation-pdf";
 import { removeDonationReceipt, safeReceiptFileName, storeDonationReceipt, validateDonationReceipt } from "@/lib/donation-receipt-storage";
 
-export type DonationActionState = { error?: string; referenceCode?: string; pdfBase64?: string };
+export type DonationValues = { fullName: string; mobileNumber: string; amount: string; transferDate: string; bankReference: string; note: string };
+export type DonationActionState = { error?: string; referenceCode?: string; pdfBase64?: string; values?: DonationValues };
 const limits = { fullName: 150, mobileNumber: 30, bankReference: 150, note: 2000 } as const;
 function text(formData: FormData, name: string) { const entry = formData.get(name); return typeof entry === "string" ? entry.trim() : ""; }
 function referenceCode() { return `JWS-DON-${new Date().getFullYear()}-${randomBytes(4).toString("hex").toUpperCase()}`; }
@@ -15,18 +16,19 @@ export async function submitDonationConfirmation(_state: DonationActionState, fo
   void _state;
   const fullName = text(formData, "fullName"), mobileNumber = text(formData, "mobileNumber"), amountInput = text(formData, "amount"), transferDateInput = text(formData, "transferDate"), bankReference = text(formData, "bankReference"), note = text(formData, "note");
   const receiptEntry = formData.get("receipt");
-  if (!fullName || !mobileNumber || !amountInput || !transferDateInput) return { error: "Please complete all required fields." };
-  if (fullName.length > limits.fullName || mobileNumber.length > limits.mobileNumber || bankReference.length > limits.bankReference || note.length > limits.note) return { error: "One or more fields exceed the allowed length." };
-  if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please enter a valid mobile number." };
-  if (!/^\d{1,10}(?:\.\d{1,2})?$/.test(amountInput)) return { error: "Please enter a valid positive donation amount with no more than two decimal places." };
+  const values = { fullName, mobileNumber, amount: amountInput, transferDate: transferDateInput, bankReference, note };
+  if (!fullName || !mobileNumber || !amountInput || !transferDateInput) return { error: "Please complete all required fields.", values };
+  if (fullName.length > limits.fullName || mobileNumber.length > limits.mobileNumber || bankReference.length > limits.bankReference || note.length > limits.note) return { error: "One or more fields exceed the allowed length.", values };
+  if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please enter a valid mobile number.", values };
+  if (!/^\d{1,10}(?:\.\d{1,2})?$/.test(amountInput)) return { error: "Please enter a valid positive donation amount with no more than two decimal places.", values };
   const amount = Number(amountInput);
-  if (!Number.isFinite(amount) || amount <= 0 || amount > 9_999_999_999.99) return { error: "Please enter a donation amount between LKR 0.01 and LKR 9,999,999,999.99." };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(transferDateInput)) return { error: "Please enter a valid transfer date." };
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 9_999_999_999.99) return { error: "Please enter a donation amount between LKR 0.01 and LKR 9,999,999,999.99.", values };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(transferDateInput)) return { error: "Please enter a valid transfer date.", values };
   const transferDate = new Date(`${transferDateInput}T00:00:00.000Z`);
-  if (Number.isNaN(transferDate.getTime()) || transferDate.toISOString().slice(0, 10) !== transferDateInput || transferDateInput > new Date().toISOString().slice(0, 10)) return { error: "Transfer date must be a valid date that is not in the future." };
-  if (!(receiptEntry instanceof File)) return { error: "Please attach the transfer receipt or proof." };
+  if (Number.isNaN(transferDate.getTime()) || transferDate.toISOString().slice(0, 10) !== transferDateInput || transferDateInput > new Date().toISOString().slice(0, 10)) return { error: "Transfer date must be a valid date that is not in the future.", values };
+  if (!(receiptEntry instanceof File)) return { error: "Please attach the transfer receipt or proof.", values };
   const receiptError = validateDonationReceipt(receiptEntry);
-  if (receiptError) return { error: receiptError };
+  if (receiptError) return { error: receiptError, values };
 
   let stored: Awaited<ReturnType<typeof storeDonationReceipt>> | null = null;
   try {
@@ -46,8 +48,8 @@ export async function submitDonationConfirmation(_state: DonationActionState, fo
     throw new Error("REFERENCE_CODE_COLLISION");
   } catch (error) {
     if (stored) await removeDonationReceipt(stored.storageKey);
-    if (error instanceof Error && error.message === "INVALID_RECEIPT_SIGNATURE") return { error: "The receipt contents do not match its declared file type." };
+    if (error instanceof Error && error.message === "INVALID_RECEIPT_SIGNATURE") return { error: "The receipt contents do not match its declared file type.", values };
     console.error("Unable to save donation confirmation", error);
-    return { error: "Unable to submit the transfer confirmation. Please try again." };
+    return { error: "Unable to submit the transfer confirmation. Please try again.", values };
   }
 }

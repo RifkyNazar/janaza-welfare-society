@@ -25,7 +25,7 @@ export function RegistrationForm() {
           {fields.map((field) => (
             <div key={field.id} className={field.id === "email" ? "sm:col-span-2" : ""}>
               <label htmlFor={field.id} className="block text-sm font-semibold text-foreground">{field.label}</label>
-              <input id={field.id} name={field.name} type={field.type} autoComplete={field.autoComplete} required className="employee-form-input mt-2" />
+              <input key={`${field.name}-${state.values?.[field.name] ?? ""}`} id={field.id} name={field.name} type={field.type} autoComplete={field.autoComplete} required defaultValue={state.values?.[field.name] as string | undefined} className="employee-form-input mt-2" />
             </div>
           ))}
           <PasswordField id="registration-password" name="password" label="Password" autoComplete="new-password" />
@@ -33,7 +33,7 @@ export function RegistrationForm() {
         </div>
 
         <label className="mt-6 flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted">
-          <input type="checkbox" name="confirmation" required className="mt-1 size-4 shrink-0 rounded border-border accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
+          <input key={`confirmation-${state.values?.confirmation ?? false}`} type="checkbox" name="confirmation" required defaultChecked={state.values?.confirmation} className="mt-1 size-5 shrink-0 rounded border-border accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
           I confirm that the information provided is correct.
         </label>
 

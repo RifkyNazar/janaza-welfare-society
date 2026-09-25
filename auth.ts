@@ -87,6 +87,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return user?.role === "EMPLOYEE" && user.status === "APPROVED";
       }
 
+      if (pathname.startsWith("/supervisor")) {
+        return (user?.role === "SUPERVISOR" || user?.role === "ADMIN") && user.status === "APPROVED";
+      }
+
       return true;
     },
   },

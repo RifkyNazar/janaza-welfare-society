@@ -14,7 +14,7 @@ export async function uploadTaskPhoto(taskId: number, _state: UploadTaskPhotoSta
   if (!profileId || !Number.isSafeInteger(taskId) || taskId <= 0) return { error: "Invalid task." };
 
   const task = await prisma.taskAssignment.findFirst({
-    where: { id: taskId, employeeId: profileId, status: { in: ["ASSIGNED", "IN_PROGRESS", "COMPLETED"] } },
+    where: { id: taskId, employeeId: profileId, OR: [{ isActive: true, status: { in: ["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS"] } }, { status: "COMPLETED" }] },
     select: { id: true },
   });
   if (!task) return { error: "This task is not available for photo uploads." };
@@ -66,7 +66,7 @@ export async function submitPhotosForReview(taskId: number, _state: UploadTaskPh
     where: {
       id: taskId,
       employeeId: profileId,
-      status: { in: ["ASSIGNED", "IN_PROGRESS", "COMPLETED"] },
+      OR: [{ isActive: true, status: { in: ["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS"] } }, { status: "COMPLETED" }],
       photosSubmittedAt: null,
       photos: { some: {} },
     },

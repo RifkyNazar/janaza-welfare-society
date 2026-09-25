@@ -77,6 +77,11 @@ export type Donation = Prisma.DonationModel
  */
 export type TaskAssignment = Prisma.TaskAssignmentModel
 /**
+ * Model Advertisement
+ * 
+ */
+export type Advertisement = Prisma.AdvertisementModel
+/**
  * Model TaskPhoto
  * 
  */

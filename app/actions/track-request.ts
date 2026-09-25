@@ -16,6 +16,7 @@ export type PublicTrackingResult = {
 export type TrackRequestActionState = {
   error?: string;
   result?: PublicTrackingResult;
+  values?: { requestCode: string; mobileNumber: string };
 };
 
 const NOT_FOUND_MESSAGE = "We could not find a request matching those details.";
@@ -36,9 +37,10 @@ export async function trackServiceRequest(
 
   const requestCode = text(formData, "requestCode");
   const mobileNumber = text(formData, "mobileNumber");
+  const values = { requestCode, mobileNumber };
 
   if (!requestCode || !mobileNumber) {
-    return { error: "Please enter your request code and mobile number." };
+    return { error: "Please enter your request code and mobile number.", values };
   }
 
   if (
@@ -46,7 +48,7 @@ export async function trackServiceRequest(
     mobileNumber.length > MOBILE_NUMBER_MAX_LENGTH ||
     !PHONE_PATTERN.test(mobileNumber)
   ) {
-    return { error: NOT_FOUND_MESSAGE };
+    return { error: NOT_FOUND_MESSAGE, values };
   }
 
   const request = await prisma.serviceRequest.findFirst({
@@ -62,9 +64,10 @@ export async function trackServiceRequest(
     },
   });
 
-  if (!request) return { error: NOT_FOUND_MESSAGE };
+  if (!request) return { error: NOT_FOUND_MESSAGE, values };
 
   return {
+    values,
     result: {
       requestCode: request.requestCode,
       serviceType: request.serviceType,

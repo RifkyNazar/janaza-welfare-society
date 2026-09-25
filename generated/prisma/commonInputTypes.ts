@@ -153,6 +153,13 @@ export type BoolFilter<$PrismaModel = never> = {
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
 }
 
+export type EnumEmployeeAvailabilityFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeeAvailability | Prisma.EnumEmployeeAvailabilityFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeeAvailability[]
+  notIn?: $Enums.EmployeeAvailability[]
+  not?: Prisma.NestedEnumEmployeeAvailabilityFilter<$PrismaModel> | $Enums.EmployeeAvailability
+}
+
 export type SortOrderInput = {
   sort: Prisma.SortOrder
   nulls?: Prisma.NullsOrder
@@ -182,6 +189,16 @@ export type BoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedBoolFilter<$PrismaModel>
   _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type EnumEmployeeAvailabilityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeeAvailability | Prisma.EnumEmployeeAvailabilityFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeeAvailability[]
+  notIn?: $Enums.EmployeeAvailability[]
+  not?: Prisma.NestedEnumEmployeeAvailabilityWithAggregatesFilter<$PrismaModel> | $Enums.EmployeeAvailability
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEmployeeAvailabilityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEmployeeAvailabilityFilter<$PrismaModel>
 }
 
 export type EnumPlaceTypeFilter<$PrismaModel = never> = {
@@ -525,6 +542,13 @@ export type NestedBoolFilter<$PrismaModel = never> = {
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
 }
 
+export type NestedEnumEmployeeAvailabilityFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeeAvailability | Prisma.EnumEmployeeAvailabilityFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeeAvailability[]
+  notIn?: $Enums.EmployeeAvailability[]
+  not?: Prisma.NestedEnumEmployeeAvailabilityFilter<$PrismaModel> | $Enums.EmployeeAvailability
+}
+
 export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
   in?: string[] | null
@@ -560,6 +584,16 @@ export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedBoolFilter<$PrismaModel>
   _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type NestedEnumEmployeeAvailabilityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeeAvailability | Prisma.EnumEmployeeAvailabilityFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeeAvailability[]
+  notIn?: $Enums.EmployeeAvailability[]
+  not?: Prisma.NestedEnumEmployeeAvailabilityWithAggregatesFilter<$PrismaModel> | $Enums.EmployeeAvailability
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEmployeeAvailabilityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEmployeeAvailabilityFilter<$PrismaModel>
 }
 
 export type NestedEnumPlaceTypeFilter<$PrismaModel = never> = {

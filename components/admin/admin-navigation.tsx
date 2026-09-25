@@ -7,12 +7,13 @@ const items = [
   { label: "Task Assignments", href: "/admin/task-assignments", available: true },
   { label: "Operations", href: "/admin/operations", available: true },
   { label: "Vehicles", href: "/admin/vehicles", available: true },
+  { label: "Advertisements", href: "/admin/advertisements", available: true },
   { label: "Donations", href: "/admin/donations", available: true },
 ] as const;
 
 export function AdminNavigation({ mobile = false }: { mobile?: boolean }) {
   return (
-    <nav aria-label="Admin navigation" className={mobile ? "flex gap-2 overflow-x-auto px-4 pb-3" : "mt-8 space-y-2"}>
+    <nav aria-label="Admin navigation" className={mobile ? "flex snap-x gap-2 overflow-x-auto px-4 pb-3" : "mt-8 space-y-2"}>
       {items.map((item) =>
         item.available ? (
           <Link key={item.label} href={item.href} className={`${mobile ? "shrink-0" : "flex w-full"} items-center rounded-xl border border-transparent px-4 py-3 text-sm font-semibold text-foreground transition hover:border-primary/40 hover:bg-light-background`}>

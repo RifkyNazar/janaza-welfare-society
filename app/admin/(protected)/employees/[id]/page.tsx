@@ -5,6 +5,7 @@ import { EmployeeActions } from "@/components/admin/employee-actions";
 import { EmployeeStatusBadge } from "@/components/admin/employee-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { updateOperationalRole } from "../actions";
 
 export const metadata: Metadata = { title: "Employee Details" };
 
@@ -25,7 +26,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
   if (!Number.isSafeInteger(id) || id <= 0) notFound();
 
   const employee = await prisma.user.findFirst({
-    where: { id, role: "EMPLOYEE" },
+    where: { id, role: { in: ["EMPLOYEE", "SUPERVISOR"] } },
     select: {
       id: true,
       email: true,
@@ -51,7 +52,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
   if (!employee) notFound();
 
   const tasks = employee.employeeProfile?.taskAssignments ?? [];
-  const activeTasks = tasks.filter((task) => task.status === "ASSIGNED" || task.status === "IN_PROGRESS").length;
+  const activeTasks = tasks.filter((task) => task.status === "ASSIGNED" || task.status === "ACKNOWLEDGED" || task.status === "IN_PROGRESS").length;
   const completedTasks = tasks.filter((task) => task.status === "COMPLETED").length;
   const profile = employee.employeeProfile;
 
@@ -74,7 +75,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
 
   return (
     <div className="mx-auto max-w-6xl">
-      <BackButton fallbackHref="/admin/employees" />
+      <BackButton fallbackHref="/admin/employees" label="Back to Employees" />
 
       <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>
@@ -84,6 +85,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
         </div>
         <EmployeeActions userId={employee.id} status={employee.status} />
       </div>
+      <form action={updateOperationalRole.bind(null, employee.id)} className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-white p-5 sm:flex-row sm:items-end"><div className="flex-1"><label htmlFor="role" className="text-sm font-semibold">Operational role</label><select id="role" name="role" defaultValue={employee.role} className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-4"><option value="EMPLOYEE">Employee</option><option value="SUPERVISOR">Supervisor</option></select></div><button className="min-h-12 rounded-xl bg-primary px-6 text-sm font-semibold">Update Role</button><p className="text-xs text-muted sm:max-w-xs">Only Admin can promote or demote Supervisor accounts. Public registration always creates an Employee.</p></form>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">

@@ -7,8 +7,8 @@ import { requireAdmin } from "@/lib/permissions";
 
 export const metadata: Metadata = { title: "Task Assignments" };
 
-const statuses = ["ALL", "ASSIGNED", "IN_PROGRESS", "COMPLETED"] as const;
-const filterStatuses = new Set<TaskStatus>(["ASSIGNED", "IN_PROGRESS", "COMPLETED"]);
+const statuses = ["ALL", "ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS", "COMPLETED"] as const;
+const filterStatuses = new Set<TaskStatus>(["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS", "COMPLETED"]);
 const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 

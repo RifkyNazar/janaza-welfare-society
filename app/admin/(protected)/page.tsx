@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
     prisma.user.count({ where: { role: "EMPLOYEE", status: "PENDING" } }),
     prisma.user.count({ where: { role: "EMPLOYEE", status: "APPROVED" } }),
     prisma.serviceRequest.count({ where: { status: "NEW" } }),
-    prisma.taskAssignment.count({ where: { status: { in: ["ASSIGNED", "IN_PROGRESS"] } } }),
+    prisma.taskAssignment.count({ where: { isActive: true, status: { in: ["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS"] } } }),
     prisma.employeeProfile.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },

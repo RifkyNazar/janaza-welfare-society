@@ -9,7 +9,13 @@ datasource db {
 
 enum UserRole {
   ADMIN
+  SUPERVISOR
   EMPLOYEE
+}
+
+enum EmployeeAvailability {
+  AVAILABLE
+  UNAVAILABLE
 }
 
 enum AccountStatus {
@@ -40,6 +46,7 @@ enum PlaceType {
 
 enum TaskStatus {
   ASSIGNED
+  ACKNOWLEDGED
   IN_PROGRESS
   COMPLETED
   CANCELLED
@@ -62,6 +69,7 @@ model User {
   employeeProfile    EmployeeProfile?
   taskPhotosReviewed TaskPhoto[]      @relation("TaskPhotoReviewer")
   donationsReviewed  Donation[]       @relation("DonationReviewer")
+  assignmentsCreated TaskAssignment[] @relation("TaskAssignedBy")
 }
 
 model EmployeeProfile {
@@ -74,6 +82,7 @@ model EmployeeProfile {
   duty            String?
   photoUrl        String?
   isPublicProfile Boolean          @default(false)
+  availability    EmployeeAvailability @default(AVAILABLE)
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   user            User             @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -101,7 +110,7 @@ model ServiceRequest {
   status                 ServiceRequestStatus @default(NEW)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
-  taskAssignment         TaskAssignment?
+  taskAssignments        TaskAssignment[]
   preferredVehicleId     String?
   preferredVehicle       Vehicle?              @relation(fields: [preferredVehicleId], references: [id], onDelete: SetNull)
   serviceCategory        ServiceCategory?
@@ -172,10 +181,16 @@ model Donation {
 
 model TaskAssignment {
   id                Int             @id @default(autoincrement())
-  requestId         Int             @unique
+  requestId         Int
+  activeRequestId   Int?            @unique
   employeeId        Int
+  assignedByUserId  Int?
+  isActive          Boolean         @default(true)
   status            TaskStatus      @default(ASSIGNED)
+  assignedAt        DateTime        @default(now())
   acceptedAt        DateTime        @default(now())
+  acknowledgedAt    DateTime?
+  unassignedAt      DateTime?
   startedAt         DateTime?
   completedAt       DateTime?
   photosSubmittedAt DateTime?
@@ -183,11 +198,31 @@ model TaskAssignment {
   updatedAt         DateTime        @updatedAt
   request           ServiceRequest  @relation(fields: [requestId], references: [id], onDelete: Restrict)
   employee          EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  assignedBy        User?           @relation("TaskAssignedBy", fields: [assignedByUserId], references: [id], onDelete: SetNull)
   photos            TaskPhoto[]
   operation         Operation?
 
   @@index([employeeId])
+  @@index([requestId, isActive])
+  @@index([assignedByUserId])
   @@index([status])
+}
+
+model Advertisement {
+  id           String   @id @default(cuid())
+  title        String
+  imageUrl     String
+  description  String?  @db.VarChar(500)
+  linkUrl      String?
+  startsAt     DateTime?
+  endsAt       DateTime?
+  isActive     Boolean  @default(false)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive, startsAt, endsAt])
+  @@index([displayOrder])
 }
 
 model TaskPhoto {

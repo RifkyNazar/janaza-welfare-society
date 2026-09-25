@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 
-export type OperationActionState = { error?: string };
+export type OperationFormStateValues = { title: string; shortDescription: string; description: string; serviceType: string; area: string; operationDate: string; photoIds: number[] };
+export type OperationActionState = { error?: string; values?: OperationFormStateValues };
 const limits = { title: 191, shortDescription: 500, description: 10000, serviceType: 191, area: 191 } as const;
 
 function text(formData: FormData, name: string) {
@@ -20,11 +21,12 @@ function values(formData: FormData) {
   const serviceType = text(formData, "serviceType");
   const area = text(formData, "area");
   const operationDateInput = text(formData, "operationDate");
-  if (!title || !shortDescription || !serviceType || !area || !operationDateInput) return { error: "Please complete all required fields." } as const;
-  if (title.length > limits.title || shortDescription.length > limits.shortDescription || description.length > limits.description || serviceType.length > limits.serviceType || area.length > limits.area) return { error: "One or more fields exceed the allowed length." } as const;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(operationDateInput)) return { error: "Please enter a valid operation date." } as const;
+  const formValues = { title, shortDescription, description, serviceType, area, operationDate: operationDateInput, photoIds: photoIds(formData) };
+  if (!title || !shortDescription || !serviceType || !area || !operationDateInput) return { error: "Please complete all required fields.", values: formValues } as const;
+  if (title.length > limits.title || shortDescription.length > limits.shortDescription || description.length > limits.description || serviceType.length > limits.serviceType || area.length > limits.area) return { error: "One or more fields exceed the allowed length.", values: formValues } as const;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(operationDateInput)) return { error: "Please enter a valid operation date.", values: formValues } as const;
   const operationDate = new Date(`${operationDateInput}T00:00:00.000Z`);
-  if (Number.isNaN(operationDate.getTime()) || operationDate.toISOString().slice(0, 10) !== operationDateInput) return { error: "Please enter a valid operation date." } as const;
+  if (Number.isNaN(operationDate.getTime()) || operationDate.toISOString().slice(0, 10) !== operationDateInput) return { error: "Please enter a valid operation date.", values: formValues } as const;
   return { data: { title, shortDescription, description: description || null, serviceType, area, operationDate } } as const;
 }
 
@@ -37,14 +39,15 @@ export async function createOperation(taskId: number, _state: OperationActionSta
   await requireAdmin();
   if (!Number.isSafeInteger(taskId) || taskId <= 0) return { error: "Invalid task assignment." };
   const parsed = values(formData);
-  if ("error" in parsed) return { error: parsed.error };
+  if ("error" in parsed) return { error: parsed.error, values: parsed.values };
   const selectedIds = photoIds(formData);
+  const preserved = { title: parsed.data.title, shortDescription: parsed.data.shortDescription, description: parsed.data.description ?? "", serviceType: parsed.data.serviceType, area: parsed.data.area, operationDate: text(formData, "operationDate"), photoIds: selectedIds };
   const task = await prisma.taskAssignment.findFirst({
     where: { id: taskId, status: "COMPLETED", request: { is: { status: "COMPLETED" } }, operation: null },
     select: { id: true, photos: { where: { id: { in: selectedIds }, isApprovedForPublic: true }, select: { id: true } } },
   });
-  if (!task) return { error: "This task is not eligible for a public operation." };
-  if (task.photos.length !== selectedIds.length) return { error: "One or more selected photos are no longer approved for public use." };
+  if (!task) return { error: "This task is not eligible for a public operation.", values: preserved };
+  if (task.photos.length !== selectedIds.length) return { error: "One or more selected photos are no longer approved for public use.", values: preserved };
 
   const operation = await prisma.$transaction(async (transaction) => {
     const created = await transaction.operation.create({ data: { taskAssignmentId: task.id, ...parsed.data, isPublished: false } });
@@ -61,12 +64,13 @@ export async function updateOperation(operationId: number, _state: OperationActi
   await requireAdmin();
   if (!Number.isSafeInteger(operationId) || operationId <= 0) return { error: "Invalid operation." };
   const parsed = values(formData);
-  if ("error" in parsed) return { error: parsed.error };
+  if ("error" in parsed) return { error: parsed.error, values: parsed.values };
   const selectedIds = photoIds(formData);
+  const preserved = { title: parsed.data.title, shortDescription: parsed.data.shortDescription, description: parsed.data.description ?? "", serviceType: parsed.data.serviceType, area: parsed.data.area, operationDate: text(formData, "operationDate"), photoIds: selectedIds };
   const operation = await prisma.operation.findUnique({ where: { id: operationId }, select: { taskAssignmentId: true } });
-  if (!operation) return { error: "Operation not found." };
+  if (!operation) return { error: "Operation not found.", values: preserved };
   const allowed = operation.taskAssignmentId ? await prisma.taskPhoto.findMany({ where: { taskAssignmentId: operation.taskAssignmentId, id: { in: selectedIds }, isApprovedForPublic: true }, select: { id: true } }) : [];
-  if (allowed.length !== selectedIds.length) return { error: "One or more selected photos are no longer approved for public use." };
+  if (allowed.length !== selectedIds.length) return { error: "One or more selected photos are no longer approved for public use.", values: preserved };
   await prisma.$transaction(async (transaction) => {
     await transaction.operation.update({ where: { id: operationId }, data: parsed.data });
     await transaction.operationPhoto.deleteMany({ where: { operationId } });

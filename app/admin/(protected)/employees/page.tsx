@@ -30,7 +30,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
 
   const employees = await prisma.user.findMany({
     where: {
-      role: "EMPLOYEE",
+      role: { in: ["EMPLOYEE", "SUPERVISOR"] },
       ...(status !== "ALL" ? { status } : {}),
       ...(query ? {
         OR: [
@@ -45,6 +45,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
       id: true,
       email: true,
       status: true,
+      role: true,
       createdAt: true,
       employeeProfile: {
         select: {
@@ -102,6 +103,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                   <p className="font-semibold">{profile?.fullName ?? "Profile unavailable"}</p>
                   <p className="mt-1 text-sm text-muted">{profile?.employeeCode ?? "No employee code"}</p>
                   <p className="mt-1 break-all text-xs text-muted">{employee.email}</p>
+                  <p className="mt-1 text-xs font-semibold text-primary">{employee.role}</p>
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted">Contact</p>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { RequestActions } from "@/components/admin/request-actions";
@@ -20,6 +21,10 @@ function safeLocationUrl(value: string | null) {
   } catch {
     return null;
   }
+}
+function coordinateMapUrl(latitude: number | null, longitude: number | null) {
+  if (latitude === null || longitude === null || !Number.isFinite(latitude) || !Number.isFinite(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null;
+  return `https://www.google.com/maps?q=${encodeURIComponent(`${latitude},${longitude}`)}`;
 }
 
 function Details({ items }: { items: Array<[string, React.ReactNode]> }) {
@@ -48,7 +53,9 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
     include: {
       preferredVehicle: { select: { name: true, vehicleNumber: true, vehicleType: true } },
       serviceSelections: { select: { serviceLabel: true }, orderBy: { id: "asc" } },
-      taskAssignment: {
+      taskAssignments: {
+        where: { isActive: true },
+        take: 1,
         select: {
           status: true,
           employee: { select: { fullName: true, employeeCode: true } },
@@ -58,11 +65,14 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
   });
 
   if (!request) notFound();
+  const taskAssignment = request.taskAssignments[0];
   const locationUrl = safeLocationUrl(request.locationLink);
+  const mapUrl = coordinateMapUrl(request.latitude, request.longitude) ?? locationUrl;
+  const coordinates = request.latitude !== null && request.longitude !== null ? `${request.latitude}, ${request.longitude}` : null;
 
   return (
     <div className="mx-auto max-w-6xl">
-      <BackButton fallbackHref="/admin/service-requests" />
+      <BackButton fallbackHref="/admin/service-requests" label="Back to Requests" />
 
       <div className="mt-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>
@@ -71,6 +81,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
           <div className="mt-3"><RequestStatusBadge status={request.status} /></div>
         </div>
         <RequestActions requestId={request.id} status={request.status} />
+        <Link href={`/supervisor/requests/${request.id}`} className="min-h-11 rounded-full border border-primary px-5 py-3 text-center text-sm font-semibold">Dispatch / Reassign</Link>
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -91,7 +102,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Location</h2>
-          <Details items={request.serviceCategory ? [["Location / Area", request.area], ["Selected Location", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open in Maps</a> : null]] : [["Address", request.address], ["Area", request.area], ["Selected Location", locationUrl ? <a key="location" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Open in Maps</a> : null], ["Hospital Name", request.hospitalName]]} />
+          <Details items={request.serviceCategory ? [["Location / Area", request.area], ["Coordinates", coordinates], ["Map", mapUrl ? <a key="location" href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Open Map</a> : null]] : [["Address", request.address], ["Area", request.area], ["Coordinates", coordinates], ["Map", mapUrl ? <a key="location" href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Open Map</a> : null], ["Hospital Name", request.hospitalName]]} />
         </section>
       </div>
 
@@ -102,10 +113,10 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
       <section className="mt-6 rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
         <h2 className="text-lg font-semibold">Task Assignment</h2>
-        {request.taskAssignment ? (
+        {taskAssignment ? (
           <div className="mt-4 rounded-xl border border-border bg-light-background p-4 text-sm">
-            <p className="font-semibold">{request.taskAssignment.employee.fullName}</p>
-            <p className="mt-1 text-muted">{request.taskAssignment.employee.employeeCode} · {request.taskAssignment.status.replaceAll("_", " ")}</p>
+            <p className="font-semibold">{taskAssignment.employee.fullName}</p>
+            <p className="mt-1 text-muted">{taskAssignment.employee.employeeCode} · {taskAssignment.status.replaceAll("_", " ")}</p>
           </div>
         ) : <p className="mt-4 text-sm text-muted">Not assigned yet</p>}
       </section>

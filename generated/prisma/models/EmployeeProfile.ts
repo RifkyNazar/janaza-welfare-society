@@ -46,6 +46,7 @@ export type EmployeeProfileMinAggregateOutputType = {
   duty: string | null
   photoUrl: string | null
   isPublicProfile: boolean | null
+  availability: $Enums.EmployeeAvailability | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +61,7 @@ export type EmployeeProfileMaxAggregateOutputType = {
   duty: string | null
   photoUrl: string | null
   isPublicProfile: boolean | null
+  availability: $Enums.EmployeeAvailability | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +76,7 @@ export type EmployeeProfileCountAggregateOutputType = {
   duty: number
   photoUrl: number
   isPublicProfile: number
+  availability: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +103,7 @@ export type EmployeeProfileMinAggregateInputType = {
   duty?: true
   photoUrl?: true
   isPublicProfile?: true
+  availability?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -114,6 +118,7 @@ export type EmployeeProfileMaxAggregateInputType = {
   duty?: true
   photoUrl?: true
   isPublicProfile?: true
+  availability?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -128,6 +133,7 @@ export type EmployeeProfileCountAggregateInputType = {
   duty?: true
   photoUrl?: true
   isPublicProfile?: true
+  availability?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -229,6 +235,7 @@ export type EmployeeProfileGroupByOutputType = {
   duty: string | null
   photoUrl: string | null
   isPublicProfile: boolean
+  availability: $Enums.EmployeeAvailability
   createdAt: Date
   updatedAt: Date
   _count: EmployeeProfileCountAggregateOutputType | null
@@ -266,6 +273,7 @@ export type EmployeeProfileWhereInput = {
   duty?: Prisma.StringNullableFilter<"EmployeeProfile"> | string | null
   photoUrl?: Prisma.StringNullableFilter<"EmployeeProfile"> | string | null
   isPublicProfile?: Prisma.BoolFilter<"EmployeeProfile"> | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFilter<"EmployeeProfile"> | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -282,6 +290,7 @@ export type EmployeeProfileOrderByWithRelationInput = {
   duty?: Prisma.SortOrderInput | Prisma.SortOrder
   photoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   isPublicProfile?: Prisma.SortOrder
+  availability?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -302,6 +311,7 @@ export type EmployeeProfileWhereUniqueInput = Prisma.AtLeast<{
   duty?: Prisma.StringNullableFilter<"EmployeeProfile"> | string | null
   photoUrl?: Prisma.StringNullableFilter<"EmployeeProfile"> | string | null
   isPublicProfile?: Prisma.BoolFilter<"EmployeeProfile"> | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFilter<"EmployeeProfile"> | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmployeeProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -318,6 +328,7 @@ export type EmployeeProfileOrderByWithAggregationInput = {
   duty?: Prisma.SortOrderInput | Prisma.SortOrder
   photoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   isPublicProfile?: Prisma.SortOrder
+  availability?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EmployeeProfileCountOrderByAggregateInput
@@ -340,6 +351,7 @@ export type EmployeeProfileScalarWhereWithAggregatesInput = {
   duty?: Prisma.StringNullableWithAggregatesFilter<"EmployeeProfile"> | string | null
   photoUrl?: Prisma.StringNullableWithAggregatesFilter<"EmployeeProfile"> | string | null
   isPublicProfile?: Prisma.BoolWithAggregatesFilter<"EmployeeProfile"> | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityWithAggregatesFilter<"EmployeeProfile"> | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EmployeeProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"EmployeeProfile"> | Date | string
 }
@@ -352,6 +364,7 @@ export type EmployeeProfileCreateInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEmployeeProfileInput
@@ -368,6 +381,7 @@ export type EmployeeProfileUncheckedCreateInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
@@ -381,6 +395,7 @@ export type EmployeeProfileUpdateInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEmployeeProfileNestedInput
@@ -397,6 +412,7 @@ export type EmployeeProfileUncheckedUpdateInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -412,6 +428,7 @@ export type EmployeeProfileCreateManyInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -424,6 +441,7 @@ export type EmployeeProfileUpdateManyMutationInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -438,6 +456,7 @@ export type EmployeeProfileUncheckedUpdateManyInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -463,6 +482,7 @@ export type EmployeeProfileCountOrderByAggregateInput = {
   duty?: Prisma.SortOrder
   photoUrl?: Prisma.SortOrder
   isPublicProfile?: Prisma.SortOrder
+  availability?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -482,6 +502,7 @@ export type EmployeeProfileMaxOrderByAggregateInput = {
   duty?: Prisma.SortOrder
   photoUrl?: Prisma.SortOrder
   isPublicProfile?: Prisma.SortOrder
+  availability?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -496,6 +517,7 @@ export type EmployeeProfileMinOrderByAggregateInput = {
   duty?: Prisma.SortOrder
   photoUrl?: Prisma.SortOrder
   isPublicProfile?: Prisma.SortOrder
+  availability?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -550,6 +572,10 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type EnumEmployeeAvailabilityFieldUpdateOperationsInput = {
+  set?: $Enums.EmployeeAvailability
+}
+
 export type EmployeeProfileCreateNestedOneWithoutTaskAssignmentsInput = {
   create?: Prisma.XOR<Prisma.EmployeeProfileCreateWithoutTaskAssignmentsInput, Prisma.EmployeeProfileUncheckedCreateWithoutTaskAssignmentsInput>
   connectOrCreate?: Prisma.EmployeeProfileCreateOrConnectWithoutTaskAssignmentsInput
@@ -572,6 +598,7 @@ export type EmployeeProfileCreateWithoutUserInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutEmployeeInput
@@ -586,6 +613,7 @@ export type EmployeeProfileUncheckedCreateWithoutUserInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutEmployeeInput
@@ -615,6 +643,7 @@ export type EmployeeProfileUpdateWithoutUserInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutEmployeeNestedInput
@@ -629,6 +658,7 @@ export type EmployeeProfileUncheckedUpdateWithoutUserInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutEmployeeNestedInput
@@ -642,6 +672,7 @@ export type EmployeeProfileCreateWithoutTaskAssignmentsInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutEmployeeProfileInput
@@ -657,6 +688,7 @@ export type EmployeeProfileUncheckedCreateWithoutTaskAssignmentsInput = {
   duty?: string | null
   photoUrl?: string | null
   isPublicProfile?: boolean
+  availability?: $Enums.EmployeeAvailability
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -685,6 +717,7 @@ export type EmployeeProfileUpdateWithoutTaskAssignmentsInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutEmployeeProfileNestedInput
@@ -700,6 +733,7 @@ export type EmployeeProfileUncheckedUpdateWithoutTaskAssignmentsInput = {
   duty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   photoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublicProfile?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  availability?: Prisma.EnumEmployeeAvailabilityFieldUpdateOperationsInput | $Enums.EmployeeAvailability
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -745,6 +779,7 @@ export type EmployeeProfileSelect<ExtArgs extends runtime.Types.Extensions.Inter
   duty?: boolean
   photoUrl?: boolean
   isPublicProfile?: boolean
+  availability?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -764,11 +799,12 @@ export type EmployeeProfileSelectScalar = {
   duty?: boolean
   photoUrl?: boolean
   isPublicProfile?: boolean
+  availability?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EmployeeProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "employeeCode" | "fullName" | "phone" | "position" | "duty" | "photoUrl" | "isPublicProfile" | "createdAt" | "updatedAt", ExtArgs["result"]["employeeProfile"]>
+export type EmployeeProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "employeeCode" | "fullName" | "phone" | "position" | "duty" | "photoUrl" | "isPublicProfile" | "availability" | "createdAt" | "updatedAt", ExtArgs["result"]["employeeProfile"]>
 export type EmployeeProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   taskAssignments?: boolean | Prisma.EmployeeProfile$taskAssignmentsArgs<ExtArgs>
@@ -791,6 +827,7 @@ export type $EmployeeProfilePayload<ExtArgs extends runtime.Types.Extensions.Int
     duty: string | null
     photoUrl: string | null
     isPublicProfile: boolean
+    availability: $Enums.EmployeeAvailability
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["employeeProfile"]>
@@ -1173,6 +1210,7 @@ export interface EmployeeProfileFieldRefs {
   readonly duty: Prisma.FieldRef<"EmployeeProfile", 'String'>
   readonly photoUrl: Prisma.FieldRef<"EmployeeProfile", 'String'>
   readonly isPublicProfile: Prisma.FieldRef<"EmployeeProfile", 'Boolean'>
+  readonly availability: Prisma.FieldRef<"EmployeeProfile", 'EmployeeAvailability'>
   readonly createdAt: Prisma.FieldRef<"EmployeeProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EmployeeProfile", 'DateTime'>
 }

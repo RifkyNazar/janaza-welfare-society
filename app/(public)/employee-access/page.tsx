@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EmployeeAuthLayout } from "@/components/employee/employee-auth-layout";
+import { redirectAuthenticatedUser } from "@/lib/permissions";
 
 export const metadata: Metadata = { title: "Employee Access" };
 
@@ -33,7 +34,8 @@ function AccessIcon({ icon }: { icon: (typeof accessOptions)[number]["icon"] }) 
   );
 }
 
-export default function EmployeeAccessPage() {
+export default async function EmployeeAccessPage() {
+  await redirectAuthenticatedUser();
   return (
     <EmployeeAuthLayout title="Employee Access" description="Secure access for authorized Janaza Welfare Society staff members." wide>
       <div className="grid gap-6 md:grid-cols-2">
@@ -63,4 +65,3 @@ export default function EmployeeAccessPage() {
     </EmployeeAuthLayout>
   );
 }
-

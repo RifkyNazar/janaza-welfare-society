@@ -7,7 +7,8 @@ import { createRequestConfirmationPdf } from "@/lib/request-confirmation-pdf";
 import { validateServiceSelection } from "@/lib/service-options";
 import { notifyStaffOfNewServiceRequest } from "@/lib/notifications";
 
-export type ServiceRequestActionState = { error?: string; requestCode?: string; status?: "NEW"; pdfBase64?: string; selectedServices?: string[] };
+export type ServiceRequestFormValues = { requesterName: string; mobileNumber: string; area: string; note: string; category: string; serviceCodes: string[]; latitude: string; longitude: string };
+export type ServiceRequestActionState = { error?: string; fieldErrors?: Partial<Record<"requesterName" | "mobileNumber" | "area" | "services" | "location", string>>; requestCode?: string; status?: "NEW"; pdfBase64?: string; selectedServices?: string[]; values?: ServiceRequestFormValues };
 
 function text(formData: FormData, name: string) { const entry = formData.get(name); return typeof entry === "string" ? entry.trim() : ""; }
 function requestCode() { return `JWS-REQ-${new Date().getFullYear()}-${randomBytes(5).toString("hex").toUpperCase()}`; }
@@ -20,18 +21,18 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
   const note = text(formData, "note");
   const category = text(formData, "serviceCategory");
   const submittedCodes = formData.getAll("serviceCodes").filter((value): value is string => typeof value === "string");
-  if (!requesterName || !mobileNumber || !area) return { error: "Please enter your name, contact number, and location / area." };
-  if (requesterName.length > 150 || mobileNumber.length > 30 || area.length > 150 || note.length > 2000) return { error: "One or more fields exceed the allowed length." };
-  if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please enter a valid contact number." };
+  const latitudeInput = text(formData, "latitude"); const longitudeInput = text(formData, "longitude");
+  const values = { requesterName, mobileNumber, area, note, category, serviceCodes: submittedCodes, latitude: latitudeInput, longitude: longitudeInput };
+  if (!requesterName || !mobileNumber || !area) return { error: "Please correct the highlighted fields.", fieldErrors: { ...(!requesterName ? { requesterName: "Enter your name." } : {}), ...(!mobileNumber ? { mobileNumber: "Enter your contact number." } : {}), ...(!area ? { area: "Enter your location or area." } : {}) }, values };
+  if (requesterName.length > 150 || mobileNumber.length > 30 || area.length > 150 || note.length > 2000) return { error: "One or more fields exceed the allowed length.", values };
+  if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please correct the highlighted field.", fieldErrors: { mobileNumber: "Enter a valid contact number." }, values };
   const selectedServices = validateServiceSelection(category, submittedCodes);
-  if (!selectedServices) return { error: category === "VEHICLE" ? "Please select exactly one valid vehicle service." : "Please select one or more valid Janazah services." };
+  if (!selectedServices) return { error: category === "VEHICLE" ? "Please select exactly one valid vehicle service." : "Please select one or more valid Janazah services.", values };
 
-  const latitudeInput = text(formData, "latitude");
-  const longitudeInput = text(formData, "longitude");
-  if ((latitudeInput && !longitudeInput) || (!latitudeInput && longitudeInput)) return { error: "Please select a valid map location." };
+  if ((latitudeInput && !longitudeInput) || (!latitudeInput && longitudeInput)) return { error: "Please select a valid map location.", values };
   const latitude = latitudeInput ? Number(latitudeInput) : null;
   const longitude = longitudeInput ? Number(longitudeInput) : null;
-  if ((latitude !== null && (!Number.isFinite(latitude) || latitude < -90 || latitude > 90)) || (longitude !== null && (!Number.isFinite(longitude) || longitude < -180 || longitude > 180))) return { error: "Please select a valid map location." };
+  if ((latitude !== null && (!Number.isFinite(latitude) || latitude < -90 || latitude > 90)) || (longitude !== null && (!Number.isFinite(longitude) || longitude < -180 || longitude > 180))) return { error: "Please select a valid map location.", values };
 
   const labels = selectedServices.map((service) => service.label);
   const serviceType = category === "JANAZAH" && selectedServices.length > 1 ? "Multiple Janazah Services" : labels[0];
@@ -67,8 +68,8 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
       } catch (pdfError) { console.error("Unable to generate request confirmation PDF", pdfError); return { requestCode: code, status: "NEW", selectedServices: labels }; }
     } catch (error) {
       const collision = error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002" && String(error.meta?.target ?? "").includes("requestCode");
-      if (!collision) { console.error("Unable to create service request", error); return { error: "Unable to submit your request right now. Please try again." }; }
+      if (!collision) { console.error("Unable to create service request", error); return { error: "Unable to submit your request right now. Please try again.", values }; }
     }
   }
-  return { error: "Unable to create a request code. Please try again." };
+  return { error: "Unable to create a request code. Please try again.", values };
 }

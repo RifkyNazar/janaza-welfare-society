@@ -40,7 +40,7 @@ export async function updateEmployeeStatus(
     select: { role: true, status: true },
   });
 
-  if (!user || user.role !== "EMPLOYEE") {
+  if (!user || (user.role !== "EMPLOYEE" && user.role !== "SUPERVISOR")) {
     return { error: "Employee account not found." };
   }
 
@@ -49,7 +49,7 @@ export async function updateEmployeeStatus(
   }
 
   const result = await prisma.user.updateMany({
-    where: { id: employeeId, role: "EMPLOYEE", status: user.status },
+    where: { id: employeeId, role: { in: ["EMPLOYEE", "SUPERVISOR"] }, status: user.status },
     data: { status: transition.to },
   });
 
@@ -62,4 +62,12 @@ export async function updateEmployeeStatus(
   revalidatePath(`/admin/employees/${employeeId}`);
 
   return { success: "Employee account status updated." };
+}
+
+export async function updateOperationalRole(userId: number, formData: FormData) {
+  await requireAdmin();
+  const role = formData.get("role");
+  if (!Number.isSafeInteger(userId) || userId <= 0 || (role !== "EMPLOYEE" && role !== "SUPERVISOR")) return;
+  await prisma.user.updateMany({ where: { id: userId, role: { in: ["EMPLOYEE", "SUPERVISOR"] } }, data: { role } });
+  revalidatePath("/admin/employees"); revalidatePath(`/admin/employees/${userId}`);
 }

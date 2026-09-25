@@ -15,7 +15,7 @@ export function LoginForm() {
       <form action={formAction} className="space-y-5">
         <div>
           <label htmlFor="employee-identifier" className="block text-sm font-semibold text-foreground">Email or Employee ID</label>
-          <input id="employee-identifier" name="identifier" type="text" autoComplete="username" required className="employee-form-input mt-2" />
+          <input key={state.values?.identifier} id="employee-identifier" name="identifier" type="text" autoComplete="username" required defaultValue={state.values?.identifier} className="employee-form-input mt-2" />
         </div>
 
         <PasswordField id="login-password" name="password" label="Password" autoComplete="current-password" />

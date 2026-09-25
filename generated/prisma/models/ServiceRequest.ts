@@ -360,7 +360,7 @@ export type ServiceRequestWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"ServiceRequest"> | Date | string
   preferredVehicleId?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   serviceCategory?: Prisma.EnumServiceCategoryNullableFilter<"ServiceRequest"> | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.XOR<Prisma.TaskAssignmentNullableScalarRelationFilter, Prisma.TaskAssignmentWhereInput> | null
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   preferredVehicle?: Prisma.XOR<Prisma.VehicleNullableScalarRelationFilter, Prisma.VehicleWhereInput> | null
   serviceSelections?: Prisma.RequestServiceSelectionListRelationFilter
 }
@@ -388,7 +388,7 @@ export type ServiceRequestOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   preferredVehicleId?: Prisma.SortOrderInput | Prisma.SortOrder
   serviceCategory?: Prisma.SortOrderInput | Prisma.SortOrder
-  taskAssignment?: Prisma.TaskAssignmentOrderByWithRelationInput
+  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
   preferredVehicle?: Prisma.VehicleOrderByWithRelationInput
   serviceSelections?: Prisma.RequestServiceSelectionOrderByRelationAggregateInput
   _relevance?: Prisma.ServiceRequestOrderByRelevanceInput
@@ -420,7 +420,7 @@ export type ServiceRequestWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"ServiceRequest"> | Date | string
   preferredVehicleId?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   serviceCategory?: Prisma.EnumServiceCategoryNullableFilter<"ServiceRequest"> | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.XOR<Prisma.TaskAssignmentNullableScalarRelationFilter, Prisma.TaskAssignmentWhereInput> | null
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
   preferredVehicle?: Prisma.XOR<Prisma.VehicleNullableScalarRelationFilter, Prisma.VehicleWhereInput> | null
   serviceSelections?: Prisma.RequestServiceSelectionListRelationFilter
 }, "id" | "requestCode">
@@ -504,7 +504,7 @@ export type ServiceRequestCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   serviceCategory?: $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentCreateNestedOneWithoutRequestInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRequestInput
   preferredVehicle?: Prisma.VehicleCreateNestedOneWithoutPreferredRequestsInput
   serviceSelections?: Prisma.RequestServiceSelectionCreateNestedManyWithoutRequestInput
 }
@@ -532,7 +532,7 @@ export type ServiceRequestUncheckedCreateInput = {
   updatedAt?: Date | string
   preferredVehicleId?: string | null
   serviceCategory?: $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUncheckedCreateNestedOneWithoutRequestInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRequestInput
   serviceSelections?: Prisma.RequestServiceSelectionUncheckedCreateNestedManyWithoutRequestInput
 }
 
@@ -557,7 +557,7 @@ export type ServiceRequestUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   serviceCategory?: Prisma.NullableEnumServiceCategoryFieldUpdateOperationsInput | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUpdateOneWithoutRequestNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRequestNestedInput
   preferredVehicle?: Prisma.VehicleUpdateOneWithoutPreferredRequestsNestedInput
   serviceSelections?: Prisma.RequestServiceSelectionUpdateManyWithoutRequestNestedInput
 }
@@ -585,7 +585,7 @@ export type ServiceRequestUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   preferredVehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceCategory?: Prisma.NullableEnumServiceCategoryFieldUpdateOperationsInput | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUncheckedUpdateOneWithoutRequestNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRequestNestedInput
   serviceSelections?: Prisma.RequestServiceSelectionUncheckedUpdateManyWithoutRequestNestedInput
 }
 
@@ -846,18 +846,18 @@ export type ServiceRequestUncheckedUpdateManyWithoutPreferredVehicleNestedInput 
   deleteMany?: Prisma.ServiceRequestScalarWhereInput | Prisma.ServiceRequestScalarWhereInput[]
 }
 
-export type ServiceRequestCreateNestedOneWithoutTaskAssignmentInput = {
-  create?: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentInput>
-  connectOrCreate?: Prisma.ServiceRequestCreateOrConnectWithoutTaskAssignmentInput
+export type ServiceRequestCreateNestedOneWithoutTaskAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentsInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.ServiceRequestCreateOrConnectWithoutTaskAssignmentsInput
   connect?: Prisma.ServiceRequestWhereUniqueInput
 }
 
-export type ServiceRequestUpdateOneRequiredWithoutTaskAssignmentNestedInput = {
-  create?: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentInput>
-  connectOrCreate?: Prisma.ServiceRequestCreateOrConnectWithoutTaskAssignmentInput
-  upsert?: Prisma.ServiceRequestUpsertWithoutTaskAssignmentInput
+export type ServiceRequestUpdateOneRequiredWithoutTaskAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentsInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.ServiceRequestCreateOrConnectWithoutTaskAssignmentsInput
+  upsert?: Prisma.ServiceRequestUpsertWithoutTaskAssignmentsInput
   connect?: Prisma.ServiceRequestWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceRequestUpdateToOneWithWhereWithoutTaskAssignmentInput, Prisma.ServiceRequestUpdateWithoutTaskAssignmentInput>, Prisma.ServiceRequestUncheckedUpdateWithoutTaskAssignmentInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceRequestUpdateToOneWithWhereWithoutTaskAssignmentsInput, Prisma.ServiceRequestUpdateWithoutTaskAssignmentsInput>, Prisma.ServiceRequestUncheckedUpdateWithoutTaskAssignmentsInput>
 }
 
 export type ServiceRequestCreateWithoutServiceSelectionsInput = {
@@ -881,7 +881,7 @@ export type ServiceRequestCreateWithoutServiceSelectionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   serviceCategory?: $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentCreateNestedOneWithoutRequestInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRequestInput
   preferredVehicle?: Prisma.VehicleCreateNestedOneWithoutPreferredRequestsInput
 }
 
@@ -908,7 +908,7 @@ export type ServiceRequestUncheckedCreateWithoutServiceSelectionsInput = {
   updatedAt?: Date | string
   preferredVehicleId?: string | null
   serviceCategory?: $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUncheckedCreateNestedOneWithoutRequestInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRequestInput
 }
 
 export type ServiceRequestCreateOrConnectWithoutServiceSelectionsInput = {
@@ -948,7 +948,7 @@ export type ServiceRequestUpdateWithoutServiceSelectionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   serviceCategory?: Prisma.NullableEnumServiceCategoryFieldUpdateOperationsInput | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUpdateOneWithoutRequestNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRequestNestedInput
   preferredVehicle?: Prisma.VehicleUpdateOneWithoutPreferredRequestsNestedInput
 }
 
@@ -975,7 +975,7 @@ export type ServiceRequestUncheckedUpdateWithoutServiceSelectionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   preferredVehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceCategory?: Prisma.NullableEnumServiceCategoryFieldUpdateOperationsInput | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUncheckedUpdateOneWithoutRequestNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRequestNestedInput
 }
 
 export type ServiceRequestCreateWithoutPreferredVehicleInput = {
@@ -999,7 +999,7 @@ export type ServiceRequestCreateWithoutPreferredVehicleInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   serviceCategory?: $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentCreateNestedOneWithoutRequestInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRequestInput
   serviceSelections?: Prisma.RequestServiceSelectionCreateNestedManyWithoutRequestInput
 }
 
@@ -1025,7 +1025,7 @@ export type ServiceRequestUncheckedCreateWithoutPreferredVehicleInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   serviceCategory?: $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUncheckedCreateNestedOneWithoutRequestInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRequestInput
   serviceSelections?: Prisma.RequestServiceSelectionUncheckedCreateNestedManyWithoutRequestInput
 }
 
@@ -1083,7 +1083,7 @@ export type ServiceRequestScalarWhereInput = {
   serviceCategory?: Prisma.EnumServiceCategoryNullableFilter<"ServiceRequest"> | $Enums.ServiceCategory | null
 }
 
-export type ServiceRequestCreateWithoutTaskAssignmentInput = {
+export type ServiceRequestCreateWithoutTaskAssignmentsInput = {
   requestCode: string
   requesterName: string
   mobileNumber: string
@@ -1108,7 +1108,7 @@ export type ServiceRequestCreateWithoutTaskAssignmentInput = {
   serviceSelections?: Prisma.RequestServiceSelectionCreateNestedManyWithoutRequestInput
 }
 
-export type ServiceRequestUncheckedCreateWithoutTaskAssignmentInput = {
+export type ServiceRequestUncheckedCreateWithoutTaskAssignmentsInput = {
   id?: number
   requestCode: string
   requesterName: string
@@ -1134,23 +1134,23 @@ export type ServiceRequestUncheckedCreateWithoutTaskAssignmentInput = {
   serviceSelections?: Prisma.RequestServiceSelectionUncheckedCreateNestedManyWithoutRequestInput
 }
 
-export type ServiceRequestCreateOrConnectWithoutTaskAssignmentInput = {
+export type ServiceRequestCreateOrConnectWithoutTaskAssignmentsInput = {
   where: Prisma.ServiceRequestWhereUniqueInput
-  create: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentInput>
+  create: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentsInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentsInput>
 }
 
-export type ServiceRequestUpsertWithoutTaskAssignmentInput = {
-  update: Prisma.XOR<Prisma.ServiceRequestUpdateWithoutTaskAssignmentInput, Prisma.ServiceRequestUncheckedUpdateWithoutTaskAssignmentInput>
-  create: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentInput>
+export type ServiceRequestUpsertWithoutTaskAssignmentsInput = {
+  update: Prisma.XOR<Prisma.ServiceRequestUpdateWithoutTaskAssignmentsInput, Prisma.ServiceRequestUncheckedUpdateWithoutTaskAssignmentsInput>
+  create: Prisma.XOR<Prisma.ServiceRequestCreateWithoutTaskAssignmentsInput, Prisma.ServiceRequestUncheckedCreateWithoutTaskAssignmentsInput>
   where?: Prisma.ServiceRequestWhereInput
 }
 
-export type ServiceRequestUpdateToOneWithWhereWithoutTaskAssignmentInput = {
+export type ServiceRequestUpdateToOneWithWhereWithoutTaskAssignmentsInput = {
   where?: Prisma.ServiceRequestWhereInput
-  data: Prisma.XOR<Prisma.ServiceRequestUpdateWithoutTaskAssignmentInput, Prisma.ServiceRequestUncheckedUpdateWithoutTaskAssignmentInput>
+  data: Prisma.XOR<Prisma.ServiceRequestUpdateWithoutTaskAssignmentsInput, Prisma.ServiceRequestUncheckedUpdateWithoutTaskAssignmentsInput>
 }
 
-export type ServiceRequestUpdateWithoutTaskAssignmentInput = {
+export type ServiceRequestUpdateWithoutTaskAssignmentsInput = {
   requestCode?: Prisma.StringFieldUpdateOperationsInput | string
   requesterName?: Prisma.StringFieldUpdateOperationsInput | string
   mobileNumber?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1175,7 +1175,7 @@ export type ServiceRequestUpdateWithoutTaskAssignmentInput = {
   serviceSelections?: Prisma.RequestServiceSelectionUpdateManyWithoutRequestNestedInput
 }
 
-export type ServiceRequestUncheckedUpdateWithoutTaskAssignmentInput = {
+export type ServiceRequestUncheckedUpdateWithoutTaskAssignmentsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   requestCode?: Prisma.StringFieldUpdateOperationsInput | string
   requesterName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1246,7 +1246,7 @@ export type ServiceRequestUpdateWithoutPreferredVehicleInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   serviceCategory?: Prisma.NullableEnumServiceCategoryFieldUpdateOperationsInput | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUpdateOneWithoutRequestNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRequestNestedInput
   serviceSelections?: Prisma.RequestServiceSelectionUpdateManyWithoutRequestNestedInput
 }
 
@@ -1272,7 +1272,7 @@ export type ServiceRequestUncheckedUpdateWithoutPreferredVehicleInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   serviceCategory?: Prisma.NullableEnumServiceCategoryFieldUpdateOperationsInput | $Enums.ServiceCategory | null
-  taskAssignment?: Prisma.TaskAssignmentUncheckedUpdateOneWithoutRequestNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRequestNestedInput
   serviceSelections?: Prisma.RequestServiceSelectionUncheckedUpdateManyWithoutRequestNestedInput
 }
 
@@ -1306,10 +1306,12 @@ export type ServiceRequestUncheckedUpdateManyWithoutPreferredVehicleInput = {
  */
 
 export type ServiceRequestCountOutputType = {
+  taskAssignments: number
   serviceSelections: number
 }
 
 export type ServiceRequestCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  taskAssignments?: boolean | ServiceRequestCountOutputTypeCountTaskAssignmentsArgs
   serviceSelections?: boolean | ServiceRequestCountOutputTypeCountServiceSelectionsArgs
 }
 
@@ -1321,6 +1323,13 @@ export type ServiceRequestCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
    * Select specific fields to fetch from the ServiceRequestCountOutputType
    */
   select?: Prisma.ServiceRequestCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ServiceRequestCountOutputType without action
+ */
+export type ServiceRequestCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentWhereInput
 }
 
 /**
@@ -1354,7 +1363,7 @@ export type ServiceRequestSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   preferredVehicleId?: boolean
   serviceCategory?: boolean
-  taskAssignment?: boolean | Prisma.ServiceRequest$taskAssignmentArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.ServiceRequest$taskAssignmentsArgs<ExtArgs>
   preferredVehicle?: boolean | Prisma.ServiceRequest$preferredVehicleArgs<ExtArgs>
   serviceSelections?: boolean | Prisma.ServiceRequest$serviceSelectionsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceRequestCountOutputTypeDefaultArgs<ExtArgs>
@@ -1389,7 +1398,7 @@ export type ServiceRequestSelectScalar = {
 
 export type ServiceRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestCode" | "requesterName" | "mobileNumber" | "alternativeNumber" | "relationshipToDeceased" | "serviceType" | "requiredDate" | "requiredTime" | "placeType" | "address" | "area" | "locationLink" | "latitude" | "longitude" | "hospitalName" | "note" | "status" | "createdAt" | "updatedAt" | "preferredVehicleId" | "serviceCategory", ExtArgs["result"]["serviceRequest"]>
 export type ServiceRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  taskAssignment?: boolean | Prisma.ServiceRequest$taskAssignmentArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.ServiceRequest$taskAssignmentsArgs<ExtArgs>
   preferredVehicle?: boolean | Prisma.ServiceRequest$preferredVehicleArgs<ExtArgs>
   serviceSelections?: boolean | Prisma.ServiceRequest$serviceSelectionsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceRequestCountOutputTypeDefaultArgs<ExtArgs>
@@ -1398,7 +1407,7 @@ export type ServiceRequestInclude<ExtArgs extends runtime.Types.Extensions.Inter
 export type $ServiceRequestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ServiceRequest"
   objects: {
-    taskAssignment: Prisma.$TaskAssignmentPayload<ExtArgs> | null
+    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
     preferredVehicle: Prisma.$VehiclePayload<ExtArgs> | null
     serviceSelections: Prisma.$RequestServiceSelectionPayload<ExtArgs>[]
   }
@@ -1765,7 +1774,7 @@ readonly fields: ServiceRequestFieldRefs;
  */
 export interface Prisma__ServiceRequestClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  taskAssignment<T extends Prisma.ServiceRequest$taskAssignmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceRequest$taskAssignmentArgs<ExtArgs>>): Prisma.Prisma__TaskAssignmentClient<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  taskAssignments<T extends Prisma.ServiceRequest$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceRequest$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   preferredVehicle<T extends Prisma.ServiceRequest$preferredVehicleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceRequest$preferredVehicleArgs<ExtArgs>>): Prisma.Prisma__VehicleClient<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   serviceSelections<T extends Prisma.ServiceRequest$serviceSelectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceRequest$serviceSelectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RequestServiceSelectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2167,9 +2176,9 @@ export type ServiceRequestDeleteManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * ServiceRequest.taskAssignment
+ * ServiceRequest.taskAssignments
  */
-export type ServiceRequest$taskAssignmentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type ServiceRequest$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the TaskAssignment
    */
@@ -2183,6 +2192,11 @@ export type ServiceRequest$taskAssignmentArgs<ExtArgs extends runtime.Types.Exte
    */
   include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
   where?: Prisma.TaskAssignmentWhereInput
+  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
 }
 
 /**

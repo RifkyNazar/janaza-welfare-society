@@ -3,6 +3,7 @@ import { LeadershipCard } from "@/components/leadership-card";
 import { PageHero } from "@/components/page-hero";
 import { leadershipTeam } from "@/lib/leadership-team";
 import { prisma } from "@/lib/prisma";
+import { profilePhotoSrc } from "@/lib/profile-photo-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,7 @@ export default async function TeamPage() {
               {employees.map((employee) => (
                 <article key={employee.id} className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_10px_30px_rgba(16,42,42,0.06)]">
                   <div className="relative aspect-[4/3] border-b border-border bg-white">
-                    {employee.photoUrl ? <Image src={employee.photoUrl} alt={`${employee.fullName}, ${employee.position}`} fill className="object-cover" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" /> : <div className="flex h-full items-center justify-center bg-[linear-gradient(145deg,#F4FFFC,#FFFFFF)] text-3xl font-semibold text-primary" aria-label={`${employee.fullName} photo placeholder`}>{employee.fullName.charAt(0)}</div>}
+                    {employee.photoUrl ? <Image unoptimized src={profilePhotoSrc(employee.photoUrl)!} alt={`${employee.fullName}, ${employee.position}`} fill className="object-cover" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" /> : <div className="flex h-full items-center justify-center bg-[linear-gradient(145deg,#F4FFFC,#FFFFFF)] text-3xl font-semibold text-primary" aria-label={`${employee.fullName} initials placeholder`}>{employee.fullName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</div>}
                   </div>
                   <div className="p-6"><p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{employee.position}</p><h3 className="mt-2 text-xl font-semibold text-foreground">{employee.fullName}</h3>{employee.duty && <p className="mt-3 leading-7 text-muted">{employee.duty}</p>}</div>
                 </article>

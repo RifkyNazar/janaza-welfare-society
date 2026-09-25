@@ -21,3 +21,10 @@ export type ServiceRequestNotification = {
   area: string;
   submittedAt: Date;
 };
+
+export type TaskAssignmentNotification = {
+  requestCode: string;
+  category: string;
+  services: string[];
+  area: string;
+};

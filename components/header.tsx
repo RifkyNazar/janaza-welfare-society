@@ -25,7 +25,7 @@ export function Header() {
             <span className="block truncate text-lg font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span>
             <span className="mt-1 block text-xs font-medium tracking-wide text-muted">Kattankudy</span>
           </Link>
-          <Link href="/admin/login" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-primary/60 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Admin Login</Link>
+          <div className="flex shrink-0 gap-2"><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-3 py-2 text-xs font-semibold text-foreground hover:border-primary sm:px-4 sm:text-sm">Supervisor</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/60 px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 sm:text-sm">Admin Login</Link></div>
         </div>
       </header>
     );
@@ -44,6 +44,7 @@ export function Header() {
             <nav aria-label="Main navigation"><ul className="flex items-center gap-5 text-sm font-medium text-muted">{navigation.map((item) => <li key={item.href}><Link className="py-2 transition-colors hover:text-foreground focus-visible:text-primary focus-visible:outline-none" href={item.href}>{item.label}</Link></li>)}</ul></nav>
             <span className="border-l border-border pl-4 text-xs font-semibold text-foreground">{"\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD"} <span className="text-muted">|</span> EN</span>
             <Link href="/employee-access" className="rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Employee Access</Link>
+            <Link href="/employee-access/login" className="px-1 py-2 text-xs font-semibold text-muted underline decoration-border underline-offset-4 hover:text-foreground">Supervisor</Link>
             <Link href="/admin/login" className="px-1 py-2 text-xs font-semibold text-muted underline decoration-border underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Admin Login</Link>
             <Link href="/request-service" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-[#35d8bd] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">Request Service</Link>
           </div>
@@ -60,7 +61,7 @@ export function Header() {
           <Link href="/request-service" className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground" onClick={closeMenu}>Request Service</Link>
           <div className="mt-5 border-t border-border pt-5">
             <p className="px-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted">Staff access</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2"><Link href="/employee-access" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}>Employee Access</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-semibold text-muted underline decoration-primary underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}>Admin Login</Link></div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3"><Link href="/employee-access" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}>Employee Access</Link><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-semibold" onClick={closeMenu}>Supervisor</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-semibold text-muted underline decoration-primary underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}>Admin Login</Link></div>
           </div>
         </nav>
       </div>

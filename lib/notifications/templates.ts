@@ -1,4 +1,4 @@
-import type { EmployeeRegistrationNotification, ServiceRequestNotification } from "@/lib/notifications/types";
+import type { EmployeeRegistrationNotification, ServiceRequestNotification, TaskAssignmentNotification } from "@/lib/notifications/types";
 
 const colors = { primary: "#45E8CD", light: "#A8F5E8", dark: "#102A2A", muted: "#5F6F6D" };
 
@@ -49,4 +49,10 @@ export function serviceRequestEmail(data: ServiceRequestNotification, dashboardU
   ];
   const title = `New JWS Service Request - ${data.requestCode}`;
   return { subject: title, html: layout(title, rows, "Open JWS Dashboard", dashboardUrl), text: plainText(title, rows, "Open JWS Dashboard", dashboardUrl) };
+}
+
+export function taskAssignmentEmail(data: TaskAssignmentNotification, dashboardUrl: string) {
+  const rows: Array<[string,string]> = [["Request Code",data.requestCode],["Category",data.category],["Services",data.services.join(", ")],["Area",data.area]];
+  const title = "JWS - New Task Assigned";
+  return { subject:title, html:layout(title,rows,"Open My Task",dashboardUrl), text:plainText(title,rows,"Open My Task",dashboardUrl) };
 }

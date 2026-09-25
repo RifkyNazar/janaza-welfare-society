@@ -25,7 +25,7 @@ export function LeadershipCard({ member, compact = false }: LeadershipCardProps)
   return (
     <article className="group h-full overflow-hidden rounded-2xl border border-border bg-white shadow-[0_10px_30px_rgba(16,42,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_16px_40px_rgba(69,232,205,0.16)] motion-reduce:transform-none motion-reduce:transition-none">
       <div className={`relative overflow-hidden border-b border-border bg-light-background ${compact ? "aspect-[16/8]" : "aspect-[4/3]"}`}>
-        {!imageFailed ? (
+        {member.photoSrc && !imageFailed ? (
           <Image
             src={member.photoSrc}
             alt={`${member.name}, ${member.position}`}
@@ -35,7 +35,7 @@ export function LeadershipCard({ member, compact = false }: LeadershipCardProps)
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-[linear-gradient(145deg,#F4FFFC,#FFFFFF)]" role="img" aria-label={`${member.name} photo placeholder`}>
+          <div className="flex h-full items-center justify-center bg-[linear-gradient(145deg,#F4FFFC,#FFFFFF)]" role="img" aria-label={`${member.name} initials placeholder`}>
             <span className="flex size-24 items-center justify-center rounded-full border border-primary/45 bg-white text-2xl font-semibold tracking-wide text-foreground shadow-sm">
               {initials(member.name)}
             </span>

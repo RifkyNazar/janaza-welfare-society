@@ -10,6 +10,7 @@ import { notifyAdminsOfEmployeeRegistration } from "@/lib/notifications";
 export type AuthActionState = {
   error?: string;
   success?: string;
+  values?: { fullName?: string; employeeCode?: string; position?: string; phone?: string; email?: string; identifier?: string; confirmation?: boolean };
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,18 +31,19 @@ export async function registerEmployee(
   const email = value(formData, "email").toLowerCase();
   const password = value(formData, "password");
   const confirmPassword = value(formData, "confirmPassword");
+  const values = { fullName, employeeCode, position, phone, email, confirmation: formData.get("confirmation") === "on" };
 
   if (!fullName || !employeeCode || !position || !phone || !email || !password || !confirmPassword) {
-    return { error: "Please complete all required fields." };
+    return { error: "Please complete all required fields.", values };
   }
   if (!emailPattern.test(email)) {
-    return { error: "Please enter a valid email address." };
+    return { error: "Please enter a valid email address.", values };
   }
   if (password.length < 12) {
-    return { error: "Password must be at least 12 characters." };
+    return { error: "Password must be at least 12 characters.", values };
   }
   if (password !== confirmPassword) {
-    return { error: "Passwords do not match." };
+    return { error: "Passwords do not match.", values };
   }
 
   const duplicate = await prisma.user.findFirst({
@@ -52,7 +54,7 @@ export async function registerEmployee(
   });
 
   if (duplicate) {
-    return { error: "That email or employee ID is already registered." };
+    return { error: "That email or employee ID is already registered.", values };
   }
 
   const passwordHash = await hash(password, 12);
@@ -96,7 +98,7 @@ export async function registerEmployee(
     }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return { error: "That email or employee ID is already registered." };
+      return { error: "That email or employee ID is already registered.", values };
     }
     throw error;
   }
@@ -112,9 +114,10 @@ export async function login(
 ): Promise<AuthActionState> {
   const identifier = value(formData, "identifier");
   const password = value(formData, "password");
+  const values = { identifier };
 
   if (!identifier || !password) {
-    return { error: "Enter your email or employee ID and password." };
+    return { error: "Enter your email or employee ID and password.", values };
   }
 
   const user = await prisma.user.findFirst({
@@ -128,24 +131,24 @@ export async function login(
   });
 
   if (!user || !(await compare(password, user.passwordHash))) {
-    return { error: "Invalid login credentials." };
+    return { error: "Invalid login credentials.", values };
   }
   if (user.status === "PENDING") {
-    return { error: "Your account is awaiting administrator approval." };
+    return { error: "Your account is awaiting administrator approval.", values };
   }
   if (user.status !== "APPROVED") {
-    return { error: "Access to this account is unavailable." };
+    return { error: "Access to this account is unavailable.", values };
   }
 
   try {
     await signIn("credentials", {
       identifier,
       password,
-      redirectTo: user.role === "ADMIN" ? "/admin" : "/employee",
+      redirectTo: user.role === "ADMIN" ? "/admin" : user.role === "SUPERVISOR" ? "/supervisor" : "/employee",
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Unable to sign in with those credentials." };
+      return { error: "Unable to sign in with those credentials.", values };
     }
     throw error;
   }
@@ -160,9 +163,10 @@ export async function adminLogin(
   const email = value(formData, "email").toLowerCase();
   const passwordField = formData.get("password");
   const password = typeof passwordField === "string" ? passwordField : "";
+  const values = { email };
 
   if (!email || !password) {
-    return { error: "Enter your email and password." };
+    return { error: "Enter your email and password.", values };
   }
 
   const user = await prisma.user.findUnique({
@@ -176,7 +180,7 @@ export async function adminLogin(
     user.role !== "ADMIN" ||
     user.status !== "APPROVED"
   ) {
-    return { error: "Invalid email or password." };
+    return { error: "Invalid email or password.", values };
   }
 
   try {
@@ -187,7 +191,7 @@ export async function adminLogin(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Unable to sign in with those credentials." };
+      return { error: "Unable to sign in with those credentials.", values };
     }
     throw error;
   }

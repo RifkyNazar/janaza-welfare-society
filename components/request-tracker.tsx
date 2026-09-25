@@ -20,11 +20,11 @@ export function RequestTracker() {
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label htmlFor="requestCode" className="block text-sm font-semibold text-foreground">Request Code</label>
-            <input id="requestCode" name="requestCode" className={inputClass} maxLength={64} autoCapitalize="characters" autoComplete="off" placeholder="JWS-REQ-..." required />
+            <input key={state.values?.requestCode} id="requestCode" name="requestCode" className={`${inputClass} font-mono uppercase tracking-wide`} maxLength={64} autoCapitalize="characters" autoComplete="off" spellCheck={false} defaultValue={state.values?.requestCode} placeholder="JWS-REQ-..." required />
           </div>
           <div>
             <label htmlFor="mobileNumber" className="block text-sm font-semibold text-foreground">Mobile Number</label>
-            <input id="mobileNumber" name="mobileNumber" type="tel" inputMode="tel" autoComplete="tel" className={inputClass} maxLength={30} placeholder="Use the number you submitted" required />
+            <input key={state.values?.mobileNumber} id="mobileNumber" name="mobileNumber" type="tel" inputMode="tel" autoComplete="tel" className={inputClass} maxLength={30} defaultValue={state.values?.mobileNumber} placeholder="Use the number you submitted" required />
           </div>
         </div>
         {state.error && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{state.error}</p>}
@@ -50,7 +50,7 @@ function TrackingResult({ result }: { result: NonNullable<TrackRequestActionStat
 
   return (
     <section aria-live="polite" aria-labelledby="tracking-result-title" className="rounded-3xl border border-border bg-white p-5 shadow-[0_20px_60px_rgba(16,42,42,0.08)] sm:p-8">
-      <h2 id="tracking-result-title" className="text-2xl font-semibold text-foreground">Request Status</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3"><h2 id="tracking-result-title" className="text-2xl font-semibold text-foreground">Request Status</h2><span className="rounded-full bg-primary/20 px-4 py-2 text-sm font-semibold">{statusLabel(result.status)}</span></div>
       <dl className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
         {details.map(([label, value]) => <div key={label} className="bg-white p-4"><dt className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</dt><dd className="mt-1 break-words text-sm font-medium text-foreground">{value}</dd></div>)}
       </dl>

@@ -58,6 +58,7 @@ export const ModelName = {
   Vehicle: 'Vehicle',
   Donation: 'Donation',
   TaskAssignment: 'TaskAssignment',
+  Advertisement: 'Advertisement',
   TaskPhoto: 'TaskPhoto',
   Operation: 'Operation',
   OperationPhoto: 'OperationPhoto'
@@ -102,6 +103,7 @@ export const EmployeeProfileScalarFieldEnum = {
   duty: 'duty',
   photoUrl: 'photoUrl',
   isPublicProfile: 'isPublicProfile',
+  availability: 'availability',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -191,9 +193,15 @@ export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typ
 export const TaskAssignmentScalarFieldEnum = {
   id: 'id',
   requestId: 'requestId',
+  activeRequestId: 'activeRequestId',
   employeeId: 'employeeId',
+  assignedByUserId: 'assignedByUserId',
+  isActive: 'isActive',
   status: 'status',
+  assignedAt: 'assignedAt',
   acceptedAt: 'acceptedAt',
+  acknowledgedAt: 'acknowledgedAt',
+  unassignedAt: 'unassignedAt',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
   photosSubmittedAt: 'photosSubmittedAt',
@@ -202,6 +210,23 @@ export const TaskAssignmentScalarFieldEnum = {
 } as const
 
 export type TaskAssignmentScalarFieldEnum = (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum]
+
+
+export const AdvertisementScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  imageUrl: 'imageUrl',
+  description: 'description',
+  linkUrl: 'linkUrl',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  isActive: 'isActive',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdvertisementScalarFieldEnum = (typeof AdvertisementScalarFieldEnum)[keyof typeof AdvertisementScalarFieldEnum]
 
 
 export const TaskPhotoScalarFieldEnum = {
@@ -334,6 +359,17 @@ export const DonationOrderByRelevanceFieldEnum = {
 } as const
 
 export type DonationOrderByRelevanceFieldEnum = (typeof DonationOrderByRelevanceFieldEnum)[keyof typeof DonationOrderByRelevanceFieldEnum]
+
+
+export const AdvertisementOrderByRelevanceFieldEnum = {
+  id: 'id',
+  title: 'title',
+  imageUrl: 'imageUrl',
+  description: 'description',
+  linkUrl: 'linkUrl'
+} as const
+
+export type AdvertisementOrderByRelevanceFieldEnum = (typeof AdvertisementOrderByRelevanceFieldEnum)[keyof typeof AdvertisementOrderByRelevanceFieldEnum]
 
 
 export const TaskPhotoOrderByRelevanceFieldEnum = {

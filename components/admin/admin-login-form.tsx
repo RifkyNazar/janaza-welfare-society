@@ -13,7 +13,7 @@ export function AdminLoginForm() {
     <form action={formAction} className="space-y-5">
       <div>
         <label htmlFor="admin-email" className="block text-sm font-semibold text-foreground">Email</label>
-        <input id="admin-email" name="email" type="email" autoComplete="username" required className="employee-form-input mt-2" />
+        <input key={state.values?.email} id="admin-email" name="email" type="email" autoComplete="username" required defaultValue={state.values?.email} className="employee-form-input mt-2" />
       </div>
 
       <PasswordField id="admin-password" name="password" label="Password" autoComplete="current-password" />

@@ -404,6 +404,7 @@ export const ModelName = {
   Vehicle: 'Vehicle',
   Donation: 'Donation',
   TaskAssignment: 'TaskAssignment',
+  Advertisement: 'Advertisement',
   TaskPhoto: 'TaskPhoto',
   Operation: 'Operation',
   OperationPhoto: 'OperationPhoto'
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "taskPhoto" | "operation" | "operationPhoto"
+    modelProps: "user" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "operationPhoto"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -888,6 +889,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Advertisement: {
+      payload: Prisma.$AdvertisementPayload<ExtArgs>
+      fields: Prisma.AdvertisementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdvertisementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdvertisementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>
+        }
+        findFirst: {
+          args: Prisma.AdvertisementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdvertisementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>
+        }
+        findMany: {
+          args: Prisma.AdvertisementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>[]
+        }
+        create: {
+          args: Prisma.AdvertisementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>
+        }
+        createMany: {
+          args: Prisma.AdvertisementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.AdvertisementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>
+        }
+        update: {
+          args: Prisma.AdvertisementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdvertisementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdvertisementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.AdvertisementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdvertisementPayload>
+        }
+        aggregate: {
+          args: Prisma.AdvertisementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdvertisement>
+        }
+        groupBy: {
+          args: Prisma.AdvertisementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdvertisementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdvertisementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdvertisementCountAggregateOutputType> | number
+        }
+      }
+    }
     TaskPhoto: {
       payload: Prisma.$TaskPhotoPayload<ExtArgs>
       fields: Prisma.TaskPhotoFieldRefs
@@ -1148,6 +1215,7 @@ export const EmployeeProfileScalarFieldEnum = {
   duty: 'duty',
   photoUrl: 'photoUrl',
   isPublicProfile: 'isPublicProfile',
+  availability: 'availability',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1237,9 +1305,15 @@ export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typ
 export const TaskAssignmentScalarFieldEnum = {
   id: 'id',
   requestId: 'requestId',
+  activeRequestId: 'activeRequestId',
   employeeId: 'employeeId',
+  assignedByUserId: 'assignedByUserId',
+  isActive: 'isActive',
   status: 'status',
+  assignedAt: 'assignedAt',
   acceptedAt: 'acceptedAt',
+  acknowledgedAt: 'acknowledgedAt',
+  unassignedAt: 'unassignedAt',
   startedAt: 'startedAt',
   completedAt: 'completedAt',
   photosSubmittedAt: 'photosSubmittedAt',
@@ -1248,6 +1322,23 @@ export const TaskAssignmentScalarFieldEnum = {
 } as const
 
 export type TaskAssignmentScalarFieldEnum = (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum]
+
+
+export const AdvertisementScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  imageUrl: 'imageUrl',
+  description: 'description',
+  linkUrl: 'linkUrl',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  isActive: 'isActive',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdvertisementScalarFieldEnum = (typeof AdvertisementScalarFieldEnum)[keyof typeof AdvertisementScalarFieldEnum]
 
 
 export const TaskPhotoScalarFieldEnum = {
@@ -1382,6 +1473,17 @@ export const DonationOrderByRelevanceFieldEnum = {
 export type DonationOrderByRelevanceFieldEnum = (typeof DonationOrderByRelevanceFieldEnum)[keyof typeof DonationOrderByRelevanceFieldEnum]
 
 
+export const AdvertisementOrderByRelevanceFieldEnum = {
+  id: 'id',
+  title: 'title',
+  imageUrl: 'imageUrl',
+  description: 'description',
+  linkUrl: 'linkUrl'
+} as const
+
+export type AdvertisementOrderByRelevanceFieldEnum = (typeof AdvertisementOrderByRelevanceFieldEnum)[keyof typeof AdvertisementOrderByRelevanceFieldEnum]
+
+
 export const TaskPhotoOrderByRelevanceFieldEnum = {
   imageUrl: 'imageUrl',
   caption: 'caption'
@@ -1446,6 +1548,13 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'EmployeeAvailability'
+ */
+export type EnumEmployeeAvailabilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeeAvailability'>
     
 
 
@@ -1655,6 +1764,7 @@ export type GlobalOmitConfig = {
   vehicle?: Prisma.VehicleOmit
   donation?: Prisma.DonationOmit
   taskAssignment?: Prisma.TaskAssignmentOmit
+  advertisement?: Prisma.AdvertisementOmit
   taskPhoto?: Prisma.TaskPhotoOmit
   operation?: Prisma.OperationOmit
   operationPhoto?: Prisma.OperationPhotoOmit

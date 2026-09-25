@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
+import { redirectAuthenticatedUser } from "@/lib/permissions";
 import { BackButton } from "@/components/back-button";
 
 export const metadata: Metadata = { title: "Admin Login" };
 
-export default function AdminLoginPage() {
+export default async function AdminLoginPage() {
+  await redirectAuthenticatedUser();
   return (
     <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-white px-6 py-12">
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(69,232,205,0.16),transparent_24rem),radial-gradient(circle_at_88%_78%,rgba(168,245,232,0.2),transparent_25rem),linear-gradient(145deg,#fff_0%,#f4fffc_100%)]" />
