@@ -40,11 +40,7 @@ export function RegistrationForm() {
         {state.error && (
           <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{state.error}</p>
         )}
-        {state.success && (
-          <p role="status" className="mt-5 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-foreground">{state.success}</p>
-        )}
-
-        <button type="submit" disabled={isPending || Boolean(state.success)} className="mt-6 w-full rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(69,232,205,0.3)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none">
+        <button type="submit" disabled={isPending} className="mt-6 w-full rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(69,232,205,0.3)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none">
           {isPending ? "Submitting..." : "Submit Registration"}
         </button>
         <p className="mt-4 text-center text-xs leading-5 text-muted">

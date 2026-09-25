@@ -7,6 +7,7 @@ import { RequestStatusBadge } from "@/components/admin/request-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 import { categoryLabel, serviceSummary } from "@/lib/service-options";
+import { directionsUrl } from "@/lib/directions";
 
 export const metadata: Metadata = { title: "Service Request Details" };
 
@@ -22,11 +23,6 @@ function safeLocationUrl(value: string | null) {
     return null;
   }
 }
-function coordinateMapUrl(latitude: number | null, longitude: number | null) {
-  if (latitude === null || longitude === null || !Number.isFinite(latitude) || !Number.isFinite(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null;
-  return `https://www.google.com/maps?q=${encodeURIComponent(`${latitude},${longitude}`)}`;
-}
-
 function Details({ items }: { items: Array<[string, React.ReactNode]> }) {
   return (
     <dl className="mt-5 divide-y divide-border">
@@ -67,7 +63,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
   if (!request) notFound();
   const taskAssignment = request.taskAssignments[0];
   const locationUrl = safeLocationUrl(request.locationLink);
-  const mapUrl = coordinateMapUrl(request.latitude, request.longitude) ?? locationUrl;
+  const mapUrl = directionsUrl(request.latitude, request.longitude, [request.address, request.area].filter(Boolean).join(", ")) ?? locationUrl;
   const coordinates = request.latitude !== null && request.longitude !== null ? `${request.latitude}, ${request.longitude}` : null;
 
   return (
@@ -102,7 +98,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold">Location</h2>
-          <Details items={request.serviceCategory ? [["Location / Area", request.area], ["Coordinates", coordinates], ["Map", mapUrl ? <a key="location" href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Open Map</a> : null]] : [["Address", request.address], ["Area", request.area], ["Coordinates", coordinates], ["Map", mapUrl ? <a key="location" href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Open Map</a> : null], ["Hospital Name", request.hospitalName]]} />
+          <Details items={request.serviceCategory ? [["Location / Area", request.area], ["Coordinates", coordinates], ["Directions", mapUrl ? <a key="location" href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Get Directions</a> : null]] : [["Address", request.address], ["Area", request.area], ["Coordinates", coordinates], ["Directions", mapUrl ? <a key="location" href={mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Get Directions</a> : null], ["Hospital Name", request.hospitalName]]} />
         </section>
       </div>
 

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { requireAdminOrSupervisor } from "@/lib/permissions";
+import { requireAdmin, requireAdminOrSupervisor } from "@/lib/permissions";
 import { removeVehicleImage, storeVehicleImage, validateVehicleImage } from "@/lib/vehicle-image-storage";
 
 export type VehicleFormStateValues = { name: string; vehicleNumber: string; vehicleType: string; description: string; displayOrder: number; isActive: boolean; isPublic: boolean };
@@ -87,4 +87,32 @@ export async function updateVehicle(id: string, _state: VehicleActionState, form
 
 async function removeIfUnreferenced(imageUrl: string) {
   try { if (await prisma.vehicle.count({ where: { imageUrl } }) === 0) await removeVehicleImage(imageUrl); } catch { /* Cleanup must not invalidate a successful vehicle update. */ }
+}
+
+export async function deactivateVehicle(id: string, _state: VehicleActionState, _formData: FormData): Promise<VehicleActionState> {
+  void _state; void _formData;
+  await requireAdmin();
+  if (!id || id.length > 191) return { error: "Invalid vehicle." };
+  const result = await prisma.vehicle.updateMany({ where: { id }, data: { isActive: false, isPublic: false } });
+  if (result.count !== 1) return { error: "Vehicle not found." };
+  refresh(id);
+  return { success: "Vehicle deactivated and hidden from public view." };
+}
+
+export async function deleteVehicle(id: string, _state: VehicleActionState, _formData: FormData): Promise<VehicleActionState> {
+  void _state; void _formData;
+  await requireAdmin();
+  if (!id || id.length > 191) return { error: "Invalid vehicle." };
+  const vehicle = await prisma.vehicle.findUnique({ where: { id }, select: { imageUrl: true, _count: { select: { preferredRequests: true } } } });
+  if (!vehicle) return { error: "Vehicle not found." };
+  if (vehicle._count.preferredRequests > 0) return { error: "This vehicle is referenced by request history and cannot be permanently deleted. Deactivate it and hide it from public instead." };
+  try {
+    await prisma.vehicle.delete({ where: { id } });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") return { error: "This vehicle gained a historical reference and cannot be permanently deleted. Deactivate it instead." };
+    throw error;
+  }
+  await removeIfUnreferenced(vehicle.imageUrl ?? "");
+  refresh(id);
+  redirect("/admin/vehicles?deleted=1");
 }

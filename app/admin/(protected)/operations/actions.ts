@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 
 export type OperationFormStateValues = { title: string; shortDescription: string; description: string; serviceType: string; area: string; operationDate: string; photoIds: number[] };
-export type OperationActionState = { error?: string; values?: OperationFormStateValues };
+export type OperationActionState = { error?: string; success?: string; values?: OperationFormStateValues };
 const limits = { title: 191, shortDescription: 500, description: 10000, serviceType: 191, area: 191 } as const;
 
 function text(formData: FormData, name: string) {
@@ -56,7 +56,7 @@ export async function createOperation(taskId: number, _state: OperationActionSta
   });
   revalidatePath("/admin/operations");
   revalidatePath(`/admin/task-assignments/${taskId}`);
-  redirect(`/admin/operations/${operation.id}`);
+  redirect(`/admin/operations/${operation.id}?created=1`);
 }
 
 export async function updateOperation(operationId: number, _state: OperationActionState, formData: FormData): Promise<OperationActionState> {
@@ -77,7 +77,7 @@ export async function updateOperation(operationId: number, _state: OperationActi
     if (selectedIds.length) await transaction.operationPhoto.createMany({ data: selectedIds.map((taskPhotoId, displayOrder) => ({ operationId, taskPhotoId, displayOrder })) });
   });
   revalidateOperationPaths(operationId);
-  return {};
+  return { success: "Operation updated successfully." };
 }
 
 export async function setOperationPublished(operationId: number, publish: boolean, _state: OperationActionState, _formData: FormData): Promise<OperationActionState> {
@@ -93,7 +93,7 @@ export async function setOperationPublished(operationId: number, publish: boolea
   if (publish && operation.photos.some(({ taskPhoto }) => !taskPhoto.isApprovedForPublic)) return { error: "Remove or re-approve unapproved selected photos before publishing." };
   await prisma.operation.update({ where: { id: operationId }, data: { isPublished: publish, publishedAt: publish ? new Date() : null } });
   revalidateOperationPaths(operationId);
-  return {};
+  return { success: publish ? "Operation published successfully." : "Operation unpublished successfully." };
 }
 
 function revalidateOperationPaths(operationId: number) {

@@ -1,6 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 import { compare, hash } from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
 import { signIn } from "@/auth";
@@ -103,9 +104,7 @@ export async function registerEmployee(
     throw error;
   }
 
-  return {
-    success: "Registration submitted. Your account requires administrator approval before login.",
-  };
+  redirect("/employee-access/register/success");
 }
 
 export async function login(

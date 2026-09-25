@@ -11,6 +11,7 @@ import { submitPhotosForReview, uploadTaskPhoto } from "./photo-actions";
 import { prisma } from "@/lib/prisma";
 import { requireEmployee } from "@/lib/permissions";
 import { categoryLabel, serviceSummary } from "@/lib/service-options";
+import { directionsUrl } from "@/lib/directions";
 
 export const metadata: Metadata = { title: "Task Details" };
 const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
@@ -48,6 +49,7 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
   if (!task) notFound();
   const request = task.request;
   const locationUrl = safeUrl(request.locationLink);
+  const routeUrl = directionsUrl(request.latitude, request.longitude, [request.address, request.area].filter(Boolean).join(", ")) ?? locationUrl;
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -57,7 +59,7 @@ export default async function MyTaskDetailsPage({ params }: { params: Promise<{ 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Request</h2><Details items={request.serviceCategory ? [["Request Code", request.requestCode], ["Category", categoryLabel(request.serviceCategory)], ["Selected Services", serviceSummary(request.serviceType, request.serviceSelections)], ["Additional Note", request.note]] : [["Request Code", request.requestCode], ["Service Type", request.serviceType], ["Preferred Vehicle", request.preferredVehicle ? `${request.preferredVehicle.name} · ${request.preferredVehicle.vehicleNumber} · ${request.preferredVehicle.vehicleType}` : "No Preference"], ["Required Date", dateFormatter.format(request.requiredDate)], ["Required Time", request.requiredTime], ["Place Type", request.placeType], ["Note", request.note]]} /></section>
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Requester</h2><Details items={request.serviceCategory ? [["Name", request.requesterName], ["Contact Number", request.mobileNumber]] : [["Name", request.requesterName], ["Mobile Number", request.mobileNumber], ["Alternative Number", request.alternativeNumber], ["Relationship", request.relationshipToDeceased]]} /></section>
-        <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Location</h2><Details items={[["Address", request.address], ["Area", request.area], ["Selected Location", locationUrl ? <a key="map" href={locationUrl} target="_blank" rel="noreferrer" className="font-semibold underline decoration-primary decoration-2 underline-offset-4">Open Location in Maps</a> : null], ["Hospital Name", request.hospitalName]]} /></section>
+        <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Location</h2><Details items={[["Address", request.address], ["Area", request.area], ["Directions", routeUrl ? <a key="map" href={routeUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-5 font-semibold">Get Directions</a> : null], ["Hospital Name", request.hospitalName]]} /></section>
         <section className="rounded-2xl border border-border bg-white p-6"><h2 className="text-lg font-semibold">Task</h2><Details items={[["Task Status", task.status.replaceAll("_", " ")], ["Accepted At", dateTimeFormatter.format(task.acceptedAt)], ["Started At", task.startedAt ? dateTimeFormatter.format(task.startedAt) : null], ["Completed At", task.completedAt ? dateTimeFormatter.format(task.completedAt) : null]]} /></section>
       </div>
       <section className="mt-6 rounded-2xl border border-border bg-white p-6">

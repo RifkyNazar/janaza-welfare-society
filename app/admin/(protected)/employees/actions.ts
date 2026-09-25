@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 
@@ -64,10 +65,21 @@ export async function updateEmployeeStatus(
   return { success: "Employee account status updated." };
 }
 
-export async function updateOperationalRole(userId: number, formData: FormData) {
+export async function updateSupervisorAccess(userId: number, grant: boolean, _state: EmployeeActionState, _formData: FormData): Promise<EmployeeActionState> {
+  void _state; void _formData;
   await requireAdmin();
-  const role = formData.get("role");
-  if (!Number.isSafeInteger(userId) || userId <= 0 || (role !== "EMPLOYEE" && role !== "SUPERVISOR")) return;
-  await prisma.user.updateMany({ where: { id: userId, role: { in: ["EMPLOYEE", "SUPERVISOR"] } }, data: { role } });
-  revalidatePath("/admin/employees"); revalidatePath(`/admin/employees/${userId}`);
+  if (!Number.isSafeInteger(userId) || userId <= 0) return { error: "Invalid employee account." };
+  const currentRole = grant ? "EMPLOYEE" : "SUPERVISOR";
+  const nextRole = grant ? "SUPERVISOR" : "EMPLOYEE";
+  const result = await prisma.user.updateMany({
+    where: { id: userId, role: currentRole, status: "APPROVED", employeeProfile: { isNot: null } },
+    data: { role: nextRole },
+  });
+  if (result.count !== 1) return { error: grant ? "Only an approved employee can be promoted." : "Only an approved Supervisor can be demoted." };
+  revalidatePath("/admin");
+  revalidatePath("/admin/employees");
+  revalidatePath(`/admin/employees/${userId}`);
+  revalidatePath("/admin/supervisors");
+  revalidatePath("/supervisor");
+  redirect("/admin/supervisors?updated=1");
 }

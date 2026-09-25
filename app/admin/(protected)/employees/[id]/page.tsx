@@ -5,7 +5,6 @@ import { EmployeeActions } from "@/components/admin/employee-actions";
 import { EmployeeStatusBadge } from "@/components/admin/employee-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
-import { updateOperationalRole } from "../actions";
 
 export const metadata: Metadata = { title: "Employee Details" };
 
@@ -85,7 +84,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
         </div>
         <EmployeeActions userId={employee.id} status={employee.status} />
       </div>
-      <form action={updateOperationalRole.bind(null, employee.id)} className="mt-6 flex flex-col gap-3 rounded-2xl border border-border bg-white p-5 sm:flex-row sm:items-end"><div className="flex-1"><label htmlFor="role" className="text-sm font-semibold">Operational role</label><select id="role" name="role" defaultValue={employee.role} className="mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-4"><option value="EMPLOYEE">Employee</option><option value="SUPERVISOR">Supervisor</option></select></div><button className="min-h-12 rounded-xl bg-primary px-6 text-sm font-semibold">Update Role</button><p className="text-xs text-muted sm:max-w-xs">Only Admin can promote or demote Supervisor accounts. Public registration always creates an Employee.</p></form>
+      <div className="mt-6 rounded-2xl border border-border bg-white p-5 text-sm text-muted">Supervisor access is managed from the dedicated <a href="/admin/supervisors" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4">Supervisor Management</a> page with confirmation.</div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">

@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 
 const items = [
   { label: "Dashboard", href: "/admin", available: true },
+  { label: "View Website", href: "/", available: true },
+  { label: "Requests", href: "/admin/service-requests", available: true },
   { label: "Employees", href: "/admin/employees", available: true },
-  { label: "Service Requests", href: "/admin/service-requests", available: true },
+  { label: "Supervisors", href: "/admin/supervisors", available: true },
   { label: "Task Assignments", href: "/admin/task-assignments", available: true },
   { label: "Operations", href: "/admin/operations", available: true },
   { label: "Vehicles", href: "/admin/vehicles", available: true },
@@ -17,7 +19,7 @@ const items = [
 export function AdminNavigation({ mobile = false }: { mobile?: boolean }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Admin navigation" className={mobile ? "flex flex-wrap gap-2 px-4 pb-3" : "mt-8 space-y-2"}>
+    <nav aria-label="Admin navigation" className={mobile ? "grid grid-cols-2 gap-2 px-4 pb-3 sm:grid-cols-3" : "mt-8 space-y-2"}>
       {items.map((item) =>
         item.available ? (
           <Link key={item.label} href={item.href} aria-current={pathname === item.href || (item.href !== "/admin" && pathname.startsWith(`${item.href}/`)) ? "page" : undefined} className={`${mobile ? "" : "flex w-full"} items-center rounded-xl border px-4 py-3 text-sm font-semibold text-foreground transition ${pathname === item.href || (item.href !== "/admin" && pathname.startsWith(`${item.href}/`)) ? "border-primary/50 bg-primary/15" : "border-transparent hover:border-primary/40 hover:bg-light-background"}`}>

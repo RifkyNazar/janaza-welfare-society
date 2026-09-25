@@ -26,7 +26,7 @@ export async function OperationsPreview() {
             <span className="absolute left-4 top-4 rounded-full bg-foreground/85 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-wider text-primary backdrop-blur-sm">{operation.serviceType}</span>
           </div>
           <div className="p-5 sm:p-6"><p className="text-xs text-white/55">{date.format(operation.operationDate)} · {operation.area}</p><h3 className="mt-2 text-xl font-semibold leading-snug">{operation.title}</h3><p className="mt-3 line-clamp-2 text-sm leading-6 text-white/65">{operation.shortDescription}</p><span className="mt-5 inline-flex text-sm font-semibold text-primary">View activity →</span></div>
-        </Link>)}</div> : <div className="mt-10 rounded-3xl border border-white/15 px-6 py-12 text-center"><p className="font-semibold">Approved service activity will appear here.</p><p className="mt-2 text-sm text-white/60">There are no public operation updates yet.</p></div>}
+        </Link>)}</div> : <div className="mt-10 rounded-3xl border border-white/15 px-6 py-12 text-center"><p className="font-semibold">Updates from our community service activities will appear here.</p></div>}
     </div>
   </section>;
 }

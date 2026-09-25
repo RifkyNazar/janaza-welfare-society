@@ -8,7 +8,7 @@ import { vehicleImageSrc } from "@/lib/vehicle-image-storage";
 export const metadata: Metadata = { title: "Vehicles" };
 const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });
 
-export default async function AdminVehiclesPage({ searchParams }: { searchParams: Promise<{ status?: string; visibility?: string; q?: string }> }) {
+export default async function AdminVehiclesPage({ searchParams }: { searchParams: Promise<{ status?: string; visibility?: string; q?: string; deleted?: string }> }) {
   await requireAdmin();
   const parameters = await searchParams;
   const status = parameters.status === "active" || parameters.status === "inactive" ? parameters.status : "all";
@@ -25,6 +25,7 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
   const query = (nextStatus: string, nextVisibility: string) => `/admin/vehicles?status=${nextStatus}&visibility=${nextVisibility}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
   return <div className="mx-auto max-w-7xl">
     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-sm font-semibold text-primary">Fleet management</p><h1 className="mt-1 text-3xl font-semibold">Vehicles</h1><p className="mt-2 text-sm text-muted">Manage the society&apos;s real service vehicles and public visibility.</p></div><Link href="/admin/vehicles/new" className="rounded-full bg-primary px-6 py-3 text-center text-sm font-semibold">Add Vehicle</Link></div>
+    {parameters.deleted === "1" && <p role="status" aria-live="polite" className="mt-5 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm font-semibold">Vehicle deleted successfully.</p>}
     <div className="mt-7 rounded-2xl border border-border bg-white p-4">
       <div className="flex flex-wrap gap-2">{[["all","All"],["active","Active"],["inactive","Inactive"]].map(([key,label]) => <Link key={key} href={query(key, visibility)} className={`rounded-full px-4 py-2 text-sm font-semibold ${status === key ? "bg-primary" : "border border-border"}`}>{label}</Link>)}</div>
       <div className="mt-3 flex flex-wrap gap-2">{[["all","All visibility"],["public","Public"],["hidden","Hidden"]].map(([key,label]) => <Link key={key} href={query(status, key)} className={`rounded-full px-4 py-2 text-sm font-semibold ${visibility === key ? "bg-foreground text-white" : "border border-border"}`}>{label}</Link>)}</div>

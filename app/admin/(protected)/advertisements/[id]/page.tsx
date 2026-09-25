@@ -21,6 +21,7 @@ export default async function AdvertisementDetails({ params, searchParams }: { p
   return <div className="mx-auto max-w-4xl">
     <Link href="/admin/advertisements" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">Back to Advertisements</Link>
     {created && <p role="status" aria-live="polite" className="mt-5 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm font-semibold">✓ Advertisement created successfully.</p>}
+    {created && <div className="mt-3 flex flex-wrap gap-3"><Link href="/admin/advertisements" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">Back to Advertisements</Link><Link href="/admin" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">Dashboard</Link><Link href="/" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">View Website</Link></div>}
     <h1 className="mt-6 text-3xl font-semibold">{advertisement.title}</h1>
     <section id="preview" className="mt-5 rounded-2xl border border-border bg-light-background p-4 sm:p-6">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[.16em] text-muted">Homepage Preview</p>
