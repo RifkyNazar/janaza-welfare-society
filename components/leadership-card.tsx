@@ -24,13 +24,13 @@ export function LeadershipCard({ member, compact = false }: LeadershipCardProps)
 
   return (
     <article className="group h-full overflow-hidden rounded-2xl border border-border bg-white shadow-[0_10px_30px_rgba(16,42,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_16px_40px_rgba(69,232,205,0.16)] motion-reduce:transform-none motion-reduce:transition-none">
-      <div className={`relative overflow-hidden border-b border-border bg-light-background ${compact ? "aspect-[16/8]" : "aspect-[4/3]"}`}>
+      <div className="relative aspect-[4/5] overflow-hidden border-b border-border bg-light-background">
         {member.photoSrc && !imageFailed ? (
           <Image
             src={member.photoSrc}
             alt={`${member.name}, ${member.position}`}
             fill
-            className="object-cover"
+            className="object-cover object-center"
             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
             onError={() => setImageFailed(true)}
           />

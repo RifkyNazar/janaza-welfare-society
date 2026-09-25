@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 function ArrowIcon() {
   return <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" className="size-4"><path d="M4 10h12m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -30,17 +31,10 @@ export function HomeHero() {
           </div>
           <p className="mt-7 flex items-center gap-3 text-sm font-semibold text-muted"><span className="inline-flex size-3 rounded-full border-2 border-white bg-primary shadow-sm ring-4 ring-primary/20" aria-hidden="true" />Serving the Kattankudy Community</p>
         </div>
-        <div className="relative mx-auto w-full max-w-lg lg:mx-0" aria-label="Janaza Welfare Society community service">
-          <div className="absolute -inset-6 rounded-[3rem] border border-primary/20" aria-hidden="true" />
-          <div className="home-hero-visual relative aspect-[4/5] overflow-hidden rounded-t-[12rem] rounded-b-[2.5rem] border border-primary/30 bg-light-background shadow-[0_30px_80px_rgba(16,42,42,0.11)]">
-            <div className="absolute inset-x-10 top-12 h-px bg-gradient-to-r from-transparent via-primary to-transparent" aria-hidden="true" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center">
-              <div className="flex size-24 items-center justify-center rounded-t-full rounded-b-3xl border border-primary/50 bg-white shadow-[0_14px_40px_rgba(16,42,42,0.08)]" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" className="size-12 text-foreground"><path d="M17 50V28c0-8.3 6.7-15 15-15s15 6.7 15 15v22M10 50h44" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M25 50V35h14v15M32 7V3m-5 6 5 4 5-4" stroke="#45E8CD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
-              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.25em] text-muted">Compassion in service</p>
-              <p className="mt-3 max-w-xs text-2xl font-semibold leading-tight text-foreground">Dignity for every family. Care at every step.</p>
-            </div>
-            <span className="absolute -bottom-20 -left-16 size-64 rounded-full border-[3rem] border-primary/15" aria-hidden="true" />
-            <span className="absolute -right-10 top-1/3 size-28 rotate-45 border border-primary/25" aria-hidden="true" />
+        <div className="relative mx-auto w-full max-w-2xl lg:mx-0" aria-label="Janaza Welfare Society community service vehicles">
+          <div className="absolute -inset-4 rounded-[2rem] border border-primary/20" aria-hidden="true" />
+          <div className="relative aspect-[2/1] overflow-hidden rounded-3xl border border-primary/30 bg-white shadow-[0_30px_80px_rgba(16,42,42,0.11)]">
+            <Image src="/images/jws/home-hero.png" alt="Janaza Welfare Society service vehicles" fill preload sizes="(min-width: 1024px) 45vw, 100vw" className="object-contain" />
           </div>
         </div>
       </div>

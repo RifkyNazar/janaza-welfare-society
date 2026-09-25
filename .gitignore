@@ -44,5 +44,6 @@ next-env.d.ts
 # private local-development task photo storage
 /.data/task-photos/
 /.data/donation-receipts/
+/.data/vehicle-images/
 
 /app/generated/prisma

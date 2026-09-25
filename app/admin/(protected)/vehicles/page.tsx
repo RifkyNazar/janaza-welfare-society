@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { vehicleImageSrc } from "@/lib/vehicle-image-storage";
 
 export const metadata: Metadata = { title: "Vehicles" };
 const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });
@@ -30,7 +31,7 @@ export default async function AdminVehiclesPage({ searchParams }: { searchParams
       <form className="mt-4 flex gap-2"><input type="hidden" name="status" value={status} /><input type="hidden" name="visibility" value={visibility} /><input name="q" type="search" defaultValue={q} placeholder="Search name, number, or type" className="min-w-0 flex-1 rounded-xl border border-border px-4 py-3 outline-none focus:border-primary" /><button className="rounded-xl bg-foreground px-5 text-sm font-semibold text-white">Search</button></form>
     </div>
     <div className="mt-6 space-y-4">{vehicles.length ? vehicles.map((vehicle) => <article key={vehicle.id} className="grid gap-4 rounded-2xl border border-border bg-white p-5 md:grid-cols-[5rem_1.4fr_1fr_auto] md:items-center">
-      <div className="flex size-20 items-center justify-center overflow-hidden rounded-xl border border-border bg-light-background">{vehicle.imageUrl ? <Image unoptimized src={vehicle.imageUrl} alt="" width={160} height={120} className="h-full w-full object-cover" /> : <VehiclePlaceholder />}</div>
+      <div className="flex size-20 items-center justify-center overflow-hidden rounded-xl border border-border bg-light-background">{vehicle.imageUrl ? <Image unoptimized src={vehicleImageSrc(vehicle.id, vehicle.imageUrl)!} alt="" width={160} height={120} className="h-full w-full object-contain" /> : <VehiclePlaceholder />}</div>
       <div><div className="flex flex-wrap gap-2"><Badge active={vehicle.isActive} labels={["Active","Inactive"]} /><Badge active={vehicle.isPublic} labels={["Public","Hidden"]} /></div><h2 className="mt-3 text-lg font-semibold">{vehicle.name}</h2><p className="mt-1 text-sm text-muted">{vehicle.vehicleNumber} · {vehicle.vehicleType}</p></div>
       <div className="text-sm text-muted"><p>Display order: {vehicle.displayOrder}</p><p className="mt-1">Created {date.format(vehicle.createdAt)}</p><p className="mt-1">Updated {date.format(vehicle.updatedAt)}</p></div>
       <Link href={`/admin/vehicles/${vehicle.id}`} className="rounded-xl border border-border px-5 py-3 text-center text-sm font-semibold hover:border-primary">Manage</Link>
