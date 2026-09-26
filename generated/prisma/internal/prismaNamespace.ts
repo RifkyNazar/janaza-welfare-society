@@ -398,6 +398,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  StaffPushSubscription: 'StaffPushSubscription',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
   RequestServiceSelection: 'RequestServiceSelection',
@@ -423,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "operationPhoto"
+    modelProps: "user" | "staffPushSubscription" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "operationPhoto"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -490,6 +491,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    StaffPushSubscription: {
+      payload: Prisma.$StaffPushSubscriptionPayload<ExtArgs>
+      fields: Prisma.StaffPushSubscriptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StaffPushSubscriptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StaffPushSubscriptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>
+        }
+        findFirst: {
+          args: Prisma.StaffPushSubscriptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StaffPushSubscriptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>
+        }
+        findMany: {
+          args: Prisma.StaffPushSubscriptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>[]
+        }
+        create: {
+          args: Prisma.StaffPushSubscriptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>
+        }
+        createMany: {
+          args: Prisma.StaffPushSubscriptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.StaffPushSubscriptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>
+        }
+        update: {
+          args: Prisma.StaffPushSubscriptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.StaffPushSubscriptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StaffPushSubscriptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.StaffPushSubscriptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StaffPushSubscriptionPayload>
+        }
+        aggregate: {
+          args: Prisma.StaffPushSubscriptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStaffPushSubscription>
+        }
+        groupBy: {
+          args: Prisma.StaffPushSubscriptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffPushSubscriptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StaffPushSubscriptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StaffPushSubscriptionCountAggregateOutputType> | number
         }
       }
     }
@@ -1205,6 +1272,20 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const StaffPushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffPushSubscriptionScalarFieldEnum = (typeof StaffPushSubscriptionScalarFieldEnum)[keyof typeof StaffPushSubscriptionScalarFieldEnum]
+
+
 export const EmployeeProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1405,6 +1486,17 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const StaffPushSubscriptionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  userAgent: 'userAgent'
+} as const
+
+export type StaffPushSubscriptionOrderByRelevanceFieldEnum = (typeof StaffPushSubscriptionOrderByRelevanceFieldEnum)[keyof typeof StaffPushSubscriptionOrderByRelevanceFieldEnum]
 
 
 export const EmployeeProfileOrderByRelevanceFieldEnum = {
@@ -1758,6 +1850,7 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  staffPushSubscription?: Prisma.StaffPushSubscriptionOmit
   employeeProfile?: Prisma.EmployeeProfileOmit
   serviceRequest?: Prisma.ServiceRequestOmit
   requestServiceSelection?: Prisma.RequestServiceSelectionOmit

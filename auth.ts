@@ -3,9 +3,13 @@ import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import type { AccountStatus, UserRole } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { consumeRateLimit } from "@/lib/rate-limit";
+
+const INVALID_PASSWORD_HASH = "$2b$12$9Q4M4wJ0RnF4XG8it8tN9uPpXrCOJry09KQQZURawW9CrZdcNAcRi";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
+  useSecureCookies: process.env.NODE_ENV === "production",
   session: { strategy: "jwt" },
   pages: { signIn: "/employee-access/login" },
   providers: [
@@ -22,7 +26,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const password =
           typeof credentials.password === "string" ? credentials.password : "";
 
-        if (!identifier || !password) return null;
+        if (!identifier || !password || identifier.length > 191 || password.length > 128) return null;
+        const [clientLimit, accountLimit] = await Promise.all([
+          consumeRateLimit("credentials-client", { limit: 50, windowMs: 15 * 60_000 }),
+          consumeRateLimit("credentials-account", { limit: 12, windowMs: 15 * 60_000, discriminator: identifier }),
+        ]);
+        if (!clientLimit.allowed || !accountLimit.allowed) return null;
 
         const user = await prisma.user.findFirst({
           where: {
@@ -34,7 +43,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           include: { employeeProfile: true },
         });
 
-        if (!user || !(await compare(password, user.passwordHash))) return null;
+        const passwordMatches = await compare(password, user?.passwordHash ?? INVALID_PASSWORD_HASH);
+        if (!user || !passwordMatches) return null;
         if (user.status !== "APPROVED") return null;
 
         return {

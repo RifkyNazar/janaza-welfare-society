@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  StaffPushSubscription: 'StaffPushSubscription',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
   RequestServiceSelection: 'RequestServiceSelection',
@@ -91,6 +92,20 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const StaffPushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StaffPushSubscriptionScalarFieldEnum = (typeof StaffPushSubscriptionScalarFieldEnum)[keyof typeof StaffPushSubscriptionScalarFieldEnum]
 
 
 export const EmployeeProfileScalarFieldEnum = {
@@ -293,6 +308,17 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const StaffPushSubscriptionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  userAgent: 'userAgent'
+} as const
+
+export type StaffPushSubscriptionOrderByRelevanceFieldEnum = (typeof StaffPushSubscriptionOrderByRelevanceFieldEnum)[keyof typeof StaffPushSubscriptionOrderByRelevanceFieldEnum]
 
 
 export const EmployeeProfileOrderByRelevanceFieldEnum = {

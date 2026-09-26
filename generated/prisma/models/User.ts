@@ -236,6 +236,7 @@ export type UserWhereInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoListRelationFilter
   donationsReviewed?: Prisma.DonationListRelationFilter
   assignmentsCreated?: Prisma.TaskAssignmentListRelationFilter
+  pushSubscriptions?: Prisma.StaffPushSubscriptionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -250,6 +251,7 @@ export type UserOrderByWithRelationInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoOrderByRelationAggregateInput
   donationsReviewed?: Prisma.DonationOrderByRelationAggregateInput
   assignmentsCreated?: Prisma.TaskAssignmentOrderByRelationAggregateInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
@@ -268,6 +270,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   taskPhotosReviewed?: Prisma.TaskPhotoListRelationFilter
   donationsReviewed?: Prisma.DonationListRelationFilter
   assignmentsCreated?: Prisma.TaskAssignmentListRelationFilter
+  pushSubscriptions?: Prisma.StaffPushSubscriptionListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -309,6 +312,7 @@ export type UserCreateInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -323,6 +327,7 @@ export type UserUncheckedCreateInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -336,6 +341,7 @@ export type UserUpdateInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -350,6 +356,7 @@ export type UserUncheckedUpdateInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -459,6 +466,20 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type UserCreateNestedOneWithoutPushSubscriptionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPushSubscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushSubscriptionsInput
+  upsert?: Prisma.UserUpsertWithoutPushSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, Prisma.UserUpdateWithoutPushSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+}
+
 export type UserCreateNestedOneWithoutEmployeeProfileInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutEmployeeProfileInput, Prisma.UserUncheckedCreateWithoutEmployeeProfileInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmployeeProfileInput
@@ -521,6 +542,76 @@ export type UserUpdateOneWithoutTaskPhotosReviewedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaskPhotosReviewedInput, Prisma.UserUpdateWithoutTaskPhotosReviewedInput>, Prisma.UserUncheckedUpdateWithoutTaskPhotosReviewedInput>
 }
 
+export type UserCreateWithoutPushSubscriptionsInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  status?: $Enums.AccountStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
+  taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
+  donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
+  assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+}
+
+export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  status?: $Enums.AccountStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
+  donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
+  assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+}
+
+export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+}
+
+export type UserUpsertWithoutPushSubscriptionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPushSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPushSubscriptionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPushSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+}
+
+export type UserUpdateWithoutPushSubscriptionsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
+  donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
+  assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
+  donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+}
+
 export type UserCreateWithoutEmployeeProfileInput = {
   email: string
   passwordHash: string
@@ -531,6 +622,7 @@ export type UserCreateWithoutEmployeeProfileInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmployeeProfileInput = {
@@ -544,6 +636,7 @@ export type UserUncheckedCreateWithoutEmployeeProfileInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmployeeProfileInput = {
@@ -572,6 +665,7 @@ export type UserUpdateWithoutEmployeeProfileInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
@@ -585,6 +679,7 @@ export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDonationsReviewedInput = {
@@ -597,6 +692,7 @@ export type UserCreateWithoutDonationsReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDonationsReviewedInput = {
@@ -610,6 +706,7 @@ export type UserUncheckedCreateWithoutDonationsReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDonationsReviewedInput = {
@@ -638,6 +735,7 @@ export type UserUpdateWithoutDonationsReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDonationsReviewedInput = {
@@ -651,6 +749,7 @@ export type UserUncheckedUpdateWithoutDonationsReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAssignmentsCreatedInput = {
@@ -663,6 +762,7 @@ export type UserCreateWithoutAssignmentsCreatedInput = {
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignmentsCreatedInput = {
@@ -676,6 +776,7 @@ export type UserUncheckedCreateWithoutAssignmentsCreatedInput = {
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignmentsCreatedInput = {
@@ -704,6 +805,7 @@ export type UserUpdateWithoutAssignmentsCreatedInput = {
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignmentsCreatedInput = {
@@ -717,6 +819,7 @@ export type UserUncheckedUpdateWithoutAssignmentsCreatedInput = {
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTaskPhotosReviewedInput = {
@@ -729,6 +832,7 @@ export type UserCreateWithoutTaskPhotosReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTaskPhotosReviewedInput = {
@@ -742,6 +846,7 @@ export type UserUncheckedCreateWithoutTaskPhotosReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTaskPhotosReviewedInput = {
@@ -770,6 +875,7 @@ export type UserUpdateWithoutTaskPhotosReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskPhotosReviewedInput = {
@@ -783,6 +889,7 @@ export type UserUncheckedUpdateWithoutTaskPhotosReviewedInput = {
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -794,12 +901,14 @@ export type UserCountOutputType = {
   taskPhotosReviewed: number
   donationsReviewed: number
   assignmentsCreated: number
+  pushSubscriptions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   taskPhotosReviewed?: boolean | UserCountOutputTypeCountTaskPhotosReviewedArgs
   donationsReviewed?: boolean | UserCountOutputTypeCountDonationsReviewedArgs
   assignmentsCreated?: boolean | UserCountOutputTypeCountAssignmentsCreatedArgs
+  pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
 }
 
 /**
@@ -833,6 +942,13 @@ export type UserCountOutputTypeCountAssignmentsCreatedArgs<ExtArgs extends runti
   where?: Prisma.TaskAssignmentWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StaffPushSubscriptionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -846,6 +962,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   taskPhotosReviewed?: boolean | Prisma.User$taskPhotosReviewedArgs<ExtArgs>
   donationsReviewed?: boolean | Prisma.User$donationsReviewedArgs<ExtArgs>
   assignmentsCreated?: boolean | Prisma.User$assignmentsCreatedArgs<ExtArgs>
+  pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -867,6 +984,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   taskPhotosReviewed?: boolean | Prisma.User$taskPhotosReviewedArgs<ExtArgs>
   donationsReviewed?: boolean | Prisma.User$donationsReviewedArgs<ExtArgs>
   assignmentsCreated?: boolean | Prisma.User$assignmentsCreatedArgs<ExtArgs>
+  pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -877,6 +995,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     taskPhotosReviewed: Prisma.$TaskPhotoPayload<ExtArgs>[]
     donationsReviewed: Prisma.$DonationPayload<ExtArgs>[]
     assignmentsCreated: Prisma.$TaskAssignmentPayload<ExtArgs>[]
+    pushSubscriptions: Prisma.$StaffPushSubscriptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1230,6 +1349,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   taskPhotosReviewed<T extends Prisma.User$taskPhotosReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$taskPhotosReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   donationsReviewed<T extends Prisma.User$donationsReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$donationsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignmentsCreated<T extends Prisma.User$assignmentsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignmentsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pushSubscriptions<T extends Prisma.User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1702,6 +1822,30 @@ export type User$assignmentsCreatedArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
+}
+
+/**
+ * User.pushSubscriptions
+ */
+export type User$pushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffPushSubscription
+   */
+  select?: Prisma.StaffPushSubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffPushSubscription
+   */
+  omit?: Prisma.StaffPushSubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffPushSubscriptionInclude<ExtArgs> | null
+  where?: Prisma.StaffPushSubscriptionWhereInput
+  orderBy?: Prisma.StaffPushSubscriptionOrderByWithRelationInput | Prisma.StaffPushSubscriptionOrderByWithRelationInput[]
+  cursor?: Prisma.StaffPushSubscriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StaffPushSubscriptionScalarFieldEnum | Prisma.StaffPushSubscriptionScalarFieldEnum[]
 }
 
 /**

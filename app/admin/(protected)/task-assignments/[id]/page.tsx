@@ -8,16 +8,12 @@ import { PhotoReviewAction } from "@/components/admin/photo-review-action";
 import { reviewTaskPhoto } from "../photo-actions";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { trustedMapUrl } from "@/lib/directions";
 
 export const metadata: Metadata = { title: "Task Assignment Details" };
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-
-function safeLocationUrl(value: string | null) {
-  if (!value) return null;
-  try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:" ? value : null; } catch { return null; }
-}
 
 function Details({ items }: { items: Array<[string, React.ReactNode]> }) {
   return <dl className="mt-5 divide-y divide-border">{items.map(([label, value]) => <div key={label} className="grid gap-1 py-3 sm:grid-cols-[10rem_1fr]"><dt className="text-xs font-semibold uppercase tracking-wider text-muted">{label}</dt><dd className="break-words text-sm">{value || "—"}</dd></div>)}</dl>;
@@ -36,7 +32,7 @@ export default async function TaskAssignmentDetailsPage({ params }: { params: Pr
   });
   if (!assignment) notFound();
   const request = assignment.request;
-  const locationUrl = safeLocationUrl(request.locationLink);
+  const locationUrl = trustedMapUrl(request.locationLink);
 
   return (
     <div className="mx-auto max-w-6xl">

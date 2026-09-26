@@ -5,6 +5,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createDonationConfirmationPdf } from "@/lib/donation-confirmation-pdf";
 import { removeDonationReceipt, safeReceiptFileName, storeDonationReceipt, validateDonationReceipt } from "@/lib/donation-receipt-storage";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type DonationValues = { fullName: string; mobileNumber: string; amount: string; transferDate: string; bankReference: string; note: string };
 export type DonationActionState = { error?: string; referenceCode?: string; pdfBase64?: string; values?: DonationValues };
@@ -17,6 +18,8 @@ export async function submitDonationConfirmation(_state: DonationActionState, fo
   const fullName = text(formData, "fullName"), mobileNumber = text(formData, "mobileNumber"), amountInput = text(formData, "amount"), transferDateInput = text(formData, "transferDate"), bankReference = text(formData, "bankReference"), note = text(formData, "note");
   const receiptEntry = formData.get("receipt");
   const values = { fullName, mobileNumber, amount: amountInput, transferDate: transferDateInput, bankReference, note };
+  const rateLimit = await consumeRateLimit("donation-confirmation", { limit: 5, windowMs: 60 * 60_000 });
+  if (!rateLimit.allowed) return { error: "Too many submissions were received from this connection. Please try again later.", values };
   if (!fullName || !mobileNumber || !amountInput || !transferDateInput) return { error: "Please complete all required fields.", values };
   if (fullName.length > limits.fullName || mobileNumber.length > limits.mobileNumber || bankReference.length > limits.bankReference || note.length > limits.note) return { error: "One or more fields exceed the allowed length.", values };
   if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please enter a valid mobile number.", values };

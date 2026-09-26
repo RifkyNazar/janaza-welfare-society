@@ -7,6 +7,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { notifyAdminsOfEmployeeRegistration } from "@/lib/notifications";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type AuthActionState = {
   error?: string;
@@ -15,6 +16,7 @@ export type AuthActionState = {
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const INVALID_PASSWORD_HASH = "$2b$12$9Q4M4wJ0RnF4XG8it8tN9uPpXrCOJry09KQQZURawW9CrZdcNAcRi";
 
 function value(formData: FormData, name: string) {
   const field = formData.get(name);
@@ -34,28 +36,26 @@ export async function registerEmployee(
   const confirmPassword = value(formData, "confirmPassword");
   const values = { fullName, employeeCode, position, phone, email, confirmation: formData.get("confirmation") === "on" };
 
+  const rateLimit = await consumeRateLimit("employee-registration", { limit: 5, windowMs: 60 * 60_000 });
+  if (!rateLimit.allowed) return { error: "Too many registration attempts. Please try again later.", values };
+
   if (!fullName || !employeeCode || !position || !phone || !email || !password || !confirmPassword) {
     return { error: "Please complete all required fields.", values };
   }
   if (!emailPattern.test(email)) {
     return { error: "Please enter a valid email address.", values };
   }
+  if (fullName.length > 150 || employeeCode.length > 64 || position.length > 150 || phone.length > 30 || email.length > 191 || password.length > 128) {
+    return { error: "One or more fields exceed the allowed length.", values };
+  }
+  if (!/^[A-Za-z0-9_-]{2,64}$/.test(employeeCode) || !/^[+]?[0-9][0-9\s-]{7,20}$/.test(phone)) {
+    return { error: "Please enter a valid employee ID and phone number.", values };
+  }
   if (password.length < 12) {
     return { error: "Password must be at least 12 characters.", values };
   }
   if (password !== confirmPassword) {
     return { error: "Passwords do not match.", values };
-  }
-
-  const duplicate = await prisma.user.findFirst({
-    where: {
-      OR: [{ email }, { employeeProfile: { is: { employeeCode } } }],
-    },
-    select: { id: true },
-  });
-
-  if (duplicate) {
-    return { error: "That email or employee ID is already registered.", values };
   }
 
   const passwordHash = await hash(password, 12);
@@ -95,11 +95,11 @@ export async function registerEmployee(
         registeredAt: employee.createdAt,
       });
     } catch {
-      console.error("[email] Employee registration notification failed after registration completed.");
+      console.error("[notifications] Employee registration notification failed after registration completed.");
     }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return { error: "That email or employee ID is already registered.", values };
+      return { error: "Unable to complete registration with those details.", values };
     }
     throw error;
   }
@@ -115,7 +115,10 @@ export async function login(
   const password = value(formData, "password");
   const values = { identifier };
 
-  if (!identifier || !password) {
+  const rateLimit = await consumeRateLimit("employee-login", { limit: 10, windowMs: 15 * 60_000, discriminator: identifier });
+  if (!rateLimit.allowed) return { error: "Too many login attempts. Please try again later.", values };
+
+  if (!identifier || !password || identifier.length > 191 || password.length > 128) {
     return { error: "Enter your email or employee ID and password.", values };
   }
 
@@ -129,14 +132,12 @@ export async function login(
     select: { passwordHash: true, role: true, status: true },
   });
 
-  if (!user || !(await compare(password, user.passwordHash))) {
+  const passwordMatches = await compare(password, user?.passwordHash ?? INVALID_PASSWORD_HASH);
+  if (!user || !passwordMatches) {
     return { error: "Invalid login credentials.", values };
   }
-  if (user.status === "PENDING") {
-    return { error: "Your account is awaiting administrator approval.", values };
-  }
   if (user.status !== "APPROVED") {
-    return { error: "Access to this account is unavailable.", values };
+    return { error: "Invalid login credentials.", values };
   }
 
   try {
@@ -164,7 +165,10 @@ export async function adminLogin(
   const password = typeof passwordField === "string" ? passwordField : "";
   const values = { email };
 
-  if (!email || !password) {
+  const rateLimit = await consumeRateLimit("admin-login", { limit: 10, windowMs: 15 * 60_000, discriminator: email });
+  if (!rateLimit.allowed) return { error: "Too many login attempts. Please try again later.", values };
+
+  if (!email || !password || email.length > 191 || password.length > 128) {
     return { error: "Enter your email and password.", values };
   }
 
@@ -173,9 +177,10 @@ export async function adminLogin(
     select: { passwordHash: true, role: true, status: true },
   });
 
+  const passwordMatches = await compare(password, user?.passwordHash ?? INVALID_PASSWORD_HASH);
   if (
     !user ||
-    !(await compare(password, user.passwordHash)) ||
+    !passwordMatches ||
     user.role !== "ADMIN" ||
     user.status !== "APPROVED"
   ) {

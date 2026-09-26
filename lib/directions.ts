@@ -3,3 +3,14 @@ export function directionsUrl(latitude: number | null, longitude: number | null,
   const destination = validCoordinates ? `${latitude},${longitude}` : locationText?.trim();
   return destination ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}` : null;
 }
+
+export function trustedMapUrl(value: string | null) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    const googleHost = url.hostname === "google.com" || url.hostname.endsWith(".google.com");
+    return url.protocol === "https:" && (googleHost || url.hostname === "maps.app.goo.gl") ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}

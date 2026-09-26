@@ -40,7 +40,7 @@ export default async function TaskAssignmentsPage({ searchParams }: { searchPara
           ],
         } : {}),
       },
-      orderBy: { acceptedAt: "desc" },
+      orderBy: [{ request: { createdAt: "desc" } }, { requestId: "desc" }, { id: "desc" }],
       select: {
         id: true,
         status: true,

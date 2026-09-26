@@ -37,7 +37,7 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
         ],
       } : {}),
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     select: {
       id: true,
       requestCode: true,

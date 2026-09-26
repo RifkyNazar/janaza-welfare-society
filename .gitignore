@@ -41,9 +41,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# private local-development task photo storage
-/.data/task-photos/
-/.data/donation-receipts/
-/.data/vehicle-images/
+# Runtime uploads are private deployment data, not source files.
+/.data/
 
 /app/generated/prisma

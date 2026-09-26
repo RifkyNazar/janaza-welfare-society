@@ -2,6 +2,7 @@
 
 import type { ServiceRequestStatus } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type PublicTrackingResult = {
   requestCode: string;
@@ -38,6 +39,9 @@ export async function trackServiceRequest(
   const requestCode = text(formData, "requestCode");
   const mobileNumber = text(formData, "mobileNumber");
   const values = { requestCode, mobileNumber };
+
+  const rateLimit = await consumeRateLimit("request-tracking", { limit: 20, windowMs: 15 * 60_000 });
+  if (!rateLimit.allowed) return { error: "Too many tracking attempts. Please try again later.", values };
 
   if (!requestCode || !mobileNumber) {
     return { error: "Please enter your request code and mobile number.", values };

@@ -7,22 +7,13 @@ import { RequestStatusBadge } from "@/components/admin/request-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 import { categoryLabel, serviceSummary } from "@/lib/service-options";
-import { directionsUrl } from "@/lib/directions";
+import { directionsUrl, trustedMapUrl } from "@/lib/directions";
 
 export const metadata: Metadata = { title: "Service Request Details" };
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
-function safeLocationUrl(value: string | null) {
-  if (!value) return null;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? value : null;
-  } catch {
-    return null;
-  }
-}
 function Details({ items }: { items: Array<[string, React.ReactNode]> }) {
   return (
     <dl className="mt-5 divide-y divide-border">
@@ -62,7 +53,7 @@ export default async function ServiceRequestDetailsPage({ params }: { params: Pr
 
   if (!request) notFound();
   const taskAssignment = request.taskAssignments[0];
-  const locationUrl = safeLocationUrl(request.locationLink);
+  const locationUrl = trustedMapUrl(request.locationLink);
   const mapUrl = directionsUrl(request.latitude, request.longitude, [request.address, request.area].filter(Boolean).join(", ")) ?? locationUrl;
   const coordinates = request.latitude !== null && request.longitude !== null ? `${request.latitude}, ${request.longitude}` : null;
 

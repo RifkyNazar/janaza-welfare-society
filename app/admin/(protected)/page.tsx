@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { PushNotificationControl } from "@/components/push-notification-control";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 
@@ -35,7 +36,7 @@ export default async function AdminDashboardPage() {
     }),
     prisma.serviceRequest.findMany({
       take: 5,
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       select: {
         requestCode: true,
         requesterName: true,
@@ -71,6 +72,8 @@ export default async function AdminDashboardPage() {
           </article>
         ))}
       </section>
+
+      <PushNotificationControl vapidPublicKey={process.env.NEXT_PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY?.trim() ?? ""} />
 
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
         <section className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_10px_30px_rgba(16,42,42,0.04)]">

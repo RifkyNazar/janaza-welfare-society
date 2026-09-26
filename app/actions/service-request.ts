@@ -5,7 +5,8 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createRequestConfirmationPdf } from "@/lib/request-confirmation-pdf";
 import { validateServiceSelection } from "@/lib/service-options";
-import { notifyStaffOfNewServiceRequest } from "@/lib/notifications";
+import { notifySupervisorsOfNewServiceRequest } from "@/lib/notifications";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type ServiceRequestFormValues = { requesterName: string; mobileNumber: string; area: string; note: string; category: string; serviceCodes: string[]; latitude: string; longitude: string };
 export type ServiceRequestActionState = { error?: string; fieldErrors?: Partial<Record<"requesterName" | "mobileNumber" | "area" | "services" | "location", string>>; requestCode?: string; status?: "NEW"; pdfBase64?: string; selectedServices?: string[]; values?: ServiceRequestFormValues };
@@ -23,8 +24,10 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
   const submittedCodes = formData.getAll("serviceCodes").filter((value): value is string => typeof value === "string");
   const latitudeInput = text(formData, "latitude"); const longitudeInput = text(formData, "longitude");
   const values = { requesterName, mobileNumber, area, note, category, serviceCodes: submittedCodes, latitude: latitudeInput, longitude: longitudeInput };
+  const rateLimit = await consumeRateLimit("service-request", { limit: 10, windowMs: 60 * 60_000 });
+  if (!rateLimit.allowed) return { error: "Too many requests were submitted from this connection. Please try again later.", values };
   if (!requesterName || !mobileNumber || !area) return { error: "Please correct the highlighted fields.", fieldErrors: { ...(!requesterName ? { requesterName: "Enter your name." } : {}), ...(!mobileNumber ? { mobileNumber: "Enter your contact number." } : {}), ...(!area ? { area: "Enter your location or area." } : {}) }, values };
-  if (requesterName.length > 150 || mobileNumber.length > 30 || area.length > 150 || note.length > 2000) return { error: "One or more fields exceed the allowed length.", values };
+  if (requesterName.length > 150 || mobileNumber.length > 30 || area.length > 150 || note.length > 2000 || submittedCodes.length > 10 || submittedCodes.some((code) => code.length > 64) || latitudeInput.length > 50 || longitudeInput.length > 50) return { error: "One or more fields exceed the allowed length.", values };
   if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please correct the highlighted field.", fieldErrors: { mobileNumber: "Enter a valid contact number." }, values };
   const selectedServices = validateServiceSelection(category, submittedCodes);
   if (!selectedServices) return { error: category === "VEHICLE" ? "Please select exactly one valid vehicle service." : "Please select one or more valid Janazah services.", values };
@@ -51,7 +54,7 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
         include: { serviceSelections: { orderBy: { id: "asc" } } },
       }));
       try {
-        await notifyStaffOfNewServiceRequest({
+        await notifySupervisorsOfNewServiceRequest({
           requestId: created.id,
           requestCode: created.requestCode,
           category: category === "JANAZAH" ? "Janazah Services" : "Vehicle Services",
@@ -60,7 +63,7 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
           submittedAt: created.createdAt,
         });
       } catch {
-        console.error("[email] Service request notification failed after request creation completed.");
+        console.error("[notifications] Service request notification failed after request creation completed.");
       }
       try {
         const pdf = await createRequestConfirmationPdf(created);

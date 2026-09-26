@@ -12,7 +12,7 @@ export default async function MyTasksPage() {
   const profileId = session.user.employeeProfileId;
   const tasks = profileId ? await prisma.taskAssignment.findMany({
     where: { employeeId: profileId, isActive: true, status: { in: ["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS"] } },
-    orderBy: { assignedAt: "desc" },
+    orderBy: [{ request: { createdAt: "desc" } }, { requestId: "desc" }, { id: "desc" }],
     select: { id: true, status: true, acceptedAt: true, request: { select: { requestCode: true, serviceType: true, area: true, requiredDate: true } } },
   }) : [];
 
