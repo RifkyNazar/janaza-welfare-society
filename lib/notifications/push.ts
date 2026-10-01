@@ -81,3 +81,17 @@ export async function sendPushToApprovedUser(userId: number, role: UserRole, pay
     console.error("[push] Notification delivery failed.");
   }
 }
+
+export async function sendPushToApprovedUsers(userIds: number[], payload: SafePushPayload) {
+  const uniqueUserIds = [...new Set(userIds.filter((id) => Number.isSafeInteger(id) && id > 0))];
+  if (!uniqueUserIds.length) return;
+  try {
+    const subscriptions = await prisma.staffPushSubscription.findMany({
+      where: { userId: { in: uniqueUserIds }, user: { status: "APPROVED" } },
+      select: { id: true, endpoint: true, p256dh: true, auth: true },
+    });
+    await deliver(subscriptions, payload);
+  } catch {
+    console.error("[push] Notification delivery failed.");
+  }
+}

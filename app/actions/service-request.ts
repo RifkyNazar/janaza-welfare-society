@@ -5,7 +5,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createRequestConfirmationPdf } from "@/lib/request-confirmation-pdf";
 import { validateServiceSelection } from "@/lib/service-options";
-import { notifySupervisorsOfNewServiceRequest } from "@/lib/notifications";
+import { notifyStaffOfNewServiceRequest } from "@/lib/notifications";
 import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type ServiceRequestFormValues = { requesterName: string; mobileNumber: string; area: string; note: string; category: string; serviceCodes: string[]; latitude: string; longitude: string };
@@ -54,14 +54,14 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
         include: { serviceSelections: { orderBy: { id: "asc" } } },
       }));
       try {
-        await notifySupervisorsOfNewServiceRequest({
+        await notifyStaffOfNewServiceRequest({
           requestId: created.id,
           requestCode: created.requestCode,
           category: category === "JANAZAH" ? "Janazah Services" : "Vehicle Services",
           services: created.serviceSelections.map((service) => service.serviceLabel),
           area: created.area,
           submittedAt: created.createdAt,
-        });
+        }, created.mobileNumber);
       } catch {
         console.error("[notifications] Service request notification failed after request creation completed.");
       }
