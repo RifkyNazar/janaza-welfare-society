@@ -61,9 +61,12 @@ body {
     font-size: 1rem;
   }
 
-  button:not(.leaflet-control-zoom-in):not(.leaflet-control-zoom-out),
-  a[class*="rounded"] {
-    min-height: 2.75rem;
+  /* A touch-target floor must not override taller card/button utilities. */
+  @layer base {
+    button:not(.leaflet-control-zoom-in):not(.leaflet-control-zoom-out),
+    a[class*="rounded"] {
+      min-height: 2.75rem;
+    }
   }
 
   .jws-portal main .flex:not(.flex-col):not(.overflow-x-auto) {
