@@ -22,9 +22,9 @@ export function CancelRequestAction({ action }: CancelRequestActionProps) {
   }
 
   return (
-    <form action={formAction} className="min-w-56 rounded-xl border border-red-200 bg-red-50 p-3">
+    <form action={formAction} className="min-w-0 w-full sm:min-w-56 rounded-xl border border-red-200 bg-red-50 p-3">
       <p className="mb-3 text-xs font-medium text-red-900">Cancel this service request?</p>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button type="button" onClick={() => setIsConfirming(false)} className="rounded-lg border border-border bg-white px-3 py-2 text-xs font-semibold">Keep Request</button>
         <button type="submit" disabled={isPending} className="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60">{isPending ? "Cancelling..." : "Cancel Request"}</button>
       </div>

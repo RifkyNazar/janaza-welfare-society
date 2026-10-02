@@ -13,7 +13,7 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0777378753",
     responsibility:
       "Leads all administrative and service activities of the organization and guides the organization toward achieving its objectives and plans.",
-    photoSrc: "/images/jws/leadership/president.png",
+    photoSrc: "/images/jws/leadership/treasurer.png",
   },
   {
     position: "Secretary",
@@ -21,7 +21,7 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0774203109",
     responsibility:
       "Handles administrative and coordination activities, including meetings, documentation, and official communications.",
-    photoSrc: "/images/jws/leadership/secretary.png",
+    photoSrc: "/images/jws/leadership/president.png",
   },
   {
     position: "Treasurer",
@@ -29,6 +29,6 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0775525806",
     responsibility:
       "Manages the organization's income and expenses, maintains financial records and documents, and ensures financial transparency.",
-    photoSrc: "/images/jws/leadership/treasurer.png",
+    photoSrc: "/images/jws/leadership/secretary.png",
   },
 ];

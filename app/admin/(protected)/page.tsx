@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
             ) : recentEmployees.map((employee) => (
               <div key={employee.employeeCode} className="flex items-start justify-between gap-4 px-5 py-4">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{employee.fullName}</p>
+                  <p className="break-words text-sm font-semibold">{employee.fullName}</p>
                   <p className="mt-1 text-xs text-muted">{employee.employeeCode} · {dateFormatter.format(employee.createdAt)}</p>
                 </div>
                 <StatusBadge status={employee.user.status} />
@@ -105,7 +105,7 @@ export default async function AdminDashboardPage() {
             ) : recentRequests.map((request) => (
               <div key={request.requestCode} className="flex items-start justify-between gap-4 px-5 py-4">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{request.requesterName}</p>
+                  <p className="break-words text-sm font-semibold">{request.requesterName}</p>
                   <p className="mt-1 text-xs text-muted">{request.requestCode} · {request.area} · {dateFormatter.format(request.createdAt)}</p>
                 </div>
                 <StatusBadge status={request.status} />

@@ -26,6 +26,66 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Allow real content (names, references and uploaded captions) to determine
+   height rather than forcing flex/grid tracks wider than the viewport. */
+@layer base {
+  :where(main, section, article, nav, form, fieldset, header, footer) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  :where(.grid, .flex) > :where(div, section, article, form, label, a, p, span, dl, dd) {
+    min-width: 0;
+  }
+
+  :where(input, select, textarea) {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  :where(button, a) {
+    overflow-wrap: anywhere;
+  }
+}
+
+.jws-portal header > div > div:first-child {
+  min-width: 0;
+  flex: 1 1 10rem;
+}
+
+@media (max-width: 639px) {
+  /* Prevent iOS focus zoom and keep file/date controls inside their fields. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+
+  button:not(.leaflet-control-zoom-in):not(.leaflet-control-zoom-out),
+  a[class*="rounded"] {
+    min-height: 2.75rem;
+  }
+
+  .jws-portal main .flex:not(.flex-col):not(.overflow-x-auto) {
+    flex-wrap: wrap;
+  }
+
+  .jws-portal main form.flex {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .jws-portal main .overflow-x-auto {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .jws-portal main :where(button, a[class*="rounded"]) {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
 .home-pattern {
   background-image:
     linear-gradient(45deg, transparent 48%, rgb(69 232 205 / 7%) 49% 51%, transparent 52%),

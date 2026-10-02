@@ -10,13 +10,13 @@ export function HomeHero() {
     <section className="home-hero relative isolate overflow-hidden border-b border-border bg-white px-6 py-16 sm:py-20 lg:py-24">
       <div className="home-pattern absolute inset-0 -z-20" aria-hidden="true" />
       <div className="absolute -right-32 -top-36 -z-10 size-[34rem] rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
-      <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 sm:gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted sm:text-sm">Janaza Welfare Society <span className="text-primary">&#8226;</span> Kattankudy</p>
-          <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-[-0.045em] text-foreground sm:text-6xl lg:text-7xl">Together in Every <span className="relative whitespace-nowrap">Farewell<span className="absolute inset-x-0 -bottom-1 h-2 bg-primary/35" aria-hidden="true" /></span></h1>
+          <h1 className="mt-6 text-4xl font-semibold leading-[1.1] tracking-[-0.045em] text-foreground sm:text-6xl sm:leading-[1.02] lg:text-7xl">Together in Every <span className="relative whitespace-nowrap">Farewell<span className="absolute inset-x-0 -bottom-1 h-2 bg-primary/35" aria-hidden="true" /></span></h1>
           <p className="mt-7 text-xl font-semibold text-foreground sm:text-2xl">Serving with Care &amp; Respect</p>
           <p className="mt-4 max-w-2xl text-base leading-8 text-muted sm:text-lg">Compassionate Janaza assistance for families in Kattankudy, offered with dignity, practical care, and the support of our community.</p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link href="/request-service" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 py-3 font-semibold text-foreground shadow-[0_12px_30px_rgba(69,232,205,0.24)] transition-colors hover:bg-[#35d8bd] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">Request Janaza Service <ArrowIcon /></Link>
             <Link href="/track-request" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-primary/60 bg-white px-7 py-3 font-semibold text-foreground transition-colors hover:border-primary hover:bg-light-background focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Track Your Request <ArrowIcon /></Link>
           </div>

@@ -32,9 +32,9 @@ export function EmployeeStatusAction({ action, label, confirmation, destructive 
   }
 
   return (
-    <form action={formAction} className={confirmation ? "min-w-52 rounded-xl border border-border bg-light-background p-3" : ""}>
+    <form action={formAction} className={confirmation ? "min-w-0 w-full sm:min-w-52 rounded-xl border border-border bg-light-background p-3" : ""}>
       {confirmation && <p className="mb-3 text-xs font-medium text-foreground">{confirmation}</p>}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {confirmation && (
           <button type="button" onClick={() => setIsConfirming(false)} className="rounded-lg border border-border bg-white px-3 py-2 text-xs font-semibold">Cancel</button>
         )}

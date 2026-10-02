@@ -21,12 +21,12 @@ export function Header() {
   if (pathname === "/") {
     return (
       <header className="relative z-30 border-b border-border bg-white">
-        <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-5 px-6">
+        <div className="mx-auto flex min-h-20 max-w-7xl flex-col items-stretch justify-between gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:py-0">
           <Link href="/" className="flex min-w-0 items-center gap-2 leading-tight text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:gap-3">
             <Image src="/images/jws/logo.png" alt="Janaza Welfare Society logo" width={52} height={52} priority className="size-11 shrink-0 rounded-full object-contain sm:size-13" />
-            <span className="min-w-0"><span className="block truncate text-sm font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span><span className="mt-1 block text-[0.68rem] font-medium tracking-wide text-muted sm:text-xs">Kattankudy</span></span>
+            <span className="min-w-0"><span className="block text-base font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span><span className="mt-1 block text-[0.68rem] font-medium tracking-wide text-muted sm:text-xs">Kattankudy</span></span>
           </Link>
-          <div className="flex shrink-0 gap-2"><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-3 py-2 text-xs font-semibold text-foreground hover:border-primary sm:px-4 sm:text-sm">Supervisor</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/60 px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 sm:text-sm">Admin Login</Link></div>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0"><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-3 py-2 text-xs font-semibold text-foreground hover:border-primary sm:px-4 sm:text-sm">Supervisor</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/60 px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 sm:text-sm">Admin Login</Link></div>
         </div>
       </header>
     );
@@ -34,11 +34,11 @@ export function Header() {
 
   return (
     <header className="relative z-30 border-b border-border bg-white">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="flex min-h-20 items-center justify-between gap-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex min-h-20 items-center justify-between gap-3 sm:gap-6">
           <Link href="/" className="flex min-w-0 shrink items-center gap-3 leading-tight text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" onClick={closeMenu}>
             <Image src="/images/jws/logo.png" alt="Janaza Welfare Society logo" width={52} height={52} priority className="size-11 shrink-0 rounded-full object-contain sm:size-13" />
-            <span className="min-w-0"><span className="block truncate text-base font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span><span className="mt-1 block text-xs font-medium tracking-wide text-muted">Kattankudy</span></span>
+            <span className="min-w-0"><span className="block text-base font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span><span className="mt-1 block text-xs font-medium tracking-wide text-muted">Kattankudy</span></span>
           </Link>
 
           <div className="hidden items-center gap-4 xl:flex">
@@ -50,7 +50,7 @@ export function Header() {
             <Link href="/request-service" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-[#35d8bd] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">Request Service</Link>
           </div>
 
-          <button type="button" className="inline-flex size-11 items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:hidden" aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen((open) => !open)}>
+          <button type="button" className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:hidden" aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen((open) => !open)}>
             <span className="sr-only">{isMenuOpen ? "Close menu" : "Open menu"}</span>
             <span className="flex w-5 flex-col gap-1.5" aria-hidden="true"><span className={`h-0.5 w-full rounded-full bg-current transition-transform ${isMenuOpen ? "translate-y-2 rotate-45" : ""}`} /><span className={`h-0.5 w-full rounded-full bg-current transition-opacity ${isMenuOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 w-full rounded-full bg-current transition-transform ${isMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} /></span>
           </button>
