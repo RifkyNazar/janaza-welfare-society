@@ -1,4 +1,5 @@
 import type { AccountStatus } from "@/generated/prisma/enums";
+import { PortalStatus } from "@/components/portal-status";
 
 const styles: Record<AccountStatus, string> = {
   PENDING: "border-amber-200 bg-amber-50 text-amber-800",
@@ -8,5 +9,5 @@ const styles: Record<AccountStatus, string> = {
 };
 
 export function EmployeeStatusBadge({ status }: { status: AccountStatus }) {
-  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[status]}`}>{status}</span>;
+  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[status]}`}><PortalStatus value={status} /></span>;
 }

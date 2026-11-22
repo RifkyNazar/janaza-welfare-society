@@ -273,9 +273,54 @@ model Operation {
   updatedAt        DateTime         @updatedAt
   taskAssignment   TaskAssignment?  @relation(fields: [taskAssignmentId], references: [id], onDelete: Restrict)
   photos           OperationPhoto[]
+  source           OperationSource  @default(TASK_BASED)
+  media            ActivityMedia[]
 
   @@index([isPublished, operationDate])
   @@index([createdAt])
+}
+
+enum OperationSource {
+  TASK_BASED
+  MANUAL
+}
+
+model ActivityMedia {
+  id           Int       @id @default(autoincrement())
+  operationId  Int
+  storageKey   String    @unique
+  altText      String    @db.VarChar(180)
+  caption      String?   @db.VarChar(500)
+  isPublic     Boolean   @default(false)
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+  operation    Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([operationId, displayOrder])
+}
+
+model HeroMedia {
+  id           Int      @id @default(autoincrement())
+  storageKey   String   @unique
+  altText      String   @db.VarChar(180)
+  caption      String?  @db.VarChar(500)
+  isActive     Boolean  @default(false)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([isActive, displayOrder])
+}
+
+// Public directory entries, intentionally unrelated to employee login accounts.
+model OperationalTeamMember {
+  id        Int      @id @default(autoincrement())
+  fullName  String   @db.VarChar(150)
+  photo     Bytes    @db.MediumBlob
+  version   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fullName, id])
 }
 
 model OperationPhoto {

@@ -19,11 +19,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     select: { role: true, status: true, employeeProfile: { select: { id: true } } },
   });
   if (!account || account.status !== "APPROVED") return new Response(null, { status: 404 });
+  const employeeId = account.employeeProfile?.id;
+  if (account.role !== "ADMIN" && (account.role !== "EMPLOYEE" || !employeeId)) {
+    return new Response(null, { status: 404 });
+  }
 
   const photo = await prisma.taskPhoto.findFirst({
     where: {
       id: photoId,
-      ...(account.role === "ADMIN" ? {} : account.role === "EMPLOYEE" && account.employeeProfile ? { taskAssignment: { is: { employeeId: account.employeeProfile.id } } } : { id: -1 }),
+      ...(account.role === "ADMIN" ? {} : { taskAssignment: { is: { employeeId } } }),
     },
     select: { imageUrl: true },
   });

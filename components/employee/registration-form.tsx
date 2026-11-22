@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/components/public-language";
 
 import { useActionState } from "react";
 import Link from "next/link";
@@ -24,7 +25,7 @@ export function RegistrationForm() {
         <div className="grid gap-5 sm:grid-cols-2">
           {fields.map((field) => (
             <div key={field.id} className={field.id === "email" ? "sm:col-span-2" : ""}>
-              <label htmlFor={field.id} className="block text-sm font-semibold text-foreground">{field.label}</label>
+              <label htmlFor={field.id} className="block text-sm font-semibold text-foreground"><T text={field.label} /></label>
               <input key={`${field.name}-${state.values?.[field.name] ?? ""}`} id={field.id} name={field.name} type={field.type} autoComplete={field.autoComplete} required defaultValue={state.values?.[field.name] as string | undefined} className="employee-form-input mt-2" />
             </div>
           ))}
@@ -34,23 +35,23 @@ export function RegistrationForm() {
 
         <label className="mt-6 flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted">
           <input key={`confirmation-${state.values?.confirmation ?? false}`} type="checkbox" name="confirmation" required defaultChecked={state.values?.confirmation} className="mt-1 size-5 shrink-0 rounded border-border accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-          I confirm that the information provided is correct.
+          <T text="I confirm that the information provided is correct." />
         </label>
 
         {state.error && (
-          <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{state.error}</p>
+          <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><T text={state.error} /></p>
         )}
-        <button type="submit" disabled={isPending} className="mt-6 w-full rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(69,232,205,0.3)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none">
-          {isPending ? "Submitting..." : "Submit Registration"}
+        <button type="submit" disabled={isPending} className="mt-6 w-full rounded-full bg-primary px-6 py-3 font-semibold text-foreground transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(8,127,35,0.3)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none">
+          <T text={isPending ? "Submitting..." : "Submit Registration"} />
         </button>
         <p className="mt-4 text-center text-xs leading-5 text-muted">
-          Submitting this form does not provide immediate access. Your account must be approved by an administrator.
+          <T text="Submitting this form does not provide immediate access. Your account must be approved by an administrator." />
         </p>
       </form>
 
       <p className="mt-6 border-t border-border pt-6 text-center text-sm text-muted">
-        Already registered?{" "}
-        <Link href="/employee-access/login" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Login</Link>
+        <T text="Already registered?" />{" "}
+        <Link href="/employee-access/login" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><T text="Login" /></Link>
       </p>
     </div>
   );

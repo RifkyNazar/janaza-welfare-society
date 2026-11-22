@@ -49,6 +49,7 @@ export type OperationMinAggregateOutputType = {
   publishedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  source: $Enums.OperationSource | null
 }
 
 export type OperationMaxAggregateOutputType = {
@@ -64,6 +65,7 @@ export type OperationMaxAggregateOutputType = {
   publishedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  source: $Enums.OperationSource | null
 }
 
 export type OperationCountAggregateOutputType = {
@@ -79,6 +81,7 @@ export type OperationCountAggregateOutputType = {
   publishedAt: number
   createdAt: number
   updatedAt: number
+  source: number
   _all: number
 }
 
@@ -106,6 +109,7 @@ export type OperationMinAggregateInputType = {
   publishedAt?: true
   createdAt?: true
   updatedAt?: true
+  source?: true
 }
 
 export type OperationMaxAggregateInputType = {
@@ -121,6 +125,7 @@ export type OperationMaxAggregateInputType = {
   publishedAt?: true
   createdAt?: true
   updatedAt?: true
+  source?: true
 }
 
 export type OperationCountAggregateInputType = {
@@ -136,6 +141,7 @@ export type OperationCountAggregateInputType = {
   publishedAt?: true
   createdAt?: true
   updatedAt?: true
+  source?: true
   _all?: true
 }
 
@@ -238,6 +244,7 @@ export type OperationGroupByOutputType = {
   publishedAt: Date | null
   createdAt: Date
   updatedAt: Date
+  source: $Enums.OperationSource
   _count: OperationCountAggregateOutputType | null
   _avg: OperationAvgAggregateOutputType | null
   _sum: OperationSumAggregateOutputType | null
@@ -276,8 +283,10 @@ export type OperationWhereInput = {
   publishedAt?: Prisma.DateTimeNullableFilter<"Operation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
+  source?: Prisma.EnumOperationSourceFilter<"Operation"> | $Enums.OperationSource
   taskAssignment?: Prisma.XOR<Prisma.TaskAssignmentNullableScalarRelationFilter, Prisma.TaskAssignmentWhereInput> | null
   photos?: Prisma.OperationPhotoListRelationFilter
+  media?: Prisma.ActivityMediaListRelationFilter
 }
 
 export type OperationOrderByWithRelationInput = {
@@ -293,8 +302,10 @@ export type OperationOrderByWithRelationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   taskAssignment?: Prisma.TaskAssignmentOrderByWithRelationInput
   photos?: Prisma.OperationPhotoOrderByRelationAggregateInput
+  media?: Prisma.ActivityMediaOrderByRelationAggregateInput
   _relevance?: Prisma.OperationOrderByRelevanceInput
 }
 
@@ -314,8 +325,10 @@ export type OperationWhereUniqueInput = Prisma.AtLeast<{
   publishedAt?: Prisma.DateTimeNullableFilter<"Operation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Operation"> | Date | string
+  source?: Prisma.EnumOperationSourceFilter<"Operation"> | $Enums.OperationSource
   taskAssignment?: Prisma.XOR<Prisma.TaskAssignmentNullableScalarRelationFilter, Prisma.TaskAssignmentWhereInput> | null
   photos?: Prisma.OperationPhotoListRelationFilter
+  media?: Prisma.ActivityMediaListRelationFilter
 }, "id" | "taskAssignmentId">
 
 export type OperationOrderByWithAggregationInput = {
@@ -331,6 +344,7 @@ export type OperationOrderByWithAggregationInput = {
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   _count?: Prisma.OperationCountOrderByAggregateInput
   _avg?: Prisma.OperationAvgOrderByAggregateInput
   _max?: Prisma.OperationMaxOrderByAggregateInput
@@ -354,6 +368,7 @@ export type OperationScalarWhereWithAggregatesInput = {
   publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Operation"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Operation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Operation"> | Date | string
+  source?: Prisma.EnumOperationSourceWithAggregatesFilter<"Operation"> | $Enums.OperationSource
 }
 
 export type OperationCreateInput = {
@@ -367,8 +382,10 @@ export type OperationCreateInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
   taskAssignment?: Prisma.TaskAssignmentCreateNestedOneWithoutOperationInput
   photos?: Prisma.OperationPhotoCreateNestedManyWithoutOperationInput
+  media?: Prisma.ActivityMediaCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateInput = {
@@ -384,7 +401,9 @@ export type OperationUncheckedCreateInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
   photos?: Prisma.OperationPhotoUncheckedCreateNestedManyWithoutOperationInput
+  media?: Prisma.ActivityMediaUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUpdateInput = {
@@ -398,8 +417,10 @@ export type OperationUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
   taskAssignment?: Prisma.TaskAssignmentUpdateOneWithoutOperationNestedInput
   photos?: Prisma.OperationPhotoUpdateManyWithoutOperationNestedInput
+  media?: Prisma.ActivityMediaUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateInput = {
@@ -415,7 +436,9 @@ export type OperationUncheckedUpdateInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
   photos?: Prisma.OperationPhotoUncheckedUpdateManyWithoutOperationNestedInput
+  media?: Prisma.ActivityMediaUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationCreateManyInput = {
@@ -431,6 +454,7 @@ export type OperationCreateManyInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
 }
 
 export type OperationUpdateManyMutationInput = {
@@ -444,6 +468,7 @@ export type OperationUpdateManyMutationInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
 }
 
 export type OperationUncheckedUpdateManyInput = {
@@ -459,6 +484,7 @@ export type OperationUncheckedUpdateManyInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
 }
 
 export type OperationNullableScalarRelationFilter = {
@@ -485,6 +511,7 @@ export type OperationCountOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
 }
 
 export type OperationAvgOrderByAggregateInput = {
@@ -505,6 +532,7 @@ export type OperationMaxOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
 }
 
 export type OperationMinOrderByAggregateInput = {
@@ -520,6 +548,7 @@ export type OperationMinOrderByAggregateInput = {
   publishedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  source?: Prisma.SortOrder
 }
 
 export type OperationSumOrderByAggregateInput = {
@@ -564,6 +593,24 @@ export type OperationUncheckedUpdateOneWithoutTaskAssignmentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OperationUpdateToOneWithWhereWithoutTaskAssignmentInput, Prisma.OperationUpdateWithoutTaskAssignmentInput>, Prisma.OperationUncheckedUpdateWithoutTaskAssignmentInput>
 }
 
+export type EnumOperationSourceFieldUpdateOperationsInput = {
+  set?: $Enums.OperationSource
+}
+
+export type OperationCreateNestedOneWithoutMediaInput = {
+  create?: Prisma.XOR<Prisma.OperationCreateWithoutMediaInput, Prisma.OperationUncheckedCreateWithoutMediaInput>
+  connectOrCreate?: Prisma.OperationCreateOrConnectWithoutMediaInput
+  connect?: Prisma.OperationWhereUniqueInput
+}
+
+export type OperationUpdateOneRequiredWithoutMediaNestedInput = {
+  create?: Prisma.XOR<Prisma.OperationCreateWithoutMediaInput, Prisma.OperationUncheckedCreateWithoutMediaInput>
+  connectOrCreate?: Prisma.OperationCreateOrConnectWithoutMediaInput
+  upsert?: Prisma.OperationUpsertWithoutMediaInput
+  connect?: Prisma.OperationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OperationUpdateToOneWithWhereWithoutMediaInput, Prisma.OperationUpdateWithoutMediaInput>, Prisma.OperationUncheckedUpdateWithoutMediaInput>
+}
+
 export type OperationCreateNestedOneWithoutPhotosInput = {
   create?: Prisma.XOR<Prisma.OperationCreateWithoutPhotosInput, Prisma.OperationUncheckedCreateWithoutPhotosInput>
   connectOrCreate?: Prisma.OperationCreateOrConnectWithoutPhotosInput
@@ -589,7 +636,9 @@ export type OperationCreateWithoutTaskAssignmentInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
   photos?: Prisma.OperationPhotoCreateNestedManyWithoutOperationInput
+  media?: Prisma.ActivityMediaCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutTaskAssignmentInput = {
@@ -604,7 +653,9 @@ export type OperationUncheckedCreateWithoutTaskAssignmentInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
   photos?: Prisma.OperationPhotoUncheckedCreateNestedManyWithoutOperationInput
+  media?: Prisma.ActivityMediaUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutTaskAssignmentInput = {
@@ -634,7 +685,9 @@ export type OperationUpdateWithoutTaskAssignmentInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
   photos?: Prisma.OperationPhotoUpdateManyWithoutOperationNestedInput
+  media?: Prisma.ActivityMediaUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutTaskAssignmentInput = {
@@ -649,6 +702,90 @@ export type OperationUncheckedUpdateWithoutTaskAssignmentInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
+  photos?: Prisma.OperationPhotoUncheckedUpdateManyWithoutOperationNestedInput
+  media?: Prisma.ActivityMediaUncheckedUpdateManyWithoutOperationNestedInput
+}
+
+export type OperationCreateWithoutMediaInput = {
+  title: string
+  shortDescription: string
+  description?: string | null
+  serviceType: string
+  area: string
+  operationDate: Date | string
+  isPublished?: boolean
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  source?: $Enums.OperationSource
+  taskAssignment?: Prisma.TaskAssignmentCreateNestedOneWithoutOperationInput
+  photos?: Prisma.OperationPhotoCreateNestedManyWithoutOperationInput
+}
+
+export type OperationUncheckedCreateWithoutMediaInput = {
+  id?: number
+  taskAssignmentId?: number | null
+  title: string
+  shortDescription: string
+  description?: string | null
+  serviceType: string
+  area: string
+  operationDate: Date | string
+  isPublished?: boolean
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  source?: $Enums.OperationSource
+  photos?: Prisma.OperationPhotoUncheckedCreateNestedManyWithoutOperationInput
+}
+
+export type OperationCreateOrConnectWithoutMediaInput = {
+  where: Prisma.OperationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OperationCreateWithoutMediaInput, Prisma.OperationUncheckedCreateWithoutMediaInput>
+}
+
+export type OperationUpsertWithoutMediaInput = {
+  update: Prisma.XOR<Prisma.OperationUpdateWithoutMediaInput, Prisma.OperationUncheckedUpdateWithoutMediaInput>
+  create: Prisma.XOR<Prisma.OperationCreateWithoutMediaInput, Prisma.OperationUncheckedCreateWithoutMediaInput>
+  where?: Prisma.OperationWhereInput
+}
+
+export type OperationUpdateToOneWithWhereWithoutMediaInput = {
+  where?: Prisma.OperationWhereInput
+  data: Prisma.XOR<Prisma.OperationUpdateWithoutMediaInput, Prisma.OperationUncheckedUpdateWithoutMediaInput>
+}
+
+export type OperationUpdateWithoutMediaInput = {
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  shortDescription?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
+  area?: Prisma.StringFieldUpdateOperationsInput | string
+  operationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
+  taskAssignment?: Prisma.TaskAssignmentUpdateOneWithoutOperationNestedInput
+  photos?: Prisma.OperationPhotoUpdateManyWithoutOperationNestedInput
+}
+
+export type OperationUncheckedUpdateWithoutMediaInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  taskAssignmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  shortDescription?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
+  area?: Prisma.StringFieldUpdateOperationsInput | string
+  operationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
   photos?: Prisma.OperationPhotoUncheckedUpdateManyWithoutOperationNestedInput
 }
 
@@ -663,7 +800,9 @@ export type OperationCreateWithoutPhotosInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
   taskAssignment?: Prisma.TaskAssignmentCreateNestedOneWithoutOperationInput
+  media?: Prisma.ActivityMediaCreateNestedManyWithoutOperationInput
 }
 
 export type OperationUncheckedCreateWithoutPhotosInput = {
@@ -679,6 +818,8 @@ export type OperationUncheckedCreateWithoutPhotosInput = {
   publishedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  source?: $Enums.OperationSource
+  media?: Prisma.ActivityMediaUncheckedCreateNestedManyWithoutOperationInput
 }
 
 export type OperationCreateOrConnectWithoutPhotosInput = {
@@ -708,7 +849,9 @@ export type OperationUpdateWithoutPhotosInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
   taskAssignment?: Prisma.TaskAssignmentUpdateOneWithoutOperationNestedInput
+  media?: Prisma.ActivityMediaUpdateManyWithoutOperationNestedInput
 }
 
 export type OperationUncheckedUpdateWithoutPhotosInput = {
@@ -724,6 +867,8 @@ export type OperationUncheckedUpdateWithoutPhotosInput = {
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  source?: Prisma.EnumOperationSourceFieldUpdateOperationsInput | $Enums.OperationSource
+  media?: Prisma.ActivityMediaUncheckedUpdateManyWithoutOperationNestedInput
 }
 
 
@@ -733,10 +878,12 @@ export type OperationUncheckedUpdateWithoutPhotosInput = {
 
 export type OperationCountOutputType = {
   photos: number
+  media: number
 }
 
 export type OperationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   photos?: boolean | OperationCountOutputTypeCountPhotosArgs
+  media?: boolean | OperationCountOutputTypeCountMediaArgs
 }
 
 /**
@@ -756,6 +903,13 @@ export type OperationCountOutputTypeCountPhotosArgs<ExtArgs extends runtime.Type
   where?: Prisma.OperationPhotoWhereInput
 }
 
+/**
+ * OperationCountOutputType without action
+ */
+export type OperationCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ActivityMediaWhereInput
+}
+
 
 export type OperationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -770,8 +924,10 @@ export type OperationSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   publishedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  source?: boolean
   taskAssignment?: boolean | Prisma.Operation$taskAssignmentArgs<ExtArgs>
   photos?: boolean | Prisma.Operation$photosArgs<ExtArgs>
+  media?: boolean | Prisma.Operation$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.OperationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["operation"]>
 
@@ -790,12 +946,14 @@ export type OperationSelectScalar = {
   publishedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  source?: boolean
 }
 
-export type OperationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskAssignmentId" | "title" | "shortDescription" | "description" | "serviceType" | "area" | "operationDate" | "isPublished" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["operation"]>
+export type OperationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskAssignmentId" | "title" | "shortDescription" | "description" | "serviceType" | "area" | "operationDate" | "isPublished" | "publishedAt" | "createdAt" | "updatedAt" | "source", ExtArgs["result"]["operation"]>
 export type OperationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   taskAssignment?: boolean | Prisma.Operation$taskAssignmentArgs<ExtArgs>
   photos?: boolean | Prisma.Operation$photosArgs<ExtArgs>
+  media?: boolean | Prisma.Operation$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.OperationCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -804,6 +962,7 @@ export type $OperationPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     taskAssignment: Prisma.$TaskAssignmentPayload<ExtArgs> | null
     photos: Prisma.$OperationPhotoPayload<ExtArgs>[]
+    media: Prisma.$ActivityMediaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -818,6 +977,7 @@ export type $OperationPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     publishedAt: Date | null
     createdAt: Date
     updatedAt: Date
+    source: $Enums.OperationSource
   }, ExtArgs["result"]["operation"]>
   composites: {}
 }
@@ -1160,6 +1320,7 @@ export interface Prisma__OperationClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   taskAssignment<T extends Prisma.Operation$taskAssignmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$taskAssignmentArgs<ExtArgs>>): Prisma.Prisma__TaskAssignmentClient<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   photos<T extends Prisma.Operation$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  media<T extends Prisma.Operation$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Operation$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1201,6 +1362,7 @@ export interface OperationFieldRefs {
   readonly publishedAt: Prisma.FieldRef<"Operation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Operation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Operation", 'DateTime'>
+  readonly source: Prisma.FieldRef<"Operation", 'OperationSource'>
 }
     
 
@@ -1589,6 +1751,30 @@ export type Operation$photosArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.OperationPhotoScalarFieldEnum | Prisma.OperationPhotoScalarFieldEnum[]
+}
+
+/**
+ * Operation.media
+ */
+export type Operation$mediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ActivityMedia
+   */
+  select?: Prisma.ActivityMediaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ActivityMedia
+   */
+  omit?: Prisma.ActivityMediaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ActivityMediaInclude<ExtArgs> | null
+  where?: Prisma.ActivityMediaWhereInput
+  orderBy?: Prisma.ActivityMediaOrderByWithRelationInput | Prisma.ActivityMediaOrderByWithRelationInput[]
+  cursor?: Prisma.ActivityMediaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ActivityMediaScalarFieldEnum | Prisma.ActivityMediaScalarFieldEnum[]
 }
 
 /**

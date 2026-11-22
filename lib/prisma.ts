@@ -9,13 +9,27 @@ if (!databaseUrl) {
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
+  prismaConstructor: typeof PrismaClient | undefined;
+  prismaDatabaseUrl: string | undefined;
 };
 
-const adapter = new PrismaMariaDb(databaseUrl);
+// A client constructed before `prisma generate` retains its old model delegates.
+// Next dev keeps globalThis across HMR, so key the cache to the generated class
+// and connection configuration, not just the presence of a previous instance.
+const development = process.env.NODE_ENV !== "production";
+const cached = development ? globalForPrisma.prisma : undefined;
+const reusable = cached && globalForPrisma.prismaConstructor === PrismaClient && globalForPrisma.prismaDatabaseUrl === databaseUrl;
 
 export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ adapter });
+  reusable ? cached : new PrismaClient({ adapter: new PrismaMariaDb(databaseUrl) });
 
-if (process.env.NODE_ENV !== "production") {
+if (development) {
   globalForPrisma.prisma = prisma;
+  globalForPrisma.prismaConstructor = PrismaClient;
+  globalForPrisma.prismaDatabaseUrl = databaseUrl;
+  if (cached && cached !== prisma) {
+    void cached.$disconnect().catch(() => {
+      console.warn("[prisma] Superseded development client could not close its pool.");
+    });
+  }
 }

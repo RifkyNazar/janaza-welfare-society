@@ -1,12 +1,14 @@
 import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { PublicSiteHeader } from "@/components/public-site-header";
+import { cookies } from "next/headers";
+import { PublicLanguage } from "@/components/public-language";
+import { PublicShell } from "@/components/public-shell";
 
-export default function PublicLayout({ children }: LayoutProps<"/">) {
+export default async function PublicLayout({ children }: LayoutProps<"/">) {
+  const locale = (await cookies()).get("jws-language")?.value === "ta" ? "ta" : "en";
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
+    <PublicLanguage locale={locale}><PublicShell header={<PublicSiteHeader />} footer={<Footer />}>
+      {children}
+    </PublicShell></PublicLanguage>
   );
 }

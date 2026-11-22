@@ -3,8 +3,9 @@ import "server-only";
 import webPush, { type PushSubscription as WebPushSubscription } from "web-push";
 import type { UserRole } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { isAllowedPushEndpoint } from "@/lib/push-endpoint";
 
-export type SafePushPayload = { title: string; body: string; url: string; tag?: string };
+export type SafePushPayload = { title: string; body: string; url: string; tag?: string; ta?: { title: string; body: string } };
 
 let configuredKey: string | null = null;
 let warnedMissing = false;
@@ -35,13 +36,14 @@ function configureWebPush() {
 
 function safePayload(payload: SafePushPayload) {
   if (!payload.url.startsWith("/") || payload.url.startsWith("//")) throw new Error("Unsafe push notification URL");
-  return JSON.stringify({ title: payload.title, body: payload.body, url: payload.url, ...(payload.tag ? { tag: payload.tag } : {}) });
+  return JSON.stringify({ title: payload.title, body: payload.body, url: payload.url, tag: payload.tag, ta: payload.ta });
 }
 
 async function deliver(subscriptions: Array<{ id: string; endpoint: string; p256dh: string; auth: string }>, payload: SafePushPayload) {
   if (!subscriptions.length || !configureWebPush()) return;
   const message = safePayload(payload);
   const results = await Promise.allSettled(subscriptions.map(async (subscription) => {
+    if (!isAllowedPushEndpoint(subscription.endpoint)) return;
     const target: WebPushSubscription = { endpoint: subscription.endpoint, keys: { p256dh: subscription.p256dh, auth: subscription.auth } };
     try {
       await webPush.sendNotification(target, message, { TTL: 60 * 60, urgency: "high", timeout: 10_000 });

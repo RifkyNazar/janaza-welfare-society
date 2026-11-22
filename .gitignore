@@ -23,6 +23,10 @@
 # misc
 .DS_Store
 *.pem
+*.key
+id_rsa
+id_ed25519
+/credentials.json
 
 # debug
 npm-debug.log*
@@ -41,7 +45,21 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Local databases and backups
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.sql.gz
+/backup.sql
+/dump.sql
+/backups/
+/dumps/
+
 # Runtime uploads are private deployment data, not source files.
 /.data/
+/uploads/
+/public/uploads/
 
+# The client in /generated/prisma is checked in; this excludes the old output path.
 /app/generated/prisma

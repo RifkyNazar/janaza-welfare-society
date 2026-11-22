@@ -8,54 +8,47 @@ function userId(value: string | undefined) {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
-async function approvedAccount(roles: Array<"ADMIN" | "SUPERVISOR" | "EMPLOYEE">) {
+const dashboards = { ADMIN: "/admin", SUPERVISOR: "/supervisor", EMPLOYEE: "/employee" };
+type Role = keyof typeof dashboards;
+
+async function approvedAccount() {
   const session = await auth();
   const id = userId(session?.user.id);
   const account = id ? await prisma.user.findUnique({
     where: { id },
     select: { role: true, status: true, employeeProfile: { select: { id: true } } },
   }) : null;
-  if (!session || !account || account.status !== "APPROVED" || !roles.includes(account.role)) return null;
+  if (!session || !account || account.status !== "APPROVED") return null;
   session.user.role = account.role;
   session.user.status = account.status;
   session.user.employeeProfileId = account.employeeProfile?.id ?? null;
   return session;
 }
 
-export async function requireAdmin() {
-  const session = await approvedAccount(["ADMIN"]);
-  if (!session) {
-    redirect("/admin/login");
-  }
-
+async function requireRole(roles: readonly Role[], loginPath: string) {
+  const session = await approvedAccount();
+  if (!session) redirect(loginPath);
+  if (!roles.includes(session.user.role)) redirect(dashboards[session.user.role]);
   return session;
 }
 
-export async function requireEmployee() {
-  const session = await approvedAccount(["EMPLOYEE"]);
-  if (!session) {
-    redirect("/employee-access/login");
-  }
-
-  return session;
+export function requireAdmin() {
+  return requireRole(["ADMIN"], "/admin/login");
 }
 
-export async function requireSupervisor() {
-  const session = await approvedAccount(["SUPERVISOR"]);
-  if (!session) redirect("/employee-access/login");
-  return session;
+export function requireEmployee() {
+  return requireRole(["EMPLOYEE"], "/employee-access/login");
 }
 
-export async function requireAdminOrSupervisor() {
-  const session = await approvedAccount(["ADMIN", "SUPERVISOR"]);
-  if (!session) redirect("/employee-access/login");
-  return session;
+export function requireSupervisor() {
+  return requireRole(["SUPERVISOR"], "/employee-access/login");
 }
 
-export async function redirectAuthenticatedUser() {
-  const session = await auth();
-  const id = userId(session?.user.id);
-  const account = id ? await prisma.user.findUnique({ where: { id }, select: { role: true, status: true } }) : null;
-  if (!account || account.status !== "APPROVED") return;
-  redirect(account.role === "ADMIN" ? "/admin" : account.role === "SUPERVISOR" ? "/supervisor" : "/employee");
+export function requireAdminOrSupervisor() {
+  return requireRole(["ADMIN", "SUPERVISOR"], "/employee-access/login");
+}
+
+export async function redirectAuthenticatedUser(roles: readonly Role[]) {
+  const session = await approvedAccount();
+  if (session && roles.includes(session.user.role)) redirect(dashboards[session.user.role]);
 }

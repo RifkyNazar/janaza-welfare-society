@@ -392,6 +392,40 @@ export type EnumTaskStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTaskStatusFilter<$PrismaModel>
 }
 
+export type EnumOperationSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.OperationSource | Prisma.EnumOperationSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.OperationSource[]
+  notIn?: $Enums.OperationSource[]
+  not?: Prisma.NestedEnumOperationSourceFilter<$PrismaModel> | $Enums.OperationSource
+}
+
+export type EnumOperationSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.OperationSource | Prisma.EnumOperationSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.OperationSource[]
+  notIn?: $Enums.OperationSource[]
+  not?: Prisma.NestedEnumOperationSourceWithAggregatesFilter<$PrismaModel> | $Enums.OperationSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumOperationSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumOperationSourceFilter<$PrismaModel>
+}
+
+export type BytesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesFilter<$PrismaModel> | runtime.Bytes
+}
+
+export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesWithAggregatesFilter<$PrismaModel> | runtime.Bytes
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBytesFilter<$PrismaModel>
+  _max?: Prisma.NestedBytesFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[]
@@ -774,6 +808,40 @@ export type NestedEnumTaskStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTaskStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTaskStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumOperationSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.OperationSource | Prisma.EnumOperationSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.OperationSource[]
+  notIn?: $Enums.OperationSource[]
+  not?: Prisma.NestedEnumOperationSourceFilter<$PrismaModel> | $Enums.OperationSource
+}
+
+export type NestedEnumOperationSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.OperationSource | Prisma.EnumOperationSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.OperationSource[]
+  notIn?: $Enums.OperationSource[]
+  not?: Prisma.NestedEnumOperationSourceWithAggregatesFilter<$PrismaModel> | $Enums.OperationSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumOperationSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumOperationSourceFilter<$PrismaModel>
+}
+
+export type NestedBytesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesFilter<$PrismaModel> | runtime.Bytes
+}
+
+export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesWithAggregatesFilter<$PrismaModel> | runtime.Bytes
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBytesFilter<$PrismaModel>
+  _max?: Prisma.NestedBytesFilter<$PrismaModel>
 }
 
 

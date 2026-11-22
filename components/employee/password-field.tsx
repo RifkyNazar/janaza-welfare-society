@@ -1,4 +1,5 @@
 "use client";
+import { T, useTranslation } from "@/components/public-language";
 
 import { useState } from "react";
 
@@ -10,11 +11,12 @@ type PasswordFieldProps = {
 };
 
 export function PasswordField({ id, name, label, autoComplete }: PasswordFieldProps) {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-semibold text-foreground">{label}</label>
+      <label htmlFor={id} className="block text-sm font-semibold text-foreground"><T text={label} /></label>
       <div className="relative mt-2">
         <input
           id={id}
@@ -27,11 +29,11 @@ export function PasswordField({ id, name, label, autoComplete }: PasswordFieldPr
         <button
           type="button"
           onClick={() => setIsVisible((visible) => !visible)}
-          aria-label={`${isVisible ? "Hide" : "Show"} ${label.toLowerCase()}`}
+          aria-label={t(isVisible ? "Hide password" : "Show password")}
           aria-pressed={isVisible}
           className="absolute inset-y-0 right-0 rounded-r-xl px-4 text-sm font-semibold text-muted transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
         >
-          {isVisible ? "Hide" : "Show"}
+          <T text={isVisible ? "Hide" : "Show"} />
         </button>
       </div>
     </div>

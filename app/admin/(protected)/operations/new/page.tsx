@@ -1,16 +1,18 @@
+import { T } from "@/components/public-language";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { OperationForm } from "@/components/admin/operation-form";
 import { BackButton } from "@/components/back-button";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
-import { createOperation } from "../actions";
+import { createOperation, createManualActivity } from "../actions";
 
 export const metadata: Metadata = { title: "Create Public Operation" };
 
 export default async function NewOperationPage({ searchParams }: { searchParams: Promise<{ taskId?: string }> }) {
   await requireAdmin();
   const value = (await searchParams).taskId ?? "";
+  if (!value) return <div className="mx-auto max-w-3xl"><p className="text-xs font-semibold uppercase tracking-widest text-primary"><T text="Public content · Step 1 of 2" /></p><h1 className="mt-2 text-3xl font-semibold"><T text="Add Latest Activity" /></h1><p className="mt-3 leading-7 text-muted"><T text="Enter the activity details and save a private draft. Next, upload photos and review your publication choices. Only enter public information." /></p><OperationForm manual draftCreation action={createManualActivity} submitLabel="Save Draft" initial={{ title: "", shortDescription: "", description: "", serviceType: "", area: "", operationDate: "" }} photos={[]} /></div>;
   if (!/^\d+$/.test(value)) notFound();
   const taskId = Number(value);
   if (!Number.isSafeInteger(taskId) || taskId <= 0) notFound();
@@ -21,5 +23,5 @@ export default async function NewOperationPage({ searchParams }: { searchParams:
   if (!task) notFound();
   if (task.operation) redirect(`/admin/operations/${task.operation.id}`);
   const operationDate = (task.completedAt ?? task.request.requiredDate).toISOString().slice(0, 10);
-  return <div className="mx-auto max-w-5xl"><BackButton fallbackHref="/admin/task-assignments" /><div className="mt-6"><p className="text-sm font-semibold text-primary">Draft workflow</p><h1 className="mt-1 text-3xl font-semibold">Create Public Operation</h1><p className="mt-2 text-sm text-muted">Review and write only information suitable for public viewing. Saving creates a private draft.</p></div><OperationForm action={createOperation.bind(null, taskId)} submitLabel="Create Draft" initial={{ title: "", shortDescription: "", description: "", serviceType: task.request.serviceType, area: task.request.area, operationDate }} photos={task.photos} /></div>;
+  return <div className="mx-auto max-w-5xl"><BackButton fallbackHref="/admin/task-assignments" /><div className="mt-6"><p className="text-sm font-semibold text-primary"><T text="Draft workflow" /></p><h1 className="mt-1 text-3xl font-semibold"><T text="Create Public Operation" /></h1><p className="mt-2 text-sm text-muted"><T text="Review and write only information suitable for public viewing. Saving creates a private draft." /></p></div><OperationForm action={createOperation.bind(null, taskId)} submitLabel="Create Draft" initial={{ title: "", shortDescription: "", description: "", serviceType: task.request.serviceType, area: task.request.area, operationDate }} photos={task.photos} /></div>;
 }

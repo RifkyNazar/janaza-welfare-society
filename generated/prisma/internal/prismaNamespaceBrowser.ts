@@ -62,6 +62,9 @@ export const ModelName = {
   Advertisement: 'Advertisement',
   TaskPhoto: 'TaskPhoto',
   Operation: 'Operation',
+  ActivityMedia: 'ActivityMedia',
+  HeroMedia: 'HeroMedia',
+  OperationalTeamMember: 'OperationalTeamMember',
   OperationPhoto: 'OperationPhoto'
 } as const
 
@@ -270,10 +273,50 @@ export const OperationScalarFieldEnum = {
   isPublished: 'isPublished',
   publishedAt: 'publishedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  source: 'source'
 } as const
 
 export type OperationScalarFieldEnum = (typeof OperationScalarFieldEnum)[keyof typeof OperationScalarFieldEnum]
+
+
+export const ActivityMediaScalarFieldEnum = {
+  id: 'id',
+  operationId: 'operationId',
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption',
+  isPublic: 'isPublic',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ActivityMediaScalarFieldEnum = (typeof ActivityMediaScalarFieldEnum)[keyof typeof ActivityMediaScalarFieldEnum]
+
+
+export const HeroMediaScalarFieldEnum = {
+  id: 'id',
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption',
+  isActive: 'isActive',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type HeroMediaScalarFieldEnum = (typeof HeroMediaScalarFieldEnum)[keyof typeof HeroMediaScalarFieldEnum]
+
+
+export const OperationalTeamMemberScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  photo: 'photo',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationalTeamMemberScalarFieldEnum = (typeof OperationalTeamMemberScalarFieldEnum)[keyof typeof OperationalTeamMemberScalarFieldEnum]
 
 
 export const OperationPhotoScalarFieldEnum = {
@@ -415,4 +458,29 @@ export const OperationOrderByRelevanceFieldEnum = {
 } as const
 
 export type OperationOrderByRelevanceFieldEnum = (typeof OperationOrderByRelevanceFieldEnum)[keyof typeof OperationOrderByRelevanceFieldEnum]
+
+
+export const ActivityMediaOrderByRelevanceFieldEnum = {
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption'
+} as const
+
+export type ActivityMediaOrderByRelevanceFieldEnum = (typeof ActivityMediaOrderByRelevanceFieldEnum)[keyof typeof ActivityMediaOrderByRelevanceFieldEnum]
+
+
+export const HeroMediaOrderByRelevanceFieldEnum = {
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption'
+} as const
+
+export type HeroMediaOrderByRelevanceFieldEnum = (typeof HeroMediaOrderByRelevanceFieldEnum)[keyof typeof HeroMediaOrderByRelevanceFieldEnum]
+
+
+export const OperationalTeamMemberOrderByRelevanceFieldEnum = {
+  fullName: 'fullName'
+} as const
+
+export type OperationalTeamMemberOrderByRelevanceFieldEnum = (typeof OperationalTeamMemberOrderByRelevanceFieldEnum)[keyof typeof OperationalTeamMemberOrderByRelevanceFieldEnum]
 

@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/components/public-language";
 
 import { useEffect, useRef, useState } from "react";
 
@@ -19,5 +20,5 @@ export function CopyRequestCode({ requestCode }: { requestCode: string }) {
     }
   }
 
-  return <button type="button" onClick={copy} className="min-h-12 rounded-full border border-primary bg-white px-6 py-3 font-semibold text-foreground transition hover:bg-light-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-live="polite">{copied ? "Copied!" : "Copy Request Code"}</button>;
+  return <button type="button" onClick={copy} className="min-h-12 rounded-full border border-primary bg-white px-6 py-3 font-semibold text-foreground transition hover:bg-light-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" aria-live="polite"><T text={copied ? "Copied!" : "Copy Request Code"} /></button>;
 }

@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/components/public-language";
 
 import { useActionState, useState } from "react";
 type TaskActionState = { error?: string; success?: string };
@@ -16,20 +17,20 @@ export function TaskAction({ action, label, confirmation }: TaskActionProps) {
   if (confirmation && !isConfirming) {
     return (
       <div>
-        <button type="button" onClick={() => setIsConfirming(true)} className="min-h-11 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">{label}</button>
-        {state.error && <p role="alert" className="mt-2 text-sm text-red-700">{state.error}</p>}
+        <button type="button" onClick={() => setIsConfirming(true)} className="min-h-11 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-foreground transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"><T text={label} /></button>
+        {state.error && <p role="alert" className="mt-2 text-sm text-red-700"><T text={state.error} /></p>}
       </div>
     );
   }
 
   return (
     <form action={formAction} className={confirmation ? "rounded-xl border border-border bg-light-background p-4" : ""}>
-      {confirmation && <p className="mb-3 text-sm font-medium">{confirmation}</p>}
+      {confirmation && <p className="mb-3 text-sm font-medium"><T text={confirmation} /></p>}
       <div className="flex flex-wrap gap-2">
-        {confirmation && <button type="button" onClick={() => setIsConfirming(false)} className="min-h-11 rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold">Cancel</button>}
-        <button type="submit" disabled={isPending} className="min-h-11 rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-foreground transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60">{isPending ? "Updating..." : label}</button>
+        {confirmation && <button type="button" onClick={() => setIsConfirming(false)} className="min-h-11 rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold"><T text="Cancel" /></button>}
+        <button type="submit" disabled={isPending} className="min-h-11 rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-foreground transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"><T text={isPending ? "Updating..." : label} /></button>
       </div>
-      {state.error && <p role="alert" className="mt-2 text-sm text-red-700">{state.error}</p>}{state.success && <p role="status" className="mt-2 text-sm font-semibold text-emerald-800">{state.success}</p>}
+      {state.error && <p role="alert" className="mt-2 text-sm text-red-700"><T text={state.error} /></p>}{state.success && <p role="status" className="mt-2 text-sm font-semibold text-emerald-800"><T text={state.success} /></p>}
     </form>
   );
 }

@@ -1,0 +1,2 @@
+# Preserve the bytes of the coordinates migration already applied in production.
+prisma/migrations/20260904193939_add_request_coordinates/migration.sql text eol=lf

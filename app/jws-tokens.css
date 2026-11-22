@@ -1,0 +1,67 @@
+/* Shared foundations; components choose dark public or quiet task-focused surfaces. */
+:root {
+  --jws-emerald: #061c18;
+  --jws-forest: #10382b;
+  --jws-green: #176347;
+  --jws-ivory: #faf8f2;
+  --jws-paper: #fffefa;
+  --jws-ink: #143d30;
+  --jws-muted: #52685e;
+  --jws-line: #d8e3d9;
+  --jws-orange: #ffad6a;
+  --jws-red: #a63835;
+  --jws-action: linear-gradient(115deg,#ffe1b9,#ffad6a 40%,#ff934e);
+  --jws-glass: linear-gradient(115deg,#0b4e3be8,#062e25ed 62%,#714325d9);
+  --jws-surface: linear-gradient(145deg,#174f39,#10382b 65%,#283021);
+  --jws-radius: 1.5rem;
+  --jws-radius-field: .75rem;
+  --jws-container: 76rem;
+  --jws-gutter: clamp(1.25rem,4vw,3rem);
+  --jws-section: clamp(3rem,6vw,5rem);
+  --jws-shadow: 0 .75rem 2rem #10382b0c;
+  --jws-focus: #176347;
+  --jws-font-body: var(--sanctuary-inter),var(--sanctuary-tamil),sans-serif;
+  --jws-font-heading: var(--sanctuary-outfit),var(--sanctuary-tamil),sans-serif;
+}
+
+/* Emerald Sanctuary palette and scale. */
+:where(.jws-public,.jws-public-theme,.jws-portal) {
+  --jws-forest: #062D25;
+  --jws-emerald: #11664C;
+  --jws-green: #11664C;
+  --jws-ivory: #F5F3EB;
+  --jws-orange: #F5A66A;
+  --jws-red: #B7444D;
+  --jws-ink: #062D25;
+  --jws-focus: #11664C;
+  --jws-action: linear-gradient(115deg,#ffdbbc,#F5A66A);
+  --jws-glass: linear-gradient(115deg,#11664cf2,#062d25f5);
+  --jws-surface: linear-gradient(145deg,#11664C,#062D25);
+  --jws-space-1: .25rem;
+  --jws-space-2: .5rem;
+  --jws-space-3: .75rem;
+  --jws-space-4: 1rem;
+  --jws-space-5: 1.5rem;
+  --jws-space-6: 2rem;
+  --jws-space-7: 3rem;
+  --jws-space-8: 4rem;
+  --jws-space-9: 5rem;
+  --jws-control-height: 2.75rem;
+  --jws-radius-pill: 999px;
+  --jws-text-small: .875rem;
+  --jws-text-body: 1rem;
+  --jws-text-lead: 1.125rem;
+  --jws-heading-section: clamp(1.5rem,3vw,2.5rem);
+  --jws-heading-card: clamp(1.125rem,2vw,1.5rem);
+  --jws-gutter: clamp(1rem,3vw,2rem);
+  --jws-section: clamp(2rem,5vw,4rem);
+  --jws-shadow: 0 .75rem 2rem #062d2510;
+}
+
+.jws-button { display: inline-flex; align-items: center; justify-content: center; gap: .75rem; min-height: 2.75rem; padding: .75rem 1.5rem; border: 1px solid transparent; border-radius: 999px; font-weight: 600; text-align: center; text-decoration: none; }
+.jws-button-primary { background: var(--jws-action); color: #29170c; border-color: #f2b679; }
+.jws-button-secondary { background: var(--jws-forest); color: var(--jws-ivory); border-color: var(--jws-green); }
+.jws-button-outline { background: transparent; color: var(--jws-ink); border-color: var(--jws-line); }
+.jws-card { border: 1px solid var(--jws-line); border-radius: var(--jws-radius); background: var(--jws-paper); box-shadow: var(--jws-shadow); }
+.jws-button:focus-visible { outline: 2px solid var(--jws-focus); outline-offset: 4px; }
+.jws-button:disabled { opacity: .55; cursor: not-allowed; }

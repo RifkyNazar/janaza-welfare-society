@@ -79,26 +79,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
     authorized({ auth: session, request }) {
       const { pathname } = request.nextUrl;
-      const user = session?.user;
-
       if (pathname === "/admin/login") {
         return true;
       }
 
       if (pathname.startsWith("/admin")) {
-        if (user?.role === "ADMIN" && user.status === "APPROVED") {
+        if (session?.user) {
           return true;
         }
 
         return Response.redirect(new URL("/admin/login", request.nextUrl));
       }
 
-      if (pathname.startsWith("/employee")) {
-        return user?.role === "EMPLOYEE" && user.status === "APPROVED";
-      }
-
-      if (pathname.startsWith("/supervisor")) {
-        return (user?.role === "SUPERVISOR" || user?.role === "ADMIN") && user.status === "APPROVED";
+      if (pathname.startsWith("/employee") || pathname.startsWith("/supervisor")) {
+        return Boolean(session?.user);
       }
 
       return true;

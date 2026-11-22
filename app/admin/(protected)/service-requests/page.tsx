@@ -1,3 +1,5 @@
+import { getPortalTranslation } from "@/lib/portal-language";
+import { T } from "@/components/public-language";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ServiceRequestStatus } from "@/generated/prisma/enums";
@@ -11,9 +13,11 @@ export const metadata: Metadata = { title: "Service Requests" };
 
 const statuses = ["ALL", "NEW", "ASSIGNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"] as const;
 const requestStatuses = new Set<ServiceRequestStatus>(["NEW", "ASSIGNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]);
-const dateFormatter = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
 
 export default async function ServiceRequestsPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string }> }) {
+  const { dateLocale, t } = await getPortalTranslation();
+  const dateFormatter = new Intl.DateTimeFormat(dateLocale, { day: "2-digit", month: "short", year: "numeric" });
   await requireAdmin();
 
   const parameters = await searchParams;
@@ -45,7 +49,7 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
       mobileNumber: true,
       serviceType: true,
       serviceCategory: true,
-      serviceSelections: { select: { serviceLabel: true }, orderBy: { id: "asc" } },
+      serviceSelections: { select: { serviceLabel: true, serviceCode: true }, orderBy: { id: "asc" } },
       area: true,
       requiredDate: true,
       placeType: true,
@@ -58,35 +62,35 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold text-primary">Operations</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Service Requests</h1>
-          <p className="mt-2 text-sm text-muted">Review public service requests and their current workflow status.</p>
+          <p className="text-sm font-semibold text-primary"><T text="Operations" /></p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl"><T text="Service Requests" /></h1>
+          <p className="mt-2 text-sm text-muted"><T text="Review public service requests and their current workflow status." /></p>
         </div>
-        <p className="text-sm text-muted"><span className="font-semibold text-foreground">{requests.length}</span> result{requests.length === 1 ? "" : "s"}</p>
+        <p className="text-sm text-muted"><span className="font-semibold text-foreground">{requests.length}</span> <T text={requests.length === 1 ? "result" : "results"} /></p>
       </div>
 
       <div className="mt-7 rounded-2xl border border-border bg-white p-4 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
         <div className="flex gap-2 overflow-x-auto pb-2">
           {statuses.map((item) => {
             const href = `/admin/service-requests?status=${item}${query ? `&q=${encodeURIComponent(query)}` : ""}`;
-            return <Link key={item} href={href} className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition ${item === status ? "bg-primary text-foreground" : "border border-border text-muted hover:border-primary hover:text-foreground"}`}>{item === "IN_PROGRESS" ? "In Progress" : item[0] + item.slice(1).toLowerCase()}</Link>;
+            return <Link key={item} href={href} className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition ${item === status ? "bg-primary text-foreground" : "border border-border text-muted hover:border-primary hover:text-foreground"}`}><T text={item === "IN_PROGRESS" ? "In Progress" : item[0] + item.slice(1).toLowerCase()} /></Link>;
           })}
         </div>
 
         <form action="/admin/service-requests" method="get" className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input type="hidden" name="status" value={status} />
-          <label htmlFor="request-search" className="sr-only">Search service requests</label>
-          <input id="request-search" name="q" type="search" defaultValue={query} placeholder="Search code, requester, mobile, or area" className="min-w-0 flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20" />
-          <button type="submit" className="rounded-xl bg-foreground px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-foreground/90">Search</button>
-          {query && <Link href={`/admin/service-requests?status=${status}`} className="rounded-xl border border-border px-5 py-2.5 text-center text-sm font-semibold text-muted hover:text-foreground">Clear</Link>}
+          <label htmlFor="request-search" className="sr-only"><T text="Search service requests" /></label>
+          <input id="request-search" name="q" type="search" defaultValue={query} placeholder={t("Search code, requester, mobile, or area")} className="min-w-0 flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20" />
+          <button type="submit" className="rounded-xl bg-foreground px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-foreground/90"><T text="Search" /></button>
+          {query && <Link href={`/admin/service-requests?status=${status}`} className="rounded-xl border border-border px-5 py-2.5 text-center text-sm font-semibold text-muted hover:text-foreground"><T text="Clear" /></Link>}
         </form>
       </div>
 
-      <section aria-label="Service requests" className="mt-6 space-y-3">
+      <section aria-label={t("Service requests")} className="mt-6 space-y-3">
         {requests.length === 0 ? (
           <div className="rounded-2xl border border-border bg-white px-6 py-14 text-center">
-            <p className="font-semibold">No service requests found</p>
-            <p className="mt-2 text-sm text-muted">Try another status filter or search term.</p>
+            <p className="font-semibold"><T text="No service requests found" /></p>
+            <p className="mt-2 text-sm text-muted"><T text="Try another status filter or search term." /></p>
           </div>
         ) : requests.map((request) => (
           <article key={request.id} className="rounded-2xl border border-border bg-white p-5 shadow-[0_8px_26px_rgba(16,42,42,0.035)]">
@@ -97,16 +101,16 @@ export default async function ServiceRequestsPage({ searchParams }: { searchPara
                 <p className="mt-1 text-sm text-muted">{request.mobileNumber}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted">{categoryLabel(request.serviceCategory)}</p>
-                <p className="mt-1 text-sm">{serviceSummary(request.serviceType, request.serviceSelections)}</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">{t(categoryLabel(request.serviceCategory))}</p>
+                <p className="mt-1 text-sm">{serviceSummary(request.serviceType, request.serviceSelections, t)}</p>
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Location</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted"><T text="Location" /></p>
                 <p className="mt-1 text-sm">{request.area}</p>
               </div>
               <div>
                 <RequestStatusBadge status={request.status} />
-                <p className="mt-2 text-xs text-muted">Submitted {dateFormatter.format(request.createdAt)}</p>
+                <p className="mt-2 text-xs text-muted"><T text="Submitted" /> {dateFormatter.format(request.createdAt)}</p>
               </div>
               <RequestActions requestId={request.id} status={request.status} />
             </div>

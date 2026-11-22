@@ -32,8 +32,10 @@ export async function registerEmployee(
   const position = value(formData, "position");
   const phone = value(formData, "phone");
   const email = value(formData, "email").toLowerCase();
-  const password = value(formData, "password");
-  const confirmPassword = value(formData, "confirmPassword");
+  const passwordField = formData.get("password");
+  const confirmationField = formData.get("confirmPassword");
+  const password = typeof passwordField === "string" ? passwordField : "";
+  const confirmPassword = typeof confirmationField === "string" ? confirmationField : "";
   const values = { fullName, employeeCode, position, phone, email, confirmation: formData.get("confirmation") === "on" };
 
   const rateLimit = await consumeRateLimit("employee-registration", { limit: 5, windowMs: 60 * 60_000 });
@@ -41,6 +43,9 @@ export async function registerEmployee(
 
   if (!fullName || !employeeCode || !position || !phone || !email || !password || !confirmPassword) {
     return { error: "Please complete all required fields.", values };
+  }
+  if (!values.confirmation) {
+    return { error: "Please confirm that the information is correct.", values };
   }
   if (!emailPattern.test(email)) {
     return { error: "Please enter a valid email address.", values };
@@ -56,6 +61,9 @@ export async function registerEmployee(
   }
   if (password !== confirmPassword) {
     return { error: "Passwords do not match.", values };
+  }
+  if (password !== password.trim() || Buffer.byteLength(password, "utf8") > 72) {
+    return { error: "Use a password of at most 72 bytes with no leading or trailing spaces.", values };
   }
 
   const passwordHash = await hash(password, 12);
@@ -136,7 +144,7 @@ export async function login(
   if (!user || !passwordMatches) {
     return { error: "Invalid login credentials.", values };
   }
-  if (user.status !== "APPROVED") {
+  if (user.status !== "APPROVED" || user.role === "ADMIN") {
     return { error: "Invalid login credentials.", values };
   }
 
@@ -144,7 +152,7 @@ export async function login(
     await signIn("credentials", {
       identifier,
       password,
-      redirectTo: user.role === "ADMIN" ? "/admin" : user.role === "SUPERVISOR" ? "/supervisor" : "/employee",
+      redirectTo: user.role === "SUPERVISOR" ? "/supervisor" : "/employee",
     });
   } catch (error) {
     if (error instanceof AuthError) {

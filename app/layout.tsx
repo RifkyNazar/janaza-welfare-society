@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import "leaflet/dist/leaflet.css";
 import "./globals.css";
+import "./jws-theme.css";
+import { cookies } from "next/headers";
+import { jwsFontVariables } from "@/lib/jws-fonts";
+import { PublicLanguage } from "@/components/public-language";
 
 export const metadata: Metadata = {
   title: {
@@ -11,10 +14,11 @@ export const metadata: Metadata = {
     "Compassionate guidance and practical support for Muslim families.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = (await cookies()).get("jws-language")?.value === "ta" ? "ta" : "en";
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+    <html lang={locale} className={`h-full antialiased ${jwsFontVariables}`}>
+      <body className="min-h-full"><PublicLanguage locale={locale} wrap={false}>{children}</PublicLanguage></body>
     </html>
   );
 }

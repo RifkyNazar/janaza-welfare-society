@@ -16,7 +16,7 @@ function StepIcon({ index }: { index: number }) {
 }
 
 export default async function EmployeeRegistrationPage() {
-  await redirectAuthenticatedUser();
+  await redirectAuthenticatedUser(["EMPLOYEE", "SUPERVISOR", "ADMIN"]);
   return (
     <EmployeeAuthLayout title="Employee Registration" description="Submit your information for administrator approval." backHref="/employee-access" backLabel="Back to Employee Access" wide>
       <div className="mx-auto mb-7 max-w-2xl rounded-2xl border border-border bg-white/80 p-5 shadow-sm">

@@ -18,5 +18,5 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const bytes = await readVehicleImage(vehicle.imageUrl);
   const mime = vehicleImageMime(vehicle.imageUrl);
   if (!bytes || !mime) return new Response(null, { status: 404 });
-  return new Response(bytes, { headers: { "Content-Type": mime, "X-Content-Type-Options": "nosniff", "Cache-Control": manager ? "private, no-store" : "public, max-age=3600" } });
+  return new Response(bytes, { headers: { "Content-Type": mime, "X-Content-Type-Options": "nosniff", "Cache-Control": "private, no-store" } });
 }

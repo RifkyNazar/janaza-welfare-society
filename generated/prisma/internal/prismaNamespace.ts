@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.10.0
- * Query Engine version: 0edf323efd1d98336f3f0a68684b56f689b900d3
+ * Prisma Client JS version: 7.10.1
+ * Query Engine version: d1b3f377ca835d73fd50954a5e22128b9ebdd6b8
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.10.0",
-  engine: "0edf323efd1d98336f3f0a68684b56f689b900d3"
+  client: "7.10.1",
+  engine: "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8"
 }
 
 /**
@@ -408,6 +408,9 @@ export const ModelName = {
   Advertisement: 'Advertisement',
   TaskPhoto: 'TaskPhoto',
   Operation: 'Operation',
+  ActivityMedia: 'ActivityMedia',
+  HeroMedia: 'HeroMedia',
+  OperationalTeamMember: 'OperationalTeamMember',
   OperationPhoto: 'OperationPhoto'
 } as const
 
@@ -424,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "staffPushSubscription" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "operationPhoto"
+    modelProps: "user" | "staffPushSubscription" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "activityMedia" | "heroMedia" | "operationalTeamMember" | "operationPhoto"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1154,6 +1157,204 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ActivityMedia: {
+      payload: Prisma.$ActivityMediaPayload<ExtArgs>
+      fields: Prisma.ActivityMediaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ActivityMediaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ActivityMediaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>
+        }
+        findFirst: {
+          args: Prisma.ActivityMediaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ActivityMediaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>
+        }
+        findMany: {
+          args: Prisma.ActivityMediaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>[]
+        }
+        create: {
+          args: Prisma.ActivityMediaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>
+        }
+        createMany: {
+          args: Prisma.ActivityMediaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ActivityMediaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>
+        }
+        update: {
+          args: Prisma.ActivityMediaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>
+        }
+        deleteMany: {
+          args: Prisma.ActivityMediaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ActivityMediaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ActivityMediaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ActivityMediaPayload>
+        }
+        aggregate: {
+          args: Prisma.ActivityMediaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateActivityMedia>
+        }
+        groupBy: {
+          args: Prisma.ActivityMediaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ActivityMediaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ActivityMediaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ActivityMediaCountAggregateOutputType> | number
+        }
+      }
+    }
+    HeroMedia: {
+      payload: Prisma.$HeroMediaPayload<ExtArgs>
+      fields: Prisma.HeroMediaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HeroMediaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HeroMediaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>
+        }
+        findFirst: {
+          args: Prisma.HeroMediaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HeroMediaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>
+        }
+        findMany: {
+          args: Prisma.HeroMediaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>[]
+        }
+        create: {
+          args: Prisma.HeroMediaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>
+        }
+        createMany: {
+          args: Prisma.HeroMediaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.HeroMediaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>
+        }
+        update: {
+          args: Prisma.HeroMediaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>
+        }
+        deleteMany: {
+          args: Prisma.HeroMediaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HeroMediaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.HeroMediaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HeroMediaPayload>
+        }
+        aggregate: {
+          args: Prisma.HeroMediaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHeroMedia>
+        }
+        groupBy: {
+          args: Prisma.HeroMediaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HeroMediaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HeroMediaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HeroMediaCountAggregateOutputType> | number
+        }
+      }
+    }
+    OperationalTeamMember: {
+      payload: Prisma.$OperationalTeamMemberPayload<ExtArgs>
+      fields: Prisma.OperationalTeamMemberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OperationalTeamMemberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OperationalTeamMemberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>
+        }
+        findFirst: {
+          args: Prisma.OperationalTeamMemberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OperationalTeamMemberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>
+        }
+        findMany: {
+          args: Prisma.OperationalTeamMemberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>[]
+        }
+        create: {
+          args: Prisma.OperationalTeamMemberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>
+        }
+        createMany: {
+          args: Prisma.OperationalTeamMemberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.OperationalTeamMemberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>
+        }
+        update: {
+          args: Prisma.OperationalTeamMemberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>
+        }
+        deleteMany: {
+          args: Prisma.OperationalTeamMemberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OperationalTeamMemberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.OperationalTeamMemberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationalTeamMemberPayload>
+        }
+        aggregate: {
+          args: Prisma.OperationalTeamMemberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOperationalTeamMember>
+        }
+        groupBy: {
+          args: Prisma.OperationalTeamMemberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OperationalTeamMemberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OperationalTeamMemberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OperationalTeamMemberCountAggregateOutputType> | number
+        }
+      }
+    }
     OperationPhoto: {
       payload: Prisma.$OperationPhotoPayload<ExtArgs>
       fields: Prisma.OperationPhotoFieldRefs
@@ -1448,10 +1649,50 @@ export const OperationScalarFieldEnum = {
   isPublished: 'isPublished',
   publishedAt: 'publishedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  source: 'source'
 } as const
 
 export type OperationScalarFieldEnum = (typeof OperationScalarFieldEnum)[keyof typeof OperationScalarFieldEnum]
+
+
+export const ActivityMediaScalarFieldEnum = {
+  id: 'id',
+  operationId: 'operationId',
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption',
+  isPublic: 'isPublic',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ActivityMediaScalarFieldEnum = (typeof ActivityMediaScalarFieldEnum)[keyof typeof ActivityMediaScalarFieldEnum]
+
+
+export const HeroMediaScalarFieldEnum = {
+  id: 'id',
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption',
+  isActive: 'isActive',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type HeroMediaScalarFieldEnum = (typeof HeroMediaScalarFieldEnum)[keyof typeof HeroMediaScalarFieldEnum]
+
+
+export const OperationalTeamMemberScalarFieldEnum = {
+  id: 'id',
+  fullName: 'fullName',
+  photo: 'photo',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationalTeamMemberScalarFieldEnum = (typeof OperationalTeamMemberScalarFieldEnum)[keyof typeof OperationalTeamMemberScalarFieldEnum]
 
 
 export const OperationPhotoScalarFieldEnum = {
@@ -1595,6 +1836,31 @@ export const OperationOrderByRelevanceFieldEnum = {
 export type OperationOrderByRelevanceFieldEnum = (typeof OperationOrderByRelevanceFieldEnum)[keyof typeof OperationOrderByRelevanceFieldEnum]
 
 
+export const ActivityMediaOrderByRelevanceFieldEnum = {
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption'
+} as const
+
+export type ActivityMediaOrderByRelevanceFieldEnum = (typeof ActivityMediaOrderByRelevanceFieldEnum)[keyof typeof ActivityMediaOrderByRelevanceFieldEnum]
+
+
+export const HeroMediaOrderByRelevanceFieldEnum = {
+  storageKey: 'storageKey',
+  altText: 'altText',
+  caption: 'caption'
+} as const
+
+export type HeroMediaOrderByRelevanceFieldEnum = (typeof HeroMediaOrderByRelevanceFieldEnum)[keyof typeof HeroMediaOrderByRelevanceFieldEnum]
+
+
+export const OperationalTeamMemberOrderByRelevanceFieldEnum = {
+  fullName: 'fullName'
+} as const
+
+export type OperationalTeamMemberOrderByRelevanceFieldEnum = (typeof OperationalTeamMemberOrderByRelevanceFieldEnum)[keyof typeof OperationalTeamMemberOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -1696,6 +1962,20 @@ export type EnumDonationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'TaskStatus'
  */
 export type EnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'OperationSource'
+ */
+export type EnumOperationSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OperationSource'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
     
 
 /**
@@ -1860,6 +2140,9 @@ export type GlobalOmitConfig = {
   advertisement?: Prisma.AdvertisementOmit
   taskPhoto?: Prisma.TaskPhotoOmit
   operation?: Prisma.OperationOmit
+  activityMedia?: Prisma.ActivityMediaOmit
+  heroMedia?: Prisma.HeroMediaOmit
+  operationalTeamMember?: Prisma.OperationalTeamMemberOmit
   operationPhoto?: Prisma.OperationPhotoOmit
 }
 

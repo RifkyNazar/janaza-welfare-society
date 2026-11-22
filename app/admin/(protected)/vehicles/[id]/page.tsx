@@ -1,3 +1,4 @@
+import { T } from "@/components/public-language";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,18 +25,18 @@ export default async function VehicleDetailsPage({ params, searchParams }: { par
 
   return <div className="mx-auto max-w-4xl">
     <BackButton fallbackHref="/admin/vehicles" label="Back to Vehicles" />
-    {query.created === "1" && <StatusMessage className="mt-6">Vehicle added successfully.</StatusMessage>}
-    {query.created === "1" && <div className="mt-3 flex flex-wrap gap-3"><Link href="/admin/vehicles" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">Back to Vehicles</Link><Link href="/admin" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">Dashboard</Link><Link href="/vehicles" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold">View Website</Link></div>}
-    <p className="mt-6 text-sm font-semibold text-primary">Fleet management</p>
+    {query.created === "1" && <StatusMessage className="mt-6"><T text="Vehicle added successfully." /></StatusMessage>}
+    {query.created === "1" && <div className="mt-3 flex flex-wrap gap-3"><Link href="/admin/vehicles" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold"><T text="Back to Vehicles" /></Link><Link href="/admin" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold"><T text="Dashboard" /></Link><Link href="/vehicles" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold"><T text="View Website" /></Link></div>}
+    <p className="mt-6 text-sm font-semibold text-primary"><T text="Fleet management" /></p>
     <h1 className="mt-1 text-3xl font-semibold">{vehicle.name}</h1>
     <VehicleForm action={updateVehicle.bind(null, vehicle.id)} submitLabel="Save Changes" currentImageSrc={vehicleImageSrc(vehicle.id, vehicle.imageUrl)} initial={{ name: vehicle.name, vehicleNumber: vehicle.vehicleNumber, vehicleType: vehicle.vehicleType, description: vehicle.description ?? "", displayOrder: vehicle.displayOrder, isActive: vehicle.isActive, isPublic: vehicle.isPublic }} />
     <section className="mt-8 rounded-2xl border border-red-200 bg-white p-5">
-      <h2 className="text-lg font-semibold">Remove vehicle</h2>
+      <h2 className="text-lg font-semibold"><T text="Remove vehicle" /></h2>
       {referenced ? <>
-        <p className="mt-2 text-sm leading-6 text-muted">This vehicle is referenced by {vehicle._count.preferredRequests} service request{vehicle._count.preferredRequests === 1 ? "" : "s"}. It cannot be permanently deleted because the history must be preserved.</p>
+        <p className="mt-2 text-sm leading-6 text-muted"><T text="This vehicle is referenced by" /> {vehicle._count.preferredRequests} <T text="service request" />{vehicle._count.preferredRequests === 1 ? "" : "s"}<T text=". It cannot be permanently deleted because the history must be preserved." /></p>
         <div className="mt-4"><TaskAction action={deactivateVehicle.bind(null, vehicle.id)} label="Deactivate / Hide from Public" confirmation="Deactivate this vehicle and hide it from public view? Historical records will remain." /></div>
       </> : <>
-        <p className="mt-2 text-sm leading-6 text-muted">This vehicle has no request-history references and can be permanently deleted. Its stored image is removed only after the database deletion succeeds.</p>
+        <p className="mt-2 text-sm leading-6 text-muted"><T text="This vehicle has no request-history references and can be permanently deleted. Its stored image is removed only after the database deletion succeeds." /></p>
         <div className="mt-4"><VehicleDeleteAction action={deleteVehicle.bind(null, vehicle.id)} /></div>
       </>}
     </section>

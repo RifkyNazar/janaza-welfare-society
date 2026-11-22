@@ -1,3 +1,4 @@
+import { PortalStatus } from "@/components/portal-status";
 import type { TaskStatus } from "@/generated/prisma/enums";
 
 const styles: Record<TaskStatus, string> = {
@@ -9,5 +10,5 @@ const styles: Record<TaskStatus, string> = {
 };
 
 export function TaskStatusBadge({ status }: { status: TaskStatus }) {
-  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[status]}`}>{status.replaceAll("_", " ")}</span>;
+  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[status]}`}><PortalStatus value={status} /></span>;
 }

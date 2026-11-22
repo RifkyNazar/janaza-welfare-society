@@ -6,7 +6,7 @@ import { redirectAuthenticatedUser } from "@/lib/permissions";
 export const metadata: Metadata = { title: "Employee Login" };
 
 export default async function EmployeeLoginPage() {
-  await redirectAuthenticatedUser();
+  await redirectAuthenticatedUser(["EMPLOYEE", "SUPERVISOR"]);
   return (
     <EmployeeAuthLayout title="Staff Login" description="Sign in to your approved Supervisor or Employee account." backHref="/employee-access" backLabel="Back to Staff Access">
       <LoginForm />

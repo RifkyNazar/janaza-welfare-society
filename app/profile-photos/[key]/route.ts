@@ -12,5 +12,5 @@ export async function GET(_request: Request, { params }: { params: Promise<{ key
   if (!allowed) return new Response("Not found", { status: 404 });
   const bytes = await readProfilePhoto(key); const mime = profilePhotoMime(key);
   if (!bytes || !mime) return new Response("Not found", { status: 404 });
-  return new Response(bytes, { headers: { "Content-Type": mime, "Cache-Control": profile.isPublicProfile ? "public, max-age=3600" : "private, no-store", "X-Content-Type-Options": "nosniff" } });
+  return new Response(bytes, { headers: { "Content-Type": mime, "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" } });
 }

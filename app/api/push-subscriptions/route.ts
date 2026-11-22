@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { isAllowedPushEndpoint } from "@/lib/push-endpoint";
 
 const keyPattern = /^[A-Za-z0-9_-]+$/;
 
@@ -27,8 +28,7 @@ async function input(request: Request) {
     const endpoint = typeof body.endpoint === "string" ? body.endpoint.trim() : "";
     const p256dh = typeof body.keys?.p256dh === "string" ? body.keys.p256dh.trim() : "";
     const authKey = typeof body.keys?.auth === "string" ? body.keys.auth.trim() : "";
-    const url = new URL(endpoint);
-    if (url.protocol !== "https:" || endpoint.length > 500 || !p256dh || p256dh.length > 255 || !authKey || authKey.length > 100 || !keyPattern.test(p256dh) || !keyPattern.test(authKey)) return null;
+    if (!isAllowedPushEndpoint(endpoint) || !p256dh || p256dh.length > 255 || !authKey || authKey.length > 100 || !keyPattern.test(p256dh) || !keyPattern.test(authKey)) return null;
     return { endpoint, p256dh, auth: authKey };
   } catch { return null; }
 }
@@ -39,10 +39,14 @@ export async function POST(request: Request) {
   if (!user) return Response.json({ error: "Authentication required." }, { status: 401 });
   if (!subscription) return Response.json({ error: "Invalid push subscription." }, { status: 400 });
   const userAgent = request.headers.get("user-agent")?.slice(0, 500) || null;
-  const existing = await prisma.staffPushSubscription.findUnique({ where: { endpoint: subscription.endpoint }, select: { userId: true } });
-  if (existing && existing.userId !== user.id) return Response.json({ error: "Subscription is already registered." }, { status: 409 });
   try {
-    await prisma.staffPushSubscription.upsert({ where: { endpoint: subscription.endpoint }, create: { userId: user.id, userAgent, ...subscription }, update: { userId: user.id, userAgent, p256dh: subscription.p256dh, auth: subscription.auth } });
+    const updated = await prisma.staffPushSubscription.updateMany({
+      where: { endpoint: subscription.endpoint, userId: user.id },
+      data: { userAgent, p256dh: subscription.p256dh, auth: subscription.auth },
+    });
+    if (updated.count === 0) {
+      await prisma.staffPushSubscription.create({ data: { userId: user.id, userAgent, ...subscription } });
+    }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") return Response.json({ error: "Unable to save subscription." }, { status: 409 });
     throw error;

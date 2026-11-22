@@ -59,6 +59,16 @@ export async function createOperation(taskId: number, _state: OperationActionSta
   redirect(`/admin/operations/${operation.id}?created=1`);
 }
 
+export async function createManualActivity(_state: OperationActionState, formData: FormData): Promise<OperationActionState> {
+  await requireAdmin();
+  const parsed = values(formData);
+  if ("error" in parsed) return { error: parsed.error, values: parsed.values };
+  if (photoIds(formData).length) return { error: "Task photos cannot be attached to a manual activity." };
+  const operation = await prisma.operation.create({ data: { ...parsed.data, source: "MANUAL", isPublished: false } });
+  revalidatePath("/admin/operations");
+  redirect(`/admin/operations/${operation.id}?created=1#activity-photos`);
+}
+
 export async function updateOperation(operationId: number, _state: OperationActionState, formData: FormData): Promise<OperationActionState> {
   void _state;
   await requireAdmin();

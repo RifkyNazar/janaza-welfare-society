@@ -1,4 +1,6 @@
 "use client";
+import "leaflet/dist/leaflet.css";
+import { T } from "@/components/public-language";
 
 import { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
@@ -86,19 +88,19 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
   return (
     <div className="sm:col-span-2 rounded-2xl border border-border bg-light-background/60 p-4 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><h3 className="font-semibold text-foreground">Interactive Map</h3><p id="map-instructions" className="mt-1 text-sm leading-6 text-muted">{message}</p></div>
+        <div><h3 className="font-semibold text-foreground"><T text="Interactive Map" /></h3><p id="map-instructions" className="mt-1 text-sm leading-6 text-muted"><T text={message} /></p></div>
         <button type="button" onClick={useCurrentLocation} disabled={isLocating} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-primary bg-white px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60">
           <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" className="size-4"><circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.6" /><path d="M10 2v2m0 12v2M2 10h2m12 0h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          {isLocating ? "Locating..." : "Use My Current Location"}
+          <T text={isLocating ? "Locating..." : "Use My Current Location"} />
         </button>
       </div>
       <div ref={containerRef} className="mt-5 h-72 w-full overflow-hidden rounded-xl border border-border bg-white sm:h-80" role="application" aria-label="Select service location on map" aria-describedby="map-instructions" />
       {value ? (
         <div className="mt-5 flex flex-col gap-4 rounded-xl border border-primary/35 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div><p className="text-xs font-semibold uppercase tracking-wider text-muted">Selected location</p><p className="mt-2 text-sm text-foreground">Latitude: <span className="font-semibold tabular-nums">{value.latitude.toFixed(6)}</span></p><p className="mt-1 text-sm text-foreground">Longitude: <span className="font-semibold tabular-nums">{value.longitude.toFixed(6)}</span></p></div>
-          <a href={mapsUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">Open Selected Location in Maps</a>
+          <div><p className="text-xs font-semibold uppercase tracking-wider text-muted"><T text="Selected location" /></p><p className="mt-2 text-sm text-foreground"><T text="Latitude:" /> <span className="font-semibold tabular-nums">{value.latitude.toFixed(6)}</span></p><p className="mt-1 text-sm text-foreground"><T text="Longitude:" /> <span className="font-semibold tabular-nums">{value.longitude.toFixed(6)}</span></p></div>
+          <a href={mapsUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"><T text="Open Selected Location in Maps" /></a>
         </div>
-      ) : <p className="mt-4 text-sm text-muted">No map location selected. You can still submit using Address and Area.</p>}
+      ) : <p className="mt-4 text-sm text-muted"><T text="No map location selected. You can still submit using Address and Area." /></p>}
     </div>
   );
 }

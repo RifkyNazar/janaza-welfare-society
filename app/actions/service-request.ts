@@ -27,7 +27,7 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
   const rateLimit = await consumeRateLimit("service-request", { limit: 10, windowMs: 60 * 60_000 });
   if (!rateLimit.allowed) return { error: "Too many requests were submitted from this connection. Please try again later.", values };
   if (!requesterName || !mobileNumber || !area) return { error: "Please correct the highlighted fields.", fieldErrors: { ...(!requesterName ? { requesterName: "Enter your name." } : {}), ...(!mobileNumber ? { mobileNumber: "Enter your contact number." } : {}), ...(!area ? { area: "Enter your location or area." } : {}) }, values };
-  if (requesterName.length > 150 || mobileNumber.length > 30 || area.length > 150 || note.length > 2000 || submittedCodes.length > 10 || submittedCodes.some((code) => code.length > 64) || latitudeInput.length > 50 || longitudeInput.length > 50) return { error: "One or more fields exceed the allowed length.", values };
+  if (requesterName.length > 150 || mobileNumber.length > 30 || area.length > 150 || note.length > 191 || submittedCodes.length > 10 || submittedCodes.some((code) => code.length > 64) || latitudeInput.length > 50 || longitudeInput.length > 50) return { error: "One or more fields exceed the allowed length.", values };
   if (!/^[+]?[0-9][0-9\s-]{7,20}$/.test(mobileNumber)) return { error: "Please correct the highlighted field.", fieldErrors: { mobileNumber: "Enter a valid contact number." }, values };
   const selectedServices = validateServiceSelection(category, submittedCodes);
   if (!selectedServices) return { error: category === "VEHICLE" ? "Please select exactly one valid vehicle service." : "Please select one or more valid Janazah services.", values };

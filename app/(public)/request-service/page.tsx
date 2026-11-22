@@ -1,3 +1,4 @@
+import { T } from "@/components/public-language";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ServiceRequestForm } from "@/components/service-request-form";
@@ -13,13 +14,13 @@ export default async function RequestServicePage() {
       <div className="request-service-pattern" aria-hidden="true" />
       <div className="relative mx-auto max-w-4xl">
         <div className="mx-auto mb-9 max-w-2xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">We are here to help</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Request a Service</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted"><T text="We are here to help" /></p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"><T text="Request a Service" /></h1>
           <div className="section-ornament" aria-hidden="true"><span /></div>
           <p className="mt-4 text-sm leading-6 text-muted sm:text-base">
-            Share the details below so our team can understand the support you need.
+            <T text="Share the details below so our team can understand the support you need." />
           </p>
-          <p className="mt-4 text-sm text-muted">Already submitted a request? <Link href="/track-request" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-muted">Track Request</Link></p>
+          <p className="mt-4 text-sm text-muted"><T text="Already submitted a request?" /> <Link href="/track-request" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-muted"><T text="Track Request" /></Link></p>
         </div>
         <ServiceRequestForm />
       </div>

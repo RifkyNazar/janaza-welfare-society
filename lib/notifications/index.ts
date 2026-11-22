@@ -7,6 +7,7 @@ import { sendPushToApprovedUser, sendPushToApprovedUsers } from "@/lib/notificat
 import { getSmsAppBaseUrl, sendSmsNotification } from "@/lib/notifications/sms";
 import { employeeRegistrationEmail, serviceRequestEmail, taskAssignmentEmail } from "@/lib/notifications/templates";
 import type { EmployeeRegistrationNotification, ServiceRequestNotification } from "@/lib/notifications/types";
+import { translate } from "@/lib/i18n";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STAFF_REGISTRATION_SMS = "JWS: New employee registration received. Please sign in to review.";
@@ -47,7 +48,11 @@ export async function notifyAssignedEmployee(taskAssignmentId: number) {
     if (!task) return;
     const data = { requestCode: task.request.requestCode, category: task.request.serviceCategory === "JANAZAH" ? "Janazah Services" : task.request.serviceCategory === "VEHICLE" ? "Vehicle Services" : task.request.serviceType, services: task.request.serviceSelections.length ? task.request.serviceSelections.map((item) => item.serviceLabel) : [task.request.serviceType], area: task.request.area };
     const deliveries: Promise<unknown>[] = [
-      sendPushToApprovedUser(task.employee.userId, "EMPLOYEE", { title: "JWS New Task Assignment", body: "You have been assigned a new JWS service task. Open JWS to view the details.", url: `/employee/my-tasks/${task.id}`, tag: `task-assignment-${task.id}` }),
+      sendPushToApprovedUser(task.employee.userId, "EMPLOYEE", {
+        title: "JWS New Task Assignment", body: "You have been assigned a new JWS service task. Open JWS to view the details.",
+        ta: { title: "JWS புதிய பணி ஒதுக்கீடு", body: "உங்களுக்கு ஒரு புதிய JWS சேவைப் பணி ஒதுக்கப்பட்டுள்ளது. விவரங்களைப் பார்க்க JWS தளத்தைத் திறக்கவும்." },
+        url: `/employee/my-tasks/${task.id}`, tag: `task-assignment-${task.id}`,
+      }),
       sendSmsNotification(task.employee.phone, ASSIGNMENT_SMS),
     ];
     const appBaseUrl = getEmailAppBaseUrl();
@@ -60,7 +65,11 @@ export async function notifyAdminsOfEmployeeRegistration(data: EmployeeRegistrat
   try {
     const admins = await approvedStaff(["ADMIN"]);
     const deliveries: Promise<unknown>[] = [
-      sendPushToApprovedUsers(admins.map(({ id }) => id), { title: "New Employee Registration", body: "A new employee registration requires administrator approval.", url: `/admin/employees/${data.employeeId}`, tag: `employee-registration-${data.employeeId}` }),
+      sendPushToApprovedUsers(admins.map(({ id }) => id), {
+        title: "New Employee Registration", body: "A new employee registration requires administrator approval.",
+        ta: { title: "புதிய ஊழியர் பதிவு", body: "புதிய ஊழியர் பதிவுக்கு நிர்வாக அங்கீகாரம் தேவை." },
+        url: `/admin/employees/${data.employeeId}`, tag: `employee-registration-${data.employeeId}`,
+      }),
       deliverSms(admins, STAFF_REGISTRATION_SMS),
     ];
     const appBaseUrl = getEmailAppBaseUrl();
@@ -76,9 +85,15 @@ export async function notifyStaffOfNewServiceRequest(data: ServiceRequestNotific
     const supervisors = staff.filter(({ role }) => role === "SUPERVISOR");
     const appBaseUrl = getEmailAppBaseUrl();
     const smsAppBaseUrl = getSmsAppBaseUrl();
+    const requestPush = {
+      title: "New JWS Service Request",
+      body: `${data.requestCode} • ${data.category} • New request waiting for assignment.`,
+      ta: { title: "புதிய JWS சேவைக் கோரிக்கை", body: `${data.requestCode} • ${translate("ta", data.category)} • புதிய கோரிக்கை ஒதுக்கீட்டுக்காகக் காத்திருக்கிறது.` },
+      tag: `service-request-${data.requestId}`,
+    };
     const deliveries: Promise<unknown>[] = [
-      sendPushToApprovedUsers(admins.map(({ id }) => id), { title: "New JWS Service Request", body: `${data.requestCode} • ${data.category} • New request waiting for assignment.`, url: `/admin/service-requests/${data.requestId}`, tag: `service-request-${data.requestId}` }),
-      sendPushToApprovedUsers(supervisors.map(({ id }) => id), { title: "New JWS Service Request", body: `${data.requestCode} • ${data.category} • New request waiting for assignment.`, url: `/supervisor/requests/${data.requestId}`, tag: `service-request-${data.requestId}` }),
+      sendPushToApprovedUsers(admins.map(({ id }) => id), { ...requestPush, url: `/admin/service-requests/${data.requestId}` }),
+      sendPushToApprovedUsers(supervisors.map(({ id }) => id), { ...requestPush, url: `/supervisor/requests/${data.requestId}` }),
       deliverSms(staff, STAFF_REQUEST_SMS),
     ];
     if (appBaseUrl) {

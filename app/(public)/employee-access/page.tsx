@@ -1,3 +1,4 @@
+import { T } from "@/components/public-language";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EmployeeAuthLayout } from "@/components/employee/employee-auth-layout";
@@ -35,19 +36,19 @@ function AccessIcon({ icon }: { icon: (typeof accessOptions)[number]["icon"] }) 
 }
 
 export default async function EmployeeAccessPage() {
-  await redirectAuthenticatedUser();
+  await redirectAuthenticatedUser(["EMPLOYEE"]);
   return (
     <EmployeeAuthLayout title="Employee Access" description="Secure access for authorized Janaza Welfare Society staff members." wide>
       <div className="grid gap-6 md:grid-cols-2">
         {accessOptions.map((option) => (
-          <article key={option.href} className="employee-access-card group rounded-2xl border border-border bg-white p-7 shadow-[0_12px_35px_rgba(16,42,42,0.07)] transition duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_18px_45px_rgba(69,232,205,0.16)]">
+          <article key={option.href} className="employee-access-card group rounded-2xl border border-border bg-white p-7 shadow-[0_12px_35px_rgba(16,42,42,0.07)] transition duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_18px_45px_rgba(8,127,35,0.16)]">
             <div className="employee-card-icon flex size-14 items-center justify-center bg-light-background text-foreground ring-1 ring-primary/45">
               <AccessIcon icon={option.icon} />
             </div>
-            <h2 className="mt-6 text-2xl font-semibold text-foreground">{option.title}</h2>
-            <p className="mt-3 leading-7 text-muted">{option.description}</p>
-            <Link href={option.href} className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-foreground transition duration-300 group-hover:shadow-[0_8px_24px_rgba(69,232,205,0.28)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
-              {option.action}
+            <h2 className="mt-6 text-2xl font-semibold text-foreground"><T text={option.title} /></h2>
+            <p className="mt-3 leading-7 text-muted"><T text={option.description} /></p>
+            <Link href={option.href} className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-foreground transition duration-300 group-hover:shadow-[0_8px_24px_rgba(8,127,35,0.28)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
+              <T text={option.action} />
               <span className="cta-gem" aria-hidden="true" />
               <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none">→</span>
             </Link>
@@ -60,7 +61,7 @@ export default async function EmployeeAccessPage() {
           <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5" />
           <path d="M10 9v5m0-8v.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
-        <p>New employee registrations require administrator approval before access is granted.</p>
+        <p><T text="New employee registrations require administrator approval before access is granted." /></p>
       </aside>
     </EmployeeAuthLayout>
   );

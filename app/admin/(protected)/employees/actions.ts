@@ -10,6 +10,21 @@ export type EmployeeActionState = {
   success?: string;
 };
 
+export async function setPublicEmployee(userId: number, visible: boolean, reviewedAt: number, _state: EmployeeActionState, _data: FormData): Promise<EmployeeActionState> {
+  void _state; void _data;
+  await requireAdmin();
+  if (!Number.isSafeInteger(userId) || userId <= 0 || typeof visible !== "boolean") return { error: "Invalid employee." };
+  const reviewedVersion = new Date(reviewedAt);
+  if (visible && (!Number.isSafeInteger(reviewedAt) || Number.isNaN(reviewedVersion.getTime()))) return { error: "Review the current profile before approving it." };
+  const result = await prisma.employeeProfile.updateMany({
+    where: { userId, ...(visible ? { updatedAt: reviewedVersion, user: { role: "EMPLOYEE", status: "APPROVED" } } : {}) },
+    data: { isPublicProfile: visible },
+  });
+  if (result.count !== 1) return { error: visible ? "Review the current profile before approving it." : "Employee profile not found." };
+  revalidatePath("/"); revalidatePath("/team"); revalidatePath("/admin/employees"); revalidatePath(`/admin/employees/${userId}`);
+  return { success: visible ? "Reviewed profile approved for public display." : "Profile hidden from public display." };
+}
+
 const transitions = {
   approve: { from: ["PENDING", "REJECTED"], to: "APPROVED" },
   reject: { from: ["PENDING"], to: "REJECTED" },

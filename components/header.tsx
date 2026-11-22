@@ -1,4 +1,6 @@
 "use client";
+import { T, LanguageSelector, useTranslation } from "@/components/public-language";
+
 
 import Image from "next/image";
 import Link from "next/link";
@@ -16,53 +18,42 @@ const navigation = [
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useTranslation();
   const closeMenu = () => setIsMenuOpen(false);
 
-  if (pathname === "/") {
-    return (
-      <header className="relative z-30 border-b border-border bg-white">
-        <div className="mx-auto flex min-h-20 max-w-7xl flex-col items-stretch justify-between gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:py-0">
-          <Link href="/" className="flex min-w-0 items-center gap-2 leading-tight text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:gap-3">
-            <Image src="/images/jws/logo.png" alt="Janaza Welfare Society logo" width={52} height={52} priority className="size-11 shrink-0 rounded-full object-contain sm:size-13" />
-            <span className="min-w-0"><span className="block text-base font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span><span className="mt-1 block text-[0.68rem] font-medium tracking-wide text-muted sm:text-xs">Kattankudy</span></span>
-          </Link>
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0"><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-3 py-2 text-xs font-semibold text-foreground hover:border-primary sm:px-4 sm:text-sm">Supervisor</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/60 px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 sm:text-sm">Admin Login</Link></div>
-        </div>
-      </header>
-    );
-  }
 
   return (
-    <header className="relative z-30 border-b border-border bg-white">
+    <header className={`jws-public-header relative z-30 border-b border-border bg-white ${pathname === "/" ? "jws-glass-header" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex min-h-20 items-center justify-between gap-3 sm:gap-6">
           <Link href="/" className="flex min-w-0 shrink items-center gap-3 leading-tight text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" onClick={closeMenu}>
             <Image src="/images/jws/logo.png" alt="Janaza Welfare Society logo" width={52} height={52} priority className="size-11 shrink-0 rounded-full object-contain sm:size-13" />
-            <span className="min-w-0"><span className="block text-base font-semibold tracking-tight sm:text-xl">Janaza Welfare Society</span><span className="mt-1 block text-xs font-medium tracking-wide text-muted">Kattankudy</span></span>
+            <span className="min-w-0"><span className="block text-base font-semibold tracking-tight sm:text-xl"><T text="Janaza Welfare Society" /></span><span className="mt-1 block text-xs font-medium tracking-wide text-muted"><T text="Kattankudy" /></span></span>
           </Link>
 
           <div className="hidden items-center gap-4 xl:flex">
-            <nav aria-label="Main navigation"><ul className="flex items-center gap-5 text-sm font-medium text-muted">{navigation.map((item) => <li key={item.href}><Link className="py-2 transition-colors hover:text-foreground focus-visible:text-primary focus-visible:outline-none" href={item.href}>{item.label}</Link></li>)}</ul></nav>
-            <span className="border-l border-border pl-4 text-xs font-semibold text-foreground">{"\u0BA4\u0BAE\u0BBF\u0BB4\u0BCD"} <span className="text-muted">|</span> EN</span>
-            <Link href="/employee-access" className="rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Employee Access</Link>
-            <Link href="/employee-access/login" className="px-1 py-2 text-xs font-semibold text-muted underline decoration-border underline-offset-4 hover:text-foreground">Supervisor</Link>
-            <Link href="/admin/login" className="px-1 py-2 text-xs font-semibold text-muted underline decoration-border underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Admin Login</Link>
-            <Link href="/request-service" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-[#35d8bd] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">Request Service</Link>
+            <nav aria-label="Main navigation"><ul className="flex items-center gap-5 text-sm font-medium text-muted">{navigation.map((item) => <li key={item.href}><Link aria-current={pathname === item.href ? "page" : undefined} className="jws-nav-link py-2 transition-colors hover:text-foreground focus-visible:text-primary focus-visible:outline-none" href={item.href}>{t(item.label)}</Link></li>)}</ul></nav>
+            <LanguageSelector />
+            <Link href="/employee-access" className="rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"><T text="Employee Access" /></Link>
+            <Link href="/employee-access/login" className="px-1 py-2 text-xs font-semibold text-muted underline decoration-border underline-offset-4 hover:text-foreground"><T text="Supervisor" /></Link>
+            <Link href="/admin/login" className="px-1 py-2 text-xs font-semibold text-muted underline decoration-border underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"><T text="Admin Login" /></Link>
+            <Link href="/request-service" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"><T text="Request Service" /></Link>
           </div>
 
-          <button type="button" className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:hidden" aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen((open) => !open)}>
-            <span className="sr-only">{isMenuOpen ? "Close menu" : "Open menu"}</span>
+          <div className="xl:hidden"><LanguageSelector /></div>
+          <button type="button" className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary xl:hidden" aria-label={t(isMenuOpen ? "Close navigation menu" : "Open navigation menu")} aria-expanded={isMenuOpen} aria-controls="mobile-navigation" onClick={() => setIsMenuOpen((open) => !open)}>
+            <span className="sr-only">{t(isMenuOpen ? "Close menu" : "Open menu")}</span>
             <span className="flex w-5 flex-col gap-1.5" aria-hidden="true"><span className={`h-0.5 w-full rounded-full bg-current transition-transform ${isMenuOpen ? "translate-y-2 rotate-45" : ""}`} /><span className={`h-0.5 w-full rounded-full bg-current transition-opacity ${isMenuOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 w-full rounded-full bg-current transition-transform ${isMenuOpen ? "-translate-y-2 -rotate-45" : ""}`} /></span>
           </button>
         </div>
 
         <nav id="mobile-navigation" aria-label="Mobile navigation" className={`${isMenuOpen ? "block" : "hidden"} border-t border-border pb-6 xl:hidden`}>
-          <p className="px-3 pt-5 text-xs font-semibold uppercase tracking-[0.18em] text-muted">Public navigation</p>
-          <ul className="flex flex-col py-2 text-sm font-medium text-foreground">{navigation.map((item) => <li key={item.href}><Link className="block rounded-lg px-3 py-3 transition-colors hover:bg-light-background focus-visible:outline-2 focus-visible:outline-primary" href={item.href} onClick={closeMenu}>{item.label}</Link></li>)}</ul>
-          <Link href="/request-service" className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground" onClick={closeMenu}>Request Service</Link>
+          <p className="px-3 pt-5 text-xs font-semibold uppercase tracking-[0.18em] text-muted"><T text="Public navigation" /></p>
+          <ul className="flex flex-col py-2 text-sm font-medium text-foreground">{navigation.map((item) => <li key={item.href}><Link aria-current={pathname === item.href ? "page" : undefined} className="jws-nav-link block rounded-lg px-3 py-3 transition-colors hover:bg-light-background focus-visible:outline-2 focus-visible:outline-primary" href={item.href} onClick={closeMenu}>{t(item.label)}</Link></li>)}</ul>
+          <Link href="/request-service" className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground" onClick={closeMenu}><T text="Request Service" /></Link>
           <div className="mt-5 border-t border-border pt-5">
-            <p className="px-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted">Staff access</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3"><Link href="/employee-access" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}>Employee Access</Link><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-semibold" onClick={closeMenu}>Supervisor</Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-semibold text-muted underline decoration-primary underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}>Admin Login</Link></div>
+            <p className="px-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted"><T text="Staff access" /></p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3"><Link href="/employee-access" className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary/70 px-4 py-2 text-sm font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}><T text="Employee Access" /></Link><Link href="/employee-access/login" className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-semibold" onClick={closeMenu}><T text="Supervisor" /></Link><Link href="/admin/login" className="inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-semibold text-muted underline decoration-primary underline-offset-4 focus-visible:outline-2 focus-visible:outline-primary" onClick={closeMenu}><T text="Admin Login" /></Link></div>
           </div>
         </nav>
       </div>

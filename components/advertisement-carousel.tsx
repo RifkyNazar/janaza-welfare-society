@@ -1,10 +1,20 @@
 "use client";
+import { T, useTranslation } from "@/components/public-language";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-type Banner={id:string;title:string;imageUrl:string;description:string|null};
-export function AdvertisementCarousel({banners}:{banners:Banner[]}){const[index,setIndex]=useState(0);const[paused,setPaused]=useState(false);const multiple=banners.length>1;const move=useCallback((by:number)=>setIndex(current=>(current+by+banners.length)%banners.length),[banners.length]);
-  useEffect(()=>{if(!multiple||paused||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;const timer=window.setInterval(()=>move(1),10_000);return()=>window.clearInterval(timer);},[multiple,paused,move]);
-  const banner=banners[index];
-  return <div className="mx-auto w-full max-w-7xl overflow-hidden" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}><article className="overflow-hidden rounded-2xl border border-border bg-light-background shadow-[0_8px_28px_rgba(16,42,42,.05)]"><p className="px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">Advertisement</p><Image unoptimized src={`/advertisement-images/${banner.imageUrl}`} alt={banner.title} width={1600} height={520} priority={index===0} className="h-44 w-full object-cover sm:h-52 md:h-[280px] lg:h-[300px]"/><div className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 sm:px-4">{banner.description&&<p className="min-w-0 flex-1 break-words text-xs text-muted sm:text-sm">{banner.description}</p>}<div className="ml-auto flex min-w-0 flex-wrap items-center gap-2"><Link href={`/advertisements/${banner.id}`} className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground sm:text-sm">View Advertisement</Link>{multiple&&<div className="flex items-center gap-1"><button type="button" onClick={()=>move(-1)} aria-label="Previous advertisement" className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-xl font-semibold focus-visible:outline-2 focus-visible:outline-primary">‹</button><button type="button" onClick={()=>move(1)} aria-label="Next advertisement" className="flex size-11 items-center justify-center rounded-full border border-border bg-white text-xl font-semibold focus-visible:outline-2 focus-visible:outline-primary">›</button></div>}</div></div></article>{multiple&&<div className="mt-2 flex flex-wrap justify-center gap-1" role="group" aria-label="Select advertisement">{banners.map((item,i)=><button key={item.id} type="button" onClick={()=>setIndex(i)} aria-label={`Show advertisement ${i+1}: ${item.title}`} aria-current={i===index?"true":undefined} className="flex size-11 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-primary"><span aria-hidden="true" className={`size-3 rounded-full border border-foreground/30 ${i===index?"bg-primary":"bg-white"}`} /></button>)}</div>}</div>;
+import { MotionControls, useShowcaseMotion } from "@/components/use-showcase-motion";
+type Banner = {
+    id: string;
+    title: string;
+    imageUrl: string;
+    description: string | null;
+};
+export function AdvertisementCarousel({ banners }: {
+    banners: Banner[];
+}) {
+    const m = useShowcaseMotion(banners.length);
+    const { t } = useTranslation();
+    if (!banners.length)
+        return null;
+    return <div className="mx-auto max-w-7xl" {...m.interaction}><div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="jws-eyebrow"><T text="From our community" /></p><h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl"><T text="Community notices" /></h2></div><MotionControls motion={m} count={banners.length} label="Community notices"/></div><div className="glass-panel overflow-hidden rounded-[1.75rem]">{banners.map((b, i) => <article hidden={i !== m.index} key={b.id} className="notice-slide"><Link href={'/advertisements/' + b.id} className="block bg-white"><Image unoptimized src={'/advertisement-images/' + b.imageUrl} alt={b.title} width={1600} height={700} className="h-[240px] w-full object-contain sm:h-[360px]"/></Link><div className="flex min-h-32 flex-wrap items-center justify-between gap-3 border-t border-border p-5"><div className="min-w-0 flex-1"><h3 className="line-clamp-1 font-semibold">{b.title}</h3><p className="mt-1 line-clamp-2 text-sm leading-6 text-muted">{b.description}</p></div><Link href={'/advertisements/' + b.id} className="jws-text-link"><T text="View notice" /> &#8599;</Link></div></article>)}</div><div className="mt-2 flex flex-wrap justify-center">{banners.length > 1 && banners.map((b, i) => <button type="button" key={b.id} onClick={() => m.setIndex(i)} aria-label={t("Show {title}").replace("{title}", () => b.title)} aria-current={i === m.index ? 'true' : undefined} className="flex size-11 items-center justify-center"><span className={'h-1.5 rounded-full ' + (i === m.index ? 'w-6 bg-foreground' : 'w-2 bg-foreground/20')}/></button>)}</div></div>;
 }

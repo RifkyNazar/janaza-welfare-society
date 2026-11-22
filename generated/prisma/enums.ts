@@ -82,3 +82,11 @@ export const DonationStatus = {
 } as const
 
 export type DonationStatus = (typeof DonationStatus)[keyof typeof DonationStatus]
+
+
+export const OperationSource = {
+  TASK_BASED: 'TASK_BASED',
+  MANUAL: 'MANUAL'
+} as const
+
+export type OperationSource = (typeof OperationSource)[keyof typeof OperationSource]

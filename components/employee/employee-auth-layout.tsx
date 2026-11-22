@@ -1,5 +1,7 @@
+import { T } from "@/components/public-language";
 import type { ReactNode } from "react";
 import { BackButton } from "@/components/back-button";
+import { PortalValidation } from "@/components/portal-validation";
 
 type EmployeeAuthLayoutProps = {
   title: string;
@@ -26,13 +28,13 @@ export function EmployeeAuthLayout({
           <div className="employee-auth-arch mx-auto" aria-hidden="true">
             <span />
           </div>
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.22em] text-muted">Janaza Welfare Society</p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">{title}</h1>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.22em] text-muted"><T text="Janaza Welfare Society" /></p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"><T text={title} /></h1>
           <div className="section-ornament" aria-hidden="true"><span /></div>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg">{description}</p>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg"><T text={description} /></p>
         </div>
 
-        <div className="mt-10">{children}</div>
+        <div className="mt-10"><PortalValidation>{children}</PortalValidation></div>
 
         {backHref && backLabel && (
           <div className="mt-7 text-center">

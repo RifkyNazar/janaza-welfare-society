@@ -33,6 +33,9 @@ export function categoryLabel(category: PublicServiceCategory | null | undefined
   return category === "JANAZAH" ? "Janazah Service" : category === "VEHICLE" ? "Vehicle Service" : "Legacy Request";
 }
 
-export function serviceSummary(serviceType: string, selections: Array<{ serviceLabel: string }>) {
-  return selections.length ? selections.map((selection) => selection.serviceLabel).join(", ") : serviceType;
+export function serviceSummary(serviceType: string, selections: Array<{ serviceLabel: string; serviceCode?: string }>, translateLabel?: (label: string) => string) {
+  return selections.length ? selections.map(({ serviceCode, serviceLabel }) => {
+    const definition = serviceCode ? definitions.get(serviceCode) : undefined;
+    return translateLabel && definition?.label === serviceLabel ? translateLabel(definition.label) : serviceLabel;
+  }).join(", ") : serviceType;
 }

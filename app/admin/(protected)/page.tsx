@@ -1,119 +1,106 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
+import { EmployeeStatusBadge } from "@/components/admin/employee-status-badge";
+import { RequestStatusBadge } from "@/components/admin/request-status-badge";
+import { TaskStatusBadge } from "@/components/employee/task-status-badge";
+import { PortalDate } from "@/components/portal-date";
+import { PushNotificationControl } from "@/components/push-notification-control";
+import { T } from "@/components/public-language";
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
-import { PushNotificationControl } from "@/components/push-notification-control";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-});
-
-function StatusBadge({ status }: { status: string }) {
-  return <span className="inline-flex rounded-full bg-primary/12 px-2.5 py-1 text-xs font-semibold text-foreground">{status.replaceAll("_", " ")}</span>;
-}
+const activeAssignment = {
+  isActive: true,
+  status: { in: ["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS"] },
+} satisfies Prisma.TaskAssignmentWhereInput;
 
 export default async function AdminDashboardPage() {
   await requireAdmin();
 
-  const [pendingEmployees, approvedEmployees, newRequests, activeTasks, recentEmployees, recentRequests] = await Promise.all([
+  const [pending, approved, newRequests, activeTasks, registrations, requests, assignments] = await Promise.all([
     prisma.user.count({ where: { role: "EMPLOYEE", status: "PENDING" } }),
     prisma.user.count({ where: { role: "EMPLOYEE", status: "APPROVED" } }),
     prisma.serviceRequest.count({ where: { status: "NEW" } }),
-    prisma.taskAssignment.count({ where: { isActive: true, status: { in: ["ASSIGNED", "ACKNOWLEDGED", "IN_PROGRESS"] } } }),
+    prisma.taskAssignment.count({ where: activeAssignment }),
     prisma.employeeProfile.findMany({
       take: 5,
-      orderBy: { createdAt: "desc" },
-      select: {
-        fullName: true,
-        employeeCode: true,
-        createdAt: true,
-        user: { select: { status: true } },
-      },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      where: { user: { role: { in: ["EMPLOYEE", "SUPERVISOR"] } } },
+      select: { fullName: true, employeeCode: true, createdAt: true, user: { select: { id: true, status: true } } },
     }),
     prisma.serviceRequest.findMany({
       take: 5,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      select: {
-        requestCode: true,
-        requesterName: true,
-        area: true,
-        status: true,
-        createdAt: true,
-      },
+      select: { id: true, requestCode: true, requesterName: true, area: true, status: true, createdAt: true },
+    }),
+    prisma.taskAssignment.findMany({
+      take: 5,
+      where: activeAssignment,
+      orderBy: [{ assignedAt: "desc" }, { id: "desc" }],
+      select: { id: true, status: true, assignedAt: true, employee: { select: { fullName: true } }, request: { select: { requestCode: true } } },
     }),
   ]);
 
   const summaries = [
-    { label: "Pending Employees", value: pendingEmployees },
-    { label: "Approved Employees", value: approvedEmployees },
-    { label: "New Service Requests", value: newRequests, href: "/admin/service-requests?status=NEW" },
-    { label: "Active Tasks", value: activeTasks },
+    ["Pending Employees", pending, "/admin/employees?status=PENDING"],
+    ["Approved Employees", approved, "/admin/employees?status=APPROVED"],
+    ["New Service Requests", newRequests, "/admin/service-requests?status=NEW"],
+    ["Active Tasks", activeTasks, "/admin/task-assignments"],
+  ] as const;
+
+  const queues = [
+    { title: "Recent Employee Registrations", empty: "No employee registrations yet.", rows: registrations.map(({ user, fullName, employeeCode, createdAt }) => ({
+      href: `/admin/employees/${user.id}`, name: fullName, details: employeeCode, date: createdAt, badge: <EmployeeStatusBadge status={user.status} />,
+    })) },
+    { title: "Recent Service Requests", empty: "No service requests yet.", rows: requests.map((request) => ({
+      href: `/admin/service-requests/${request.id}`, name: request.requesterName, details: `${request.requestCode} · ${request.area}`, date: request.createdAt, badge: <RequestStatusBadge status={request.status} />,
+    })) },
+    { title: "Active Task Assignments", empty: "No active tasks", rows: assignments.map((assignment) => ({
+      href: `/admin/task-assignments/${assignment.id}`, name: assignment.employee.fullName, details: assignment.request.requestCode, date: assignment.assignedAt, badge: <TaskStatusBadge status={assignment.status} />,
+    })) },
   ];
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div>
-        <p className="text-sm font-semibold text-primary">Overview</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl">Dashboard</h1>
-        <p className="mt-2 text-sm text-muted">Current operational summary from the welfare database.</p>
+    <div className="mx-auto max-w-7xl space-y-5">
+      <div className="portal-overview-banner">
+        <h1 className="font-semibold"><T text="Dashboard" /></h1>
+        <p className="mt-1 text-sm"><T text="Review requests, employee registrations, and active assignments." /></p>
       </div>
 
-      <section aria-label="Dashboard summary" className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {summaries.map((summary) => (
-          <article key={summary.label} className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-[0_10px_30px_rgba(16,42,42,0.05)]">
-            <span aria-hidden="true" className="absolute right-0 top-0 size-16 translate-x-5 -translate-y-5 rotate-45 border border-primary/25" />
-            <p className="text-sm font-medium text-muted">{summary.label}</p>
-            <p className="mt-3 text-3xl font-semibold tabular-nums">{summary.value}</p>
-            {"href" in summary && summary.href && <Link href={summary.href} className="absolute inset-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"><span className="sr-only">View new service requests</span></Link>}
-          </article>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {summaries.map(([label, value, href]) => (
+          <Link key={label} href={href} className="jws-card portal-overview-stat">
+            <span className="text-sm font-medium text-muted"><T text={label} /></span>
+            <strong className="text-2xl font-semibold tabular-nums">{value}</strong>
+          </Link>
         ))}
-      </section>
-
-      <PushNotificationControl vapidPublicKey={process.env.NEXT_PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY?.trim() ?? ""} />
-
-      <div className="mt-8 grid gap-6 xl:grid-cols-2">
-        <section className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_10px_30px_rgba(16,42,42,0.04)]">
-          <div className="border-b border-border px-5 py-4">
-            <h2 className="font-semibold">Recent Employee Registrations</h2>
-          </div>
-          <div className="divide-y divide-border">
-            {recentEmployees.length === 0 ? (
-              <p className="px-5 py-8 text-center text-sm text-muted">No employee registrations yet.</p>
-            ) : recentEmployees.map((employee) => (
-              <div key={employee.employeeCode} className="flex items-start justify-between gap-4 px-5 py-4">
-                <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold">{employee.fullName}</p>
-                  <p className="mt-1 text-xs text-muted">{employee.employeeCode} · {dateFormatter.format(employee.createdAt)}</p>
-                </div>
-                <StatusBadge status={employee.user.status} />
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_10px_30px_rgba(16,42,42,0.04)]">
-          <div className="border-b border-border px-5 py-4">
-            <h2 className="font-semibold">Recent Service Requests</h2>
-          </div>
-          <div className="divide-y divide-border">
-            {recentRequests.length === 0 ? (
-              <p className="px-5 py-8 text-center text-sm text-muted">No service requests yet.</p>
-            ) : recentRequests.map((request) => (
-              <div key={request.requestCode} className="flex items-start justify-between gap-4 px-5 py-4">
-                <div className="min-w-0">
-                  <p className="break-words text-sm font-semibold">{request.requesterName}</p>
-                  <p className="mt-1 text-xs text-muted">{request.requestCode} · {request.area} · {dateFormatter.format(request.createdAt)}</p>
-                </div>
-                <StatusBadge status={request.status} />
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
+
+      <div className="grid gap-3 xl:grid-cols-3">
+        {queues.map(({ title, empty, rows }) => (
+          <section key={title} className="jws-card min-w-0">
+            <h2 className="border-b border-border px-4 py-3 font-semibold"><T text={title} /></h2>
+            {rows.length === 0 ? <p className="p-4 text-sm text-muted"><T text={empty} /></p> : (
+              <ul className="divide-y divide-border">
+                {rows.map(({ href, name, details, date, badge }) => (
+                  <li key={href} className="flex flex-wrap items-start justify-between gap-2 px-4 py-3">
+                    <div className="min-w-0">
+                      <Link href={href} className="text-sm font-semibold text-primary underline underline-offset-2">{name}</Link>
+                      <p className="text-xs text-muted">{details} · <PortalDate value={date.toISOString()} /></p>
+                    </div>
+                    {badge}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
+      </div>
+
+      <div id="notifications"><PushNotificationControl vapidPublicKey={process.env.NEXT_PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY?.trim() ?? ""} /></div>
     </div>
   );
 }

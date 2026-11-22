@@ -1,3 +1,6 @@
+import { PortalStatus } from "@/components/portal-status";
+import { getPortalTranslation } from "@/lib/portal-language";
+import { T } from "@/components/public-language";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { AssignmentForm } from "@/components/supervisor/assignment-form";
@@ -7,9 +10,11 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminOrSupervisor } from "@/lib/permissions";
 import { serviceSummary } from "@/lib/service-options";
 
-const dt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
 
 export default async function DispatchRequestDetails({ params }: { params: Promise<{ id: string }> }) {
+  const { dateLocale, t } = await getPortalTranslation();
+  const dt = new Intl.DateTimeFormat(dateLocale, { dateStyle: "medium", timeStyle: "short" });
   await requireAdminOrSupervisor();
   const raw = (await params).id;
   if (!/^\d+$/.test(raw)) notFound();
@@ -26,11 +31,11 @@ export default async function DispatchRequestDetails({ params }: { params: Promi
 
   return <div className="mx-auto max-w-5xl">
     <BackButton fallbackHref="/supervisor/requests" label="Back to Requests" />
-    <div className="mt-6"><p className="text-sm font-semibold text-primary">{request.requestCode}</p><h1 className="mt-1 text-3xl font-semibold">{serviceSummary(request.serviceType, request.serviceSelections)}</h1></div>
+    <div className="mt-6"><p className="text-sm font-semibold text-primary">{request.requestCode}</p><h1 className="mt-1 text-3xl font-semibold">{serviceSummary(request.serviceType, request.serviceSelections, t)}</h1></div>
     <div className="mt-7 grid gap-6 lg:grid-cols-2">
-      <section className="rounded-2xl border border-border bg-white p-5"><h2 className="font-semibold">Operational request details</h2><dl className="mt-4 divide-y divide-border">{details.map(([key, value]) => <div key={key} className="grid gap-1 py-3 sm:grid-cols-[7rem_1fr]"><dt className="text-xs font-semibold uppercase text-muted">{key}</dt><dd className="break-words text-sm">{value || "—"}</dd></div>)}</dl>{location && <a href={location} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-primary px-5 text-sm font-semibold">Get Directions</a>}</section>
-      <div>{current && <p className="mb-4 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm">Current: <strong>{current.employee.fullName}</strong> ({current.status.replaceAll("_", " ")})</p>}<AssignmentForm action={(current ? reassignEmployee : assignEmployee).bind(null, request.id)} employees={employees} label={current ? "Reassign Employee" : "Assign Employee"} /></div>
+      <section className="rounded-2xl border border-border bg-white p-5"><h2 className="font-semibold"><T text="Operational request details" /></h2><dl className="mt-4 divide-y divide-border">{details.map(([key, value]) => <div key={key} className="grid gap-1 py-3 sm:grid-cols-[7rem_1fr]"><dt className="text-xs font-semibold uppercase text-muted">{t(key)}</dt><dd className="break-words text-sm">{value || "—"}</dd></div>)}</dl>{location && <a href={location} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-12 items-center rounded-xl bg-primary px-5 text-sm font-semibold"><T text="Get Directions" /></a>}</section>
+      <div>{current && <p className="mb-4 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"><T text="Current:" /> <strong>{current.employee.fullName}</strong> (<PortalStatus value={current.status} />)</p>}<AssignmentForm action={(current ? reassignEmployee : assignEmployee).bind(null, request.id)} employees={employees} label={current ? "Reassign Employee" : "Assign Employee"} /></div>
     </div>
-    <section className="mt-6 rounded-2xl border border-border bg-white p-5"><h2 className="font-semibold">Assignment History</h2>{request.taskAssignments.length ? <div className="mt-3 divide-y divide-border">{request.taskAssignments.map((assignment) => <div key={assignment.id} className="py-3 text-sm"><strong>{assignment.employee.fullName}</strong> · {assignment.status.replaceAll("_", " ")} · {dt.format(assignment.assignedAt)}{assignment.assignedBy ? ` · by ${assignment.assignedBy.email}` : ""}</div>)}</div> : <p className="mt-3 text-sm text-muted">No assignment history.</p>}</section>
+    <section className="mt-6 rounded-2xl border border-border bg-white p-5"><h2 className="font-semibold"><T text="Assignment History" /></h2>{request.taskAssignments.length ? <div className="mt-3 divide-y divide-border">{request.taskAssignments.map((assignment) => <div key={assignment.id} className="py-3 text-sm"><strong>{assignment.employee.fullName}</strong> · <PortalStatus value={assignment.status} /> · {dt.format(assignment.assignedAt)}{assignment.assignedBy ? ` · by ${assignment.assignedBy.email}` : ""}</div>)}</div> : <p className="mt-3 text-sm text-muted"><T text="No assignment history." /></p>}</section>
   </div>;
 }
