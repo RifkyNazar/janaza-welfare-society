@@ -13,16 +13,20 @@ type Role = keyof typeof dashboards;
 
 async function approvedAccount() {
   const session = await auth();
-  const id = userId(session?.user.id);
+  const id = userId(session?.user?.id);
   const account = id ? await prisma.user.findUnique({
     where: { id },
     select: { role: true, status: true, employeeProfile: { select: { id: true } } },
   }) : null;
-  if (!session || !account || account.status !== "APPROVED") return null;
+  if (!session || !account || account.status !== "APPROVED" || (session.user.role && account.role !== session.user.role)) return null;
   session.user.role = account.role;
   session.user.status = account.status;
   session.user.employeeProfileId = account.employeeProfile?.id ?? null;
   return session;
+}
+
+export async function currentStaffRole() {
+  return (await approvedAccount())?.user.role ?? null;
 }
 
 async function requireRole(roles: readonly Role[], loginPath: string) {
@@ -41,11 +45,11 @@ export function requireEmployee() {
 }
 
 export function requireSupervisor() {
-  return requireRole(["SUPERVISOR"], "/employee-access/login");
+  return requireRole(["SUPERVISOR"], "/supervisor-login");
 }
 
 export function requireAdminOrSupervisor() {
-  return requireRole(["ADMIN", "SUPERVISOR"], "/employee-access/login");
+  return requireRole(["ADMIN", "SUPERVISOR"], "/supervisor-login");
 }
 
 export async function redirectAuthenticatedUser(roles: readonly Role[]) {

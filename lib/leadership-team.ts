@@ -6,6 +6,8 @@ export type LeadershipMember = {
   photoSrc: string | null;
 };
 
+// Keep each contact and portrait on the same profile. The uploaded asset
+// filenames predate the current profile mapping.
 export const leadershipTeam: LeadershipMember[] = [
   {
     position: "President",
@@ -21,7 +23,7 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0774203109",
     responsibility:
       "Handles administrative and coordination activities, including meetings, documentation, and official communications.",
-    photoSrc: "/images/jws/leadership/president.png",
+    photoSrc: "/images/jws/leadership/secretary.png",
   },
   {
     position: "Treasurer",
@@ -29,6 +31,6 @@ export const leadershipTeam: LeadershipMember[] = [
     contact: "0775525806",
     responsibility:
       "Manages the organization's income and expenses, maintains financial records and documents, and ensures financial transparency.",
-    photoSrc: "/images/jws/leadership/secretary.png",
+    photoSrc: "/images/jws/leadership/president.png",
   },
 ];

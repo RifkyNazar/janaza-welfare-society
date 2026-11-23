@@ -3,26 +3,28 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { advertisementDateBoundary, advertisementDateInput } from "@/lib/advertisement-schedule";
 import { advertisementImageExists, removeAdvertisementImage, storeAdvertisementImage, validateAdvertisementImage } from "@/lib/advertisement-image-storage";
 
 export type AdState = { error?: string; success?: string };
-const OFFSET = 330;
 const text = (formData: FormData, name: string) => { const value = formData.get(name); return typeof value === "string" ? value.trim() : ""; };
-function colomboDate(value: string) { if (!value) return null; const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value); if (!match) return undefined; const [, y, m, d, h, min] = match; const result = new Date(Date.UTC(+y, +m - 1, +d, +h, +min) - OFFSET * 60_000); return Number.isNaN(result.getTime()) ? undefined : result; }
 export async function saveAdvertisement(id: string | null, _state: AdState, formData: FormData): Promise<AdState> {
   await requireAdmin();
-  const title = text(formData, "title"), description = text(formData, "description"), order = text(formData, "displayOrder");
-  const startsAt = colomboDate(text(formData, "startsAt")), endsAt = colomboDate(text(formData, "endsAt"));
-  if (!title || title.length > 191 || description.length > 500 || !/^-?\d+$/.test(order)) return { error: "Check the title, description, and display order." };
-  if (startsAt === undefined || endsAt === undefined || (startsAt && endsAt && startsAt > endsAt)) return { error: "Check the advertisement dates." };
-  const existing = id ? await prisma.advertisement.findUnique({ where: { id }, select: { imageUrl: true } }) : null;
+  const title = text(formData, "title"), description = text(formData, "description");
+  const startDate = text(formData, "startsAt"), endDate = text(formData, "endsAt");
+  const startBoundary = advertisementDateBoundary(startDate), endBoundary = advertisementDateBoundary(endDate, true);
+  if (!title || title.length > 191 || description.length > 500) return { error: "Check the title and description." };
+  if (startBoundary === undefined || endBoundary === undefined || (startDate && endDate && startDate > endDate)) return { error: "Check the advertisement dates." };
+  const existing = id ? await prisma.advertisement.findUnique({ where: { id }, select: { imageUrl: true, startsAt: true, endsAt: true } }) : null;
   if (id && !existing) return { error: "Advertisement not found." };
+  const startsAt = existing && startDate === advertisementDateInput(existing.startsAt) ? existing.startsAt : startBoundary;
+  const endsAt = existing && endDate === advertisementDateInput(existing.endsAt) ? existing.endsAt : endBoundary;
   const entry = formData.get("image"); let imageUrl = existing?.imageUrl ?? ""; let newKey: string | null = null;
   if (entry instanceof File && entry.size) { const error = validateAdvertisementImage(entry); if (error) return { error }; try { newKey = await storeAdvertisementImage(entry); imageUrl = newKey; } catch { return { error: "Image content is invalid or could not be stored." }; } }
   if (!imageUrl || (!newKey && !(await advertisementImageExists(imageUrl)))) return { error: "Choose a banner image. The previously stored image is unavailable." };
   let advertisementId: string;
   try {
-    const data = { title, imageUrl, description: description || null, startsAt, endsAt, isActive: formData.get("isActive") === "on", displayOrder: Number(order) };
+    const data = { title, imageUrl, description: description || null, startsAt, endsAt, isActive: formData.get("isActive") === "on" };
     const advertisement = id ? await prisma.advertisement.update({ where: { id }, data }) : await prisma.advertisement.create({ data });
     if (newKey && existing?.imageUrl) await removeIfUnreferenced(existing.imageUrl);
     advertisementId = advertisement.id;

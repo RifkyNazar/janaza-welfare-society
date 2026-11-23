@@ -9,7 +9,7 @@ export default async function SupervisorLayout({ children }: { children: ReactNo
 
   async function logout() {
     "use server";
-    await signOut({ redirectTo: "/employee-access/login" });
+    await signOut({ redirectTo: "/supervisor-login" });
   }
 
   return (

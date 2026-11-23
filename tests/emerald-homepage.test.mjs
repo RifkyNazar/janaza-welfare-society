@@ -1,9 +1,11 @@
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadServerModule } from "./load-server-module.mjs";
 
+const rail = { LoopingCardRail: ({ children }) => children };
 const base = "@/app/design-preview/emerald-sanctuary/";
 const styles = new Proxy({}, { get: (_, name) => name === "__esModule" ? false : String(name) });
 const copy = loadServerModule("app/design-preview/emerald-sanctuary/preview-copy.ts");
@@ -20,14 +22,15 @@ const { PreviewNavigation } = loadServerModule("app/design-preview/emerald-sanct
   "./preview-copy": copy, "./sanctuary.module.css": styles,
 });
 
-async function homepage({ locale = "en", session = null, preview = false } = {}) {
+async function homepage({ locale = "en", session = null, preview = false, operationalMembers = [] } = {}) {
   const { EmeraldSanctuary } = loadServerModule("components/emerald-sanctuary.tsx", {
     "next/image": Image, "next/link": Link,
     "next/headers": { cookies: async () => ({ get: () => ({ value: locale }) }) },
-    "@/auth": { auth: async () => session },
+    "@/lib/permissions": { currentStaffRole: async () => session?.user.status === "APPROVED" ? session.user.role : null },
+    "@/components/looping-card-rail": rail,
     "@/components/public-language": language,
     "@/lib/leadership-team": loadServerModule("lib/leadership-team.ts"),
-    [`${base}latest-activities`]: { LatestActivities: () => null },
+    [`${base}latest-activities`]: { LatestActivities: () => React.createElement("section", { id: "latest-activities" }) },
     [`${base}preview-motion`]: { PreviewMotion: () => null },
     [`${base}preview-navigation`]: { PreviewNavigation },
     [`${base}quran-intro`]: { QuranIntro: () => null },
@@ -35,7 +38,7 @@ async function homepage({ locale = "en", session = null, preview = false } = {})
     [`${base}preview-copy`]: copy,
     [`${base}sanctuary.module.css`]: styles,
   });
-  return renderToStaticMarkup(await EmeraldSanctuary({ preview }));
+  return renderToStaticMarkup(await EmeraldSanctuary({ preview, operationalMembers }));
 }
 
 test("live homepage preserves Quran, branding and service destinations without preview labels", async () => {
@@ -49,6 +52,8 @@ test("live homepage preserves Quran, branding and service destinations without p
     assert.ok(html.includes(`href="${href}"`), href);
   }
   assert.equal((html.match(/<main\b/g) || []).length, 1);
+  const hero = html.match(/<section[^>]*aria-labelledby="hero-title"[\s\S]*?<\/section>/)[0];
+  assert.match(html.slice(html.indexOf(hero) + hero.length), /^<section id="latest-activities"><\/section><section id="services"/);
   assert.ok(!html.includes("PHASE B"));
   assert.ok(!html.includes("Homepage preview"));
   assert.ok(!html.includes('href="/design-preview/emerald-sanctuary"'));
@@ -96,17 +101,18 @@ test("public shell avoids duplicate home landmarks and keeps existing chrome on 
   }
 });
 
-test("homepage activities select published records and public manual media without querying task photos", async () => {
+test("homepage selects only published records with approved task photos and public manual media", async () => {
   const { LatestActivities } = loadServerModule("app/design-preview/emerald-sanctuary/latest-activities.tsx", {
     "next/image": Image, "next/link": Link,
     "@/lib/prisma": { prisma: { operation: { findMany: async query => {
       assert.deepEqual(query.where, { isPublished: true });
-      assert.equal(query.select.photos, false);
+      assert.deepEqual(query.select.photos.where, { taskPhoto: { isApprovedForPublic: true } });
       assert.deepEqual(query.select.media.where, { isPublic: true, operation: { source: "MANUAL" } });
-      assert.equal(query.take, 3);
+      assert.equal(query.take, 6);
       return [];
     } } } },
-    "@/lib/public-operations": loadServerModule("lib/public-operations.ts"),
+    "@/components/looping-card-rail": rail,
+      "@/lib/public-operations": loadServerModule("lib/public-operations.ts"),
     "./preview-copy": copy, "./preview-icon": icon, "./sanctuary.module.css": styles,
   });
   const html = renderToStaticMarkup(await LatestActivities({ locale: "en" }));
@@ -159,16 +165,17 @@ test("all three real leadership contacts and lazy thumbnail sources remain on th
   assert.equal((team.match(/loading="lazy"/g) || []).length, 3);
 });
 
-test("activity tiles render only actual published records with no task photos or invented slots", async () => {
+test("operation tiles render real titles, detail links and both approved image sources", async () => {
   for (const count of [0, 1, 2, 3]) {
     const { LatestActivities } = loadServerModule("app/design-preview/emerald-sanctuary/latest-activities.tsx", {
       "next/image": Image, "next/link": Link,
       "@/lib/prisma": { prisma: { operation: { findMany: async query => {
         assert.deepEqual(query.where, { isPublished: true });
-        assert.equal(query.take, 3);
-        assert.equal(query.select.photos, false);
-        return Array.from({ length: count }, (_, index) => ({ id: index + 1, title: `Test published title ${index + 1}`, operationDate: new Date("2026-11-17T00:00:00Z"), photos: [{ id: 999, taskPhoto: { caption: "PRIVATE TASK PHOTO" } }], media: [{ id: index + 10, altText: "Approved public image" }] }));
+        assert.equal(query.take, 6);
+        assert.deepEqual(query.select.photos.where, { taskPhoto: { isApprovedForPublic: true } });
+        return Array.from({ length: count }, (_, index) => ({ id: index + 1, title: `Test published title ${index + 1}`, operationDate: new Date("2026-11-17T00:00:00Z"), photos: index % 2 === 0 ? [{ id: 999, taskPhoto: { caption: "Approved task photo" } }] : [], media: [{ id: index + 10, altText: "Approved manual image" }] }));
       } } } },
+      "@/components/looping-card-rail": rail,
       "@/lib/public-operations": loadServerModule("lib/public-operations.ts"),
       "./preview-copy": copy, "./preview-icon": icon, "./sanctuary.module.css": styles,
     });
@@ -176,63 +183,20 @@ test("activity tiles render only actual published records with no task photos or
     assert.equal((html.match(/<article\b/g) || []).length, count);
     assert.equal((html.match(/loading="lazy"/g) || []).length, count);
     assert.ok(html.includes('href="/operations"'));
-    assert.ok(!html.includes("/operation-photos/"));
-    assert.ok(!html.includes("PRIVATE TASK PHOTO"));
+    if (count) assert.ok(html.includes('/operation-photos/999'));
+    if (count > 1) assert.ok(html.includes('/public-media/activity/11'));
+    for (let id = 1; id <= count; id++) {
+      assert.ok(html.includes('href="/operations/' + id + '"'));
+      assert.ok(html.includes("Test published title " + id));
+    }
     if (!count) assert.ok(html.includes(copy.previewCopy("en").emptyTitle));
   }
 });
 
-test("mobile scroll navigation shrinks, hides, reveals and keeps focus or an open drawer visible", () => {
-  const oldWindow = globalThis.window;
-  const oldDocument = globalThis.document;
-  const effects = [];
-  const listeners = new Map();
-  const frames = new Map();
-  let nextFrame = 1;
-  const dialog = { open: false };
-  const node = { dataset: {}, contains: element => element === "header-focus", addEventListener: (event, handler) => listeners.set(`header-${event}`, handler), removeEventListener: (event) => listeners.delete(`header-${event}`) };
-  const refs = [{ current: dialog }, { current: null }, { current: node }];
-  globalThis.document = { activeElement: null };
-  globalThis.window = {
-    scrollY: 0,
-    matchMedia: () => ({ matches: true, addEventListener() {}, removeEventListener() {} }),
-    addEventListener: (event, handler, options) => { if (event === "scroll") assert.equal(options.passive, true); listeners.set(event, handler); },
-    removeEventListener: event => listeners.delete(event),
-    requestAnimationFrame: handler => { const id = nextFrame++; frames.set(id, handler); return id; },
-    cancelAnimationFrame: id => frames.delete(id),
-  };
-  try {
-    const navigation = loadServerModule("app/design-preview/emerald-sanctuary/preview-navigation.tsx", {
-      react: { ...React, useEffect: effect => effects.push(effect), useRef: () => refs.shift() },
-      "next/image": Image, "next/link": Link,
-      "@/components/public-language": language,
-      "./preview-copy": copy, "./sanctuary.module.css": styles,
-    });
-    navigation.PreviewNavigation({ locale: "en", role: null });
-    const cleanup = effects[0]();
-    const scroll = y => {
-      window.scrollY = y;
-      listeners.get("scroll")();
-      listeners.get("scroll")();
-      assert.equal(frames.size, 1);
-      const pending = [...frames.values()]; frames.clear(); pending.forEach(handler => handler());
-    };
-    assert.equal(node.dataset.scroll, "top");
-    scroll(100); assert.equal(node.dataset.scroll, "compact");
-    scroll(300); assert.equal(node.dataset.scroll, "hidden");
-    scroll(295); assert.equal(node.dataset.scroll, "hidden");
-    scroll(280); assert.equal(node.dataset.scroll, "compact");
-    document.activeElement = "header-focus";
-    scroll(500); assert.equal(node.dataset.scroll, "compact");
-    document.activeElement = null; dialog.open = true;
-    scroll(700); assert.equal(node.dataset.scroll, "compact");
-    dialog.open = false;
-    scroll(0); assert.equal(node.dataset.scroll, "top");
-    cleanup(); assert.ok(!listeners.has("scroll"));
-  } finally {
-    if (oldWindow === undefined) delete globalThis.window; else globalThis.window = oldWindow;
-    if (oldDocument === undefined) delete globalThis.document; else globalThis.document = oldDocument;
-  }
+test("compact header is in flow and does not cover sections while scrolling", () => {
+  const css = readFileSync("app/design-preview/emerald-sanctuary/sanctuary.module.css", "utf8");
+  assert.match(css, /\.header,\.header\.solidHeader \{\s*position: relative/);
+  assert.doesNotMatch(css, /\.header\[data-scroll/);
 });
 
 test("staff disclosure closes on Escape, outside pointer, and leaving focus while retaining focus inside", () => {
@@ -255,7 +219,7 @@ test("staff disclosure closes on Escape, outside pointer, and leaving focus whil
     const tree = Navigation({ locale: "en", role: null });
     function find(element, type) { if (!element || typeof element !== "object") return null; if (element.type === type) return element; for (const child of React.Children.toArray(element.props?.children)) { const found = find(child, type); if (found) return found; } return null; }
     const details = find(tree, "details");
-    const cleanup = effects[1]();
+    const cleanup = effects[0]();
     listeners.get("pointerdown")({ target: inside }); assert.equal(disclosure.open, true);
     listeners.get("keydown")({ key: "Escape" }); assert.equal(disclosure.open, false); assert.equal(focused, true);
     disclosure.open = true;
@@ -292,4 +256,22 @@ test("language selector writes the chosen preference and refreshes without chang
     if (previousDocument === undefined) delete globalThis.document; else globalThis.document = previousDocument;
     if (previousLocation === undefined) delete globalThis.location; else globalThis.location = previousLocation;
   }
+});
+
+test("leadership contacts stay with their own profile and operational members use uploaded photo endpoints", async () => {
+  const html = await homepage({ operationalMembers: [{ id: 19, fullName: "Test operational member" }] });
+  const team = html.match(/<section id="our-team"[\s\S]*?<\/section>/)[0];
+  const cards = team.match(/<article\b[\s\S]*?<\/article>/g);
+  assert.equal(cards.length, 4);
+  for (const [index, asset, name, phone] of [
+    [0, "treasurer.png", "MHS. Hameed", "0777378753"],
+    [1, "secretary.png", "SM. Firthous", "0774203109"],
+    [2, "president.png", "ABM. Haroon", "0775525806"],
+  ]) {
+    assert.ok(cards[index].includes(asset));
+    assert.ok(cards[index].includes(name));
+    assert.ok(cards[index].includes("tel:" + phone));
+  }
+  assert.ok(cards[3].includes("/team-member-photos/19"));
+  assert.ok(cards[3].includes("Test operational member"));
 });

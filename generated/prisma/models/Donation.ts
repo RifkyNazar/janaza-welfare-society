@@ -695,10 +695,6 @@ export type EnumDonationStatusFieldUpdateOperationsInput = {
   set?: $Enums.DonationStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number

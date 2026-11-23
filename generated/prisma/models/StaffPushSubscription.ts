@@ -476,10 +476,6 @@ export type StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.StaffPushSubscriptionScalarWhereInput | Prisma.StaffPushSubscriptionScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type StaffPushSubscriptionCreateWithoutUserInput = {
   id?: string
   endpoint: string

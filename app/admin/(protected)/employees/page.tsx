@@ -7,6 +7,7 @@ import { EmployeeActions } from "@/components/admin/employee-actions";
 import { EmployeeStatusBadge } from "@/components/admin/employee-status-badge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { PIN_ONLY_EMAIL_SUFFIX } from "@/lib/employee-phone";
 
 export const metadata: Metadata = { title: "Employee Management" };
 
@@ -39,6 +40,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
       ...(query ? {
         OR: [
           { email: { contains: query } },
+          { employeeProfile: { is: { phone: { contains: query } } } },
           { employeeProfile: { is: { fullName: { contains: query } } } },
           { employeeProfile: { is: { employeeCode: { contains: query } } } },
         ],
@@ -71,7 +73,10 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
           <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl"><T text="Employees" /></h1>
           <p className="mt-2 text-sm text-muted"><T text="Review registrations and manage employee account access." /></p>
         </div>
-        <p className="text-sm text-muted"><span className="font-semibold text-foreground">{employees.length}</span> <T text={employees.length === 1 ? "result" : "results"} /></p>
+        <div className="space-y-2">
+          <Link href="/admin/employees/phone-conflicts" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold"><T text="Review duplicate phone numbers" /></Link>
+          <p className="text-sm text-muted"><span className="font-semibold text-foreground">{employees.length}</span> <T text={employees.length === 1 ? "result" : "results"} /></p>
+        </div>
       </div>
 
       <div className="mt-7 rounded-2xl border border-border bg-white p-4 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
@@ -86,7 +91,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
         <form action="/admin/employees" method="get" className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input type="hidden" name="status" value={status} />
           <label htmlFor="employee-search" className="sr-only"><T text="Search employees" /></label>
-          <input id="employee-search" name="q" type="search" defaultValue={query} placeholder={t("Search name, employee code, or email")} className="min-w-0 flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20" />
+          <input id="employee-search" name="q" type="search" defaultValue={query} placeholder={t("Search name, phone, employee code, or email")} className="min-w-0 flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20" />
           <button type="submit" className="rounded-xl bg-foreground px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-foreground/90"><T text="Search" /></button>
           {query && <Link href={`/admin/employees?status=${status}`} className="rounded-xl border border-border px-5 py-2.5 text-center text-sm font-semibold text-muted hover:text-foreground"><T text="Clear" /></Link>}
         </form>
@@ -106,7 +111,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                 <div>
                   <p className="font-semibold">{profile?.fullName ?? <T text="Profile unavailable" />}</p>
                   <p className="mt-1 text-sm text-muted">{profile?.employeeCode ?? <T text="No employee code" />}</p>
-                  <p className="mt-1 break-all text-xs text-muted">{employee.email}</p>
+                  {!employee.email.endsWith(PIN_ONLY_EMAIL_SUFFIX) && <p className="mt-1 break-all text-xs text-muted">{employee.email}</p>}
                   <p className="mt-1 text-xs font-semibold text-primary">{employee.role}</p>
                 </div>
                 <div>

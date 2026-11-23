@@ -6,6 +6,7 @@ import { SupervisorRoleAction } from "@/components/admin/supervisor-role-action"
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 import { StatusMessage } from "@/components/status-message";
+import { NO_STAFF_PASSWORD } from "@/lib/employee-phone";
 
 export const metadata: Metadata = { title: "Supervisor Management" };
 
@@ -15,7 +16,7 @@ export default async function SupervisorsPage({ searchParams }: { searchParams: 
   const updated = (await searchParams).updated === "1";
   const [supervisors, employees] = await Promise.all([
     prisma.user.findMany({ where: { role: "SUPERVISOR", status: "APPROVED" }, orderBy: { employeeProfile: { fullName: "asc" } }, select: { id: true, email: true, employeeProfile: { select: { fullName: true, employeeCode: true, position: true } } } }),
-    prisma.user.findMany({ where: { role: "EMPLOYEE", status: "APPROVED", employeeProfile: { isNot: null } }, orderBy: { employeeProfile: { fullName: "asc" } }, select: { id: true, email: true, employeeProfile: { select: { fullName: true, employeeCode: true, position: true } } } }),
+    prisma.user.findMany({ where: { role: "EMPLOYEE", status: "APPROVED", passwordHash: { not: NO_STAFF_PASSWORD }, employeeProfile: { isNot: null } }, orderBy: { employeeProfile: { fullName: "asc" } }, select: { id: true, email: true, employeeProfile: { select: { fullName: true, employeeCode: true, position: true } } } }),
   ]);
 
   return <div className="mx-auto max-w-6xl">

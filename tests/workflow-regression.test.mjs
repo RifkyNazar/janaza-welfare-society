@@ -89,7 +89,7 @@ test("existing employee task transitions retain ownership and expected prior sta
 });
 test("public employee approval is restricted to approved employees", async () => {
   const reviewedAt = Date.parse("2026-11-22T12:30:00Z");
-  const actions = loadServerModule("app/admin/(protected)/employees/actions.ts", { "@/lib/permissions": admin, "next/cache": cache, "next/navigation": navigation, "@/lib/prisma": { prisma: { employeeProfile: { updateMany: async ({ where, data }) => { assert.deepEqual(where.user, { role: "EMPLOYEE", status: "APPROVED" }); assert.deepEqual(where.updatedAt, new Date(reviewedAt)); assert.equal(data.isPublicProfile, true); return { count: 0 }; } } } } });
+  const actions = loadServerModule("app/admin/(protected)/employees/actions.ts", { "@/lib/employee-pin": {}, "@/lib/employee-phone-registration": {}, "@/generated/prisma/client": {}, "@/lib/employee-phone": {}, "@/lib/permissions": admin, "next/cache": cache, "next/navigation": navigation, "@/lib/prisma": { prisma: { employeeProfile: { updateMany: async ({ where, data }) => { assert.deepEqual(where.user, { role: "EMPLOYEE", status: "APPROVED" }); assert.deepEqual(where.updatedAt, new Date(reviewedAt)); assert.equal(data.isPublicProfile, true); return { count: 0 }; } } } } });
   assert.match((await actions.setPublicEmployee(7, true, reviewedAt, {}, new FormData())).error, /Review the current profile/);
 });
 test("translation changes UI labels without changing request codes or user content", () => {

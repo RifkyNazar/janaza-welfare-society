@@ -34,7 +34,7 @@ for (const locale of ['en', 'ta']) {
     const localizedLabels = {
       '/support': ['Bank Transfer Details', 'Submit Transfer Confirmation'],
       '/employee-access': ['Employee Login', 'Employee Registration'],
-      '/employee-access/login': ['Staff Login'],
+      '/employee-access/login': ['Employee Login'],
       '/admin/login': ['Admin Login'],
     };
     for (const label of localizedLabels[path] ?? []) {

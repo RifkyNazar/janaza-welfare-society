@@ -3,6 +3,7 @@ import "server-only";
 import type { UserRole } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 import { getEmailAppBaseUrl, sendEmailNotification } from "@/lib/notifications/email";
+import { PIN_ONLY_EMAIL_SUFFIX } from "@/lib/employee-phone";
 import { sendPushToApprovedUser, sendPushToApprovedUsers } from "@/lib/notifications/push";
 import { getSmsAppBaseUrl, sendSmsNotification } from "@/lib/notifications/sms";
 import { employeeRegistrationEmail, serviceRequestEmail, taskAssignmentEmail } from "@/lib/notifications/templates";
@@ -56,7 +57,7 @@ export async function notifyAssignedEmployee(taskAssignmentId: number) {
       sendSmsNotification(task.employee.phone, ASSIGNMENT_SMS),
     ];
     const appBaseUrl = getEmailAppBaseUrl();
-    if (appBaseUrl && emailPattern.test(task.employee.user.email)) deliveries.push(sendEmailNotification({ to: task.employee.user.email, ...taskAssignmentEmail(data, `${appBaseUrl}/employee/my-tasks/${task.id}`) }));
+    if (appBaseUrl && !task.employee.user.email.endsWith(PIN_ONLY_EMAIL_SUFFIX) && emailPattern.test(task.employee.user.email)) deliveries.push(sendEmailNotification({ to: task.employee.user.email, ...taskAssignmentEmail(data, `${appBaseUrl}/employee/my-tasks/${task.id}`) }));
     await Promise.allSettled(deliveries);
   } catch { console.error("[notifications] Task assignment notification could not be completed."); }
 }

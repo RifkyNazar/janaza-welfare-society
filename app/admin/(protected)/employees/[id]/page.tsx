@@ -11,6 +11,8 @@ import Image from "next/image";
 import { profilePhotoSrc } from "@/lib/profile-photo-storage";
 import { EmployeeStatusAction } from "@/components/admin/employee-status-action";
 import { setPublicEmployee } from "../actions";
+import { EmployeePinEnrollment } from "@/components/admin/employee-pin-enrollment";
+import { PIN_ONLY_EMAIL_SUFFIX } from "@/lib/employee-phone";
 
 export const metadata: Metadata = { title: "Employee Details" };
 
@@ -65,7 +67,7 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
   const profile = employee.employeeProfile;
 
   const accountItems = [
-    ["Email", employee.email],
+    ["Email", employee.email.endsWith(PIN_ONLY_EMAIL_SUFFIX) ? "—" : employee.email],
     ["Role", employee.role],
     ["Status", employee.status],
     ["Created", dateTimeFormatter.format(employee.createdAt)],
@@ -95,6 +97,8 @@ export default async function EmployeeDetailsPage({ params }: { params: Promise<
       </div>
       <div className="mt-6 rounded-2xl border border-border bg-white p-5 text-sm text-muted"><T text="Supervisor access is managed from the dedicated" /> <a href="/admin/supervisors" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4"><T text="Supervisor Management" /></a> <T text="page with confirmation." /></div>
 
+      {profile && employee.role === "EMPLOYEE" && employee.status === "APPROVED" &&
+        <EmployeePinEnrollment userId={employee.id} phone={profile.phone} />}
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_28px_rgba(16,42,42,0.04)]">
           <h2 className="text-lg font-semibold"><T text="Account" /></h2>

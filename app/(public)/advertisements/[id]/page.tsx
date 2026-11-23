@@ -1,3 +1,4 @@
+import { liveAdvertisementFilter } from "@/lib/advertisement-schedule";
 import { T } from "@/components/public-language";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -13,7 +14,7 @@ export default async function PublicAdvertisementPage({ params }: { params: Prom
   if (!id || id.length > 191) notFound();
   const now = new Date();
   const advertisement = await prisma.advertisement.findFirst({
-    where: { id, isActive: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gte: now } }] }] },
+    where: { id, ...liveAdvertisementFilter(now) },
     select: { title: true, description: true, imageUrl: true },
   });
   if (!advertisement || !(await advertisementImageExists(advertisement.imageUrl))) notFound();

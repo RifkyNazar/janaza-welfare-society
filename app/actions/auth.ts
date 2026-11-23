@@ -2,21 +2,20 @@
 
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
-import { compare, hash } from "bcryptjs";
+import { randomUUID } from "node:crypto";
+import { after } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
 import { signIn } from "@/auth";
-import { prisma } from "@/lib/prisma";
 import { notifyAdminsOfEmployeeRegistration } from "@/lib/notifications";
-import { consumeRateLimit } from "@/lib/rate-limit";
+import { allowEmployeeAuthAttempt, enrollEmployeePin } from "@/lib/employee-pin";
+import { isEmployeePin, normalizeEmployeePhone, NO_STAFF_PASSWORD, PIN_ONLY_EMAIL_SUFFIX } from "@/lib/employee-phone";
+import { assertEmployeePhonesAvailable, EmployeePhoneConflict, employeePhoneTransaction } from "@/lib/employee-phone-registration";
 
 export type AuthActionState = {
   error?: string;
   success?: string;
-  values?: { fullName?: string; employeeCode?: string; position?: string; phone?: string; email?: string; identifier?: string; confirmation?: boolean };
+  values?: { fullName?: string; position?: string; phone?: string; identifier?: string; email?: string };
 };
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const INVALID_PASSWORD_HASH = "$2b$12$9Q4M4wJ0RnF4XG8it8tN9uPpXrCOJry09KQQZURawW9CrZdcNAcRi";
 
 function value(formData: FormData, name: string) {
   const field = formData.get(name);
@@ -24,95 +23,89 @@ function value(formData: FormData, name: string) {
 }
 
 export async function registerEmployee(
-  _previousState: AuthActionState,
-  formData: FormData,
+  _state: AuthActionState,
+  form: FormData,
 ): Promise<AuthActionState> {
-  const fullName = value(formData, "fullName");
-  const employeeCode = value(formData, "employeeCode");
-  const position = value(formData, "position");
-  const phone = value(formData, "phone");
-  const email = value(formData, "email").toLowerCase();
-  const passwordField = formData.get("password");
-  const confirmationField = formData.get("confirmPassword");
-  const password = typeof passwordField === "string" ? passwordField : "";
-  const confirmPassword = typeof confirmationField === "string" ? confirmationField : "";
-  const values = { fullName, employeeCode, position, phone, email, confirmation: formData.get("confirmation") === "on" };
+  const fullName = value(form, "fullName");
+  const phoneInput = value(form, "phone");
+  const position = value(form, "position");
+  const values = { fullName, phone: phoneInput, position };
+  const phone = normalizeEmployeePhone(phoneInput);
+  if (!fullName || !position || fullName.length > 150 || position.length > 150) {
+    return { error: "Enter your full name and position, up to 150 characters each.", values };
+  }
+  if (!phone) return { error: "Enter a valid Sri Lankan phone number.", values };
 
-  const rateLimit = await consumeRateLimit("employee-registration", { limit: 5, windowMs: 60 * 60_000 });
-  if (!rateLimit.allowed) return { error: "Too many registration attempts. Please try again later.", values };
-
-  if (!fullName || !employeeCode || !position || !phone || !email || !password || !confirmPassword) {
-    return { error: "Please complete all required fields.", values };
-  }
-  if (!values.confirmation) {
-    return { error: "Please confirm that the information is correct.", values };
-  }
-  if (!emailPattern.test(email)) {
-    return { error: "Please enter a valid email address.", values };
-  }
-  if (fullName.length > 150 || employeeCode.length > 64 || position.length > 150 || phone.length > 30 || email.length > 191 || password.length > 128) {
-    return { error: "One or more fields exceed the allowed length.", values };
-  }
-  if (!/^[A-Za-z0-9_-]{2,64}$/.test(employeeCode) || !/^[+]?[0-9][0-9\s-]{7,20}$/.test(phone)) {
-    return { error: "Please enter a valid employee ID and phone number.", values };
-  }
-  if (password.length < 12) {
-    return { error: "Password must be at least 12 characters.", values };
-  }
-  if (password !== confirmPassword) {
-    return { error: "Passwords do not match.", values };
-  }
-  if (password !== password.trim() || Buffer.byteLength(password, "utf8") > 72) {
-    return { error: "Use a password of at most 72 bytes with no leading or trailing spaces.", values };
-  }
-
-  const passwordHash = await hash(password, 12);
-
+  let employee;
   try {
-    const employee = await prisma.$transaction(async (transaction) => {
-      return transaction.user.create({
+    if (!(await allowEmployeeAuthAttempt("register", phone))) {
+      return { error: "Unable to submit another registration right now. Please try again later.", values };
+    }
+    const reference = randomUUID();
+    employee = await employeePhoneTransaction(async tx => {
+      await assertEmployeePhonesAvailable(tx, [phone]);
+      return tx.user.create({
         data: {
-          email,
-          passwordHash,
+          email: reference + PIN_ONLY_EMAIL_SUFFIX,
+          passwordHash: NO_STAFF_PASSWORD,
           role: "EMPLOYEE",
           status: "PENDING",
-          employeeProfile: {
-            create: {
-              employeeCode,
-              fullName,
-              phone,
-              position,
-              isPublicProfile: false,
-            },
-          },
+          employeeProfile: { create: { fullName, phone, position, employeeCode: "JWS-" + reference, isPublicProfile: false } },
         },
-        select: {
-          id: true,
-          email: true,
-          createdAt: true,
-          employeeProfile: { select: { fullName: true, employeeCode: true } },
-        },
+        select: { id: true, createdAt: true, employeeProfile: { select: { employeeCode: true } } },
       });
     });
-    try {
-      await notifyAdminsOfEmployeeRegistration({
-        employeeId: employee.id,
-        fullName: employee.employeeProfile?.fullName ?? fullName,
-        email: employee.email,
-        employeeCode: employee.employeeProfile?.employeeCode,
-        registeredAt: employee.createdAt,
-      });
-    } catch {
-      console.error("[notifications] Employee registration notification failed after registration completed.");
-    }
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return { error: "Unable to complete registration with those details.", values };
+    if (error instanceof EmployeePhoneConflict) {
+      return { error: "Unable to register with this phone number. Check the number or contact JWS for help.", values };
     }
+    console.warn("[auth] Employee registration failed.", error instanceof Prisma.PrismaClientKnownRequestError ? error.code : "registration unavailable");
+    return { error: "Unable to complete registration right now. Please try again later.", values };
+  }
+  const notification = {
+    employeeId: employee.id,
+    fullName,
+    employeeCode: employee.employeeProfile?.employeeCode,
+    registeredAt: employee.createdAt,
+  };
+  after(() => notifyAdminsOfEmployeeRegistration(notification));
+  redirect("/employee-access/register/success");
+}
+
+const employeeLoginError = "Unable to sign in. Check your phone number and PIN, try again later, or contact JWS about your approval or account access.";
+
+export async function employeeLogin(_state: AuthActionState, form: FormData): Promise<AuthActionState> {
+  const phoneInput = value(form, "phone");
+  const phone = normalizeEmployeePhone(phoneInput);
+  const pin = form.get("pin");
+  const values = { phone: phoneInput };
+  if (!phone || typeof pin !== "string" || !isEmployeePin(pin)) return { error: "Enter a Sri Lankan phone number and a six-digit PIN.", values };
+  try {
+    await signIn("credentials", {
+      phone, pin, portal: "employee",
+      remember: form.get("remember") === "on" ? "on" : "off",
+      redirectTo: "/employee",
+    });
+  } catch (error) {
+    if (error instanceof AuthError) return { error: employeeLoginError, values };
     throw error;
   }
+  return {};
+}
 
-  redirect("/employee-access/register/success");
+export async function setupEmployeePin(_state: AuthActionState, form: FormData): Promise<AuthActionState> {
+  const phone = normalizeEmployeePhone(value(form, "phone"));
+  const token = value(form, "token");
+  const pin = form.get("pin");
+  if (!phone || typeof pin !== "string" || !isEmployeePin(pin) || pin !== form.get("confirmPin")) {
+    return { error: "Enter your verified phone number and two matching six-digit PINs." };
+  }
+  try {
+    if (!(await enrollEmployeePin(phone, token, pin))) return { error: "Unable to set your PIN. Check your setup token or ask JWS for a new one." };
+  } catch {
+    return { error: "Unable to set your PIN. Check your setup token or ask JWS for a new one." };
+  }
+  redirect("/employee-access/login?pinSet=1");
 }
 
 export async function login(
@@ -120,39 +113,19 @@ export async function login(
   formData: FormData,
 ): Promise<AuthActionState> {
   const identifier = value(formData, "identifier");
-  const password = value(formData, "password");
+  const password = formData.get("password");
   const values = { identifier };
 
-  const rateLimit = await consumeRateLimit("employee-login", { limit: 10, windowMs: 15 * 60_000, discriminator: identifier });
-  if (!rateLimit.allowed) return { error: "Too many login attempts. Please try again later.", values };
-
-  if (!identifier || !password || identifier.length > 191 || password.length > 128) {
+  if (!identifier || typeof password !== "string" || !password || identifier.length > 191 || password.length > 128) {
     return { error: "Enter your email or employee ID and password.", values };
-  }
-
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { email: identifier.toLowerCase() },
-        { employeeProfile: { is: { employeeCode: identifier } } },
-      ],
-    },
-    select: { passwordHash: true, role: true, status: true },
-  });
-
-  const passwordMatches = await compare(password, user?.passwordHash ?? INVALID_PASSWORD_HASH);
-  if (!user || !passwordMatches) {
-    return { error: "Invalid login credentials.", values };
-  }
-  if (user.status !== "APPROVED" || user.role === "ADMIN") {
-    return { error: "Invalid login credentials.", values };
   }
 
   try {
     await signIn("credentials", {
       identifier,
       password,
-      redirectTo: user.role === "SUPERVISOR" ? "/supervisor" : "/employee",
+      portal: "staff",
+      redirectTo: "/supervisor-login",
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -173,33 +146,16 @@ export async function adminLogin(
   const password = typeof passwordField === "string" ? passwordField : "";
   const values = { email };
 
-  const rateLimit = await consumeRateLimit("admin-login", { limit: 10, windowMs: 15 * 60_000, discriminator: email });
-  if (!rateLimit.allowed) return { error: "Too many login attempts. Please try again later.", values };
-
   if (!email || !password || email.length > 191 || password.length > 128) {
     return { error: "Enter your email and password.", values };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { passwordHash: true, role: true, status: true },
-  });
-
-  const passwordMatches = await compare(password, user?.passwordHash ?? INVALID_PASSWORD_HASH);
-  if (
-    !user ||
-    !passwordMatches ||
-    user.role !== "ADMIN" ||
-    user.status !== "APPROVED"
-  ) {
-    return { error: "Invalid email or password.", values };
   }
 
   try {
     await signIn("credentials", {
       identifier: email,
       password,
-      redirectTo: "/admin",
+      portal: "admin",
+      redirectTo: "/admin/login",
     });
   } catch (error) {
     if (error instanceof AuthError) {

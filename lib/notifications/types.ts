@@ -8,7 +8,7 @@ export type EmailMessage = {
 export type EmployeeRegistrationNotification = {
   employeeId: number;
   fullName: string;
-  email: string;
+  email?: string;
   employeeCode?: string | null;
   registeredAt: Date;
 };

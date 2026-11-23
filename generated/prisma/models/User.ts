@@ -28,10 +28,12 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
+  employeeSessionVersion: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
+  employeeSessionVersion: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -40,6 +42,7 @@ export type UserMinAggregateOutputType = {
   passwordHash: string | null
   role: $Enums.UserRole | null
   status: $Enums.AccountStatus | null
+  employeeSessionVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +53,7 @@ export type UserMaxAggregateOutputType = {
   passwordHash: string | null
   role: $Enums.UserRole | null
   status: $Enums.AccountStatus | null
+  employeeSessionVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +64,7 @@ export type UserCountAggregateOutputType = {
   passwordHash: number
   role: number
   status: number
+  employeeSessionVersion: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -68,10 +73,12 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
+  employeeSessionVersion?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
+  employeeSessionVersion?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -80,6 +87,7 @@ export type UserMinAggregateInputType = {
   passwordHash?: true
   role?: true
   status?: true
+  employeeSessionVersion?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -90,6 +98,7 @@ export type UserMaxAggregateInputType = {
   passwordHash?: true
   role?: true
   status?: true
+  employeeSessionVersion?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +109,7 @@ export type UserCountAggregateInputType = {
   passwordHash?: true
   role?: true
   status?: true
+  employeeSessionVersion?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -197,6 +207,7 @@ export type UserGroupByOutputType = {
   passwordHash: string
   role: $Enums.UserRole
   status: $Enums.AccountStatus
+  employeeSessionVersion: number
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -230,6 +241,7 @@ export type UserWhereInput = {
   passwordHash?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFilter<"User"> | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   employeeProfile?: Prisma.XOR<Prisma.EmployeeProfileNullableScalarRelationFilter, Prisma.EmployeeProfileWhereInput> | null
@@ -237,6 +249,8 @@ export type UserWhereInput = {
   donationsReviewed?: Prisma.DonationListRelationFilter
   assignmentsCreated?: Prisma.TaskAssignmentListRelationFilter
   pushSubscriptions?: Prisma.StaffPushSubscriptionListRelationFilter
+  employeePin?: Prisma.XOR<Prisma.EmployeePinCredentialNullableScalarRelationFilter, Prisma.EmployeePinCredentialWhereInput> | null
+  employeeSessions?: Prisma.EmployeePinSessionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -245,6 +259,7 @@ export type UserOrderByWithRelationInput = {
   passwordHash?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   employeeProfile?: Prisma.EmployeeProfileOrderByWithRelationInput
@@ -252,6 +267,8 @@ export type UserOrderByWithRelationInput = {
   donationsReviewed?: Prisma.DonationOrderByRelationAggregateInput
   assignmentsCreated?: Prisma.TaskAssignmentOrderByRelationAggregateInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionOrderByRelationAggregateInput
+  employeePin?: Prisma.EmployeePinCredentialOrderByWithRelationInput
+  employeeSessions?: Prisma.EmployeePinSessionOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
@@ -264,6 +281,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordHash?: Prisma.StringFilter<"User"> | string
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFilter<"User"> | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFilter<"User"> | number
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   employeeProfile?: Prisma.XOR<Prisma.EmployeeProfileNullableScalarRelationFilter, Prisma.EmployeeProfileWhereInput> | null
@@ -271,6 +289,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   donationsReviewed?: Prisma.DonationListRelationFilter
   assignmentsCreated?: Prisma.TaskAssignmentListRelationFilter
   pushSubscriptions?: Prisma.StaffPushSubscriptionListRelationFilter
+  employeePin?: Prisma.XOR<Prisma.EmployeePinCredentialNullableScalarRelationFilter, Prisma.EmployeePinCredentialWhereInput> | null
+  employeeSessions?: Prisma.EmployeePinSessionListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -279,6 +299,7 @@ export type UserOrderByWithAggregationInput = {
   passwordHash?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -297,6 +318,7 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumAccountStatusWithAggregatesFilter<"User"> | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntWithAggregatesFilter<"User"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -306,6 +328,7 @@ export type UserCreateInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
@@ -313,6 +336,8 @@ export type UserCreateInput = {
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -321,6 +346,7 @@ export type UserUncheckedCreateInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
@@ -328,6 +354,8 @@ export type UserUncheckedCreateInput = {
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -335,6 +363,7 @@ export type UserUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
@@ -342,6 +371,8 @@ export type UserUpdateInput = {
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -350,6 +381,7 @@ export type UserUncheckedUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
@@ -357,6 +389,8 @@ export type UserUncheckedUpdateInput = {
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -365,6 +399,7 @@ export type UserCreateManyInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -374,6 +409,7 @@ export type UserUpdateManyMutationInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -384,6 +420,7 @@ export type UserUncheckedUpdateManyInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -400,12 +437,14 @@ export type UserCountOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -414,6 +453,7 @@ export type UserMaxOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -424,12 +464,14 @@ export type UserMinOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   role?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  employeeSessionVersion?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -454,16 +496,44 @@ export type EnumAccountStatusFieldUpdateOperationsInput = {
   set?: $Enums.AccountStatus
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutEmployeePinInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmployeePinInput, Prisma.UserUncheckedCreateWithoutEmployeePinInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmployeePinInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutEmployeePinNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmployeePinInput, Prisma.UserUncheckedCreateWithoutEmployeePinInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmployeePinInput
+  upsert?: Prisma.UserUpsertWithoutEmployeePinInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmployeePinInput, Prisma.UserUpdateWithoutEmployeePinInput>, Prisma.UserUncheckedUpdateWithoutEmployeePinInput>
+}
+
+export type UserCreateNestedOneWithoutEmployeeSessionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmployeeSessionsInput, Prisma.UserUncheckedCreateWithoutEmployeeSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmployeeSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutEmployeeSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmployeeSessionsInput, Prisma.UserUncheckedCreateWithoutEmployeeSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmployeeSessionsInput
+  upsert?: Prisma.UserUpsertWithoutEmployeeSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmployeeSessionsInput, Prisma.UserUpdateWithoutEmployeeSessionsInput>, Prisma.UserUncheckedUpdateWithoutEmployeeSessionsInput>
 }
 
 export type UserCreateNestedOneWithoutPushSubscriptionsInput = {
@@ -542,17 +612,184 @@ export type UserUpdateOneWithoutTaskPhotosReviewedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaskPhotosReviewedInput, Prisma.UserUpdateWithoutTaskPhotosReviewedInput>, Prisma.UserUncheckedUpdateWithoutTaskPhotosReviewedInput>
 }
 
-export type UserCreateWithoutPushSubscriptionsInput = {
+export type UserCreateWithoutEmployeePinInput = {
   email: string
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutEmployeePinInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
+  donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
+  assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutEmployeePinInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmployeePinInput, Prisma.UserUncheckedCreateWithoutEmployeePinInput>
+}
+
+export type UserUpsertWithoutEmployeePinInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEmployeePinInput, Prisma.UserUncheckedUpdateWithoutEmployeePinInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmployeePinInput, Prisma.UserUncheckedCreateWithoutEmployeePinInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEmployeePinInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEmployeePinInput, Prisma.UserUncheckedUpdateWithoutEmployeePinInput>
+}
+
+export type UserUpdateWithoutEmployeePinInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
+  donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
+  assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEmployeePinInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
+  donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutEmployeeSessionsInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
+  taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
+  donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
+  assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutEmployeeSessionsInput = {
+  id?: number
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
+  donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
+  assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutEmployeeSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmployeeSessionsInput, Prisma.UserUncheckedCreateWithoutEmployeeSessionsInput>
+}
+
+export type UserUpsertWithoutEmployeeSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEmployeeSessionsInput, Prisma.UserUncheckedUpdateWithoutEmployeeSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmployeeSessionsInput, Prisma.UserUncheckedCreateWithoutEmployeeSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEmployeeSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEmployeeSessionsInput, Prisma.UserUncheckedUpdateWithoutEmployeeSessionsInput>
+}
+
+export type UserUpdateWithoutEmployeeSessionsInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
+  donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
+  assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEmployeeSessionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+  taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
+  donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
+  assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPushSubscriptionsInput = {
+  email: string
+  passwordHash: string
+  role?: $Enums.UserRole
+  status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
+  taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
+  donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
+  assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -561,12 +798,15 @@ export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -590,12 +830,15 @@ export type UserUpdateWithoutPushSubscriptionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -604,12 +847,15 @@ export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEmployeeProfileInput = {
@@ -617,12 +863,15 @@ export type UserCreateWithoutEmployeeProfileInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmployeeProfileInput = {
@@ -631,12 +880,15 @@ export type UserUncheckedCreateWithoutEmployeeProfileInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmployeeProfileInput = {
@@ -660,12 +912,15 @@ export type UserUpdateWithoutEmployeeProfileInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
@@ -674,12 +929,15 @@ export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDonationsReviewedInput = {
@@ -687,12 +945,15 @@ export type UserCreateWithoutDonationsReviewedInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDonationsReviewedInput = {
@@ -701,12 +962,15 @@ export type UserUncheckedCreateWithoutDonationsReviewedInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDonationsReviewedInput = {
@@ -730,12 +994,15 @@ export type UserUpdateWithoutDonationsReviewedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDonationsReviewedInput = {
@@ -744,12 +1011,15 @@ export type UserUncheckedUpdateWithoutDonationsReviewedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAssignmentsCreatedInput = {
@@ -757,12 +1027,15 @@ export type UserCreateWithoutAssignmentsCreatedInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAssignmentsCreatedInput = {
@@ -771,12 +1044,15 @@ export type UserUncheckedCreateWithoutAssignmentsCreatedInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedCreateNestedManyWithoutReviewedByAdminInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAssignmentsCreatedInput = {
@@ -800,12 +1076,15 @@ export type UserUpdateWithoutAssignmentsCreatedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignmentsCreatedInput = {
@@ -814,12 +1093,15 @@ export type UserUncheckedUpdateWithoutAssignmentsCreatedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   taskPhotosReviewed?: Prisma.TaskPhotoUncheckedUpdateManyWithoutReviewedByAdminNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTaskPhotosReviewedInput = {
@@ -827,12 +1109,15 @@ export type UserCreateWithoutTaskPhotosReviewedInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileCreateNestedOneWithoutUserInput
   donationsReviewed?: Prisma.DonationCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTaskPhotosReviewedInput = {
@@ -841,12 +1126,15 @@ export type UserUncheckedCreateWithoutTaskPhotosReviewedInput = {
   passwordHash: string
   role?: $Enums.UserRole
   status?: $Enums.AccountStatus
+  employeeSessionVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
   donationsReviewed?: Prisma.DonationUncheckedCreateNestedManyWithoutReviewedByInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedCreateNestedOneWithoutUserInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTaskPhotosReviewedInput = {
@@ -870,12 +1158,15 @@ export type UserUpdateWithoutTaskPhotosReviewedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUpdateOneWithoutUserNestedInput
   donationsReviewed?: Prisma.DonationUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskPhotosReviewedInput = {
@@ -884,12 +1175,15 @@ export type UserUncheckedUpdateWithoutTaskPhotosReviewedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumAccountStatusFieldUpdateOperationsInput | $Enums.AccountStatus
+  employeeSessionVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   employeeProfile?: Prisma.EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
   donationsReviewed?: Prisma.DonationUncheckedUpdateManyWithoutReviewedByNestedInput
   assignmentsCreated?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
   pushSubscriptions?: Prisma.StaffPushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  employeePin?: Prisma.EmployeePinCredentialUncheckedUpdateOneWithoutUserNestedInput
+  employeeSessions?: Prisma.EmployeePinSessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -902,6 +1196,7 @@ export type UserCountOutputType = {
   donationsReviewed: number
   assignmentsCreated: number
   pushSubscriptions: number
+  employeeSessions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -909,6 +1204,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   donationsReviewed?: boolean | UserCountOutputTypeCountDonationsReviewedArgs
   assignmentsCreated?: boolean | UserCountOutputTypeCountAssignmentsCreatedArgs
   pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
+  employeeSessions?: boolean | UserCountOutputTypeCountEmployeeSessionsArgs
 }
 
 /**
@@ -949,6 +1245,13 @@ export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends runtim
   where?: Prisma.StaffPushSubscriptionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountEmployeeSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmployeePinSessionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -956,6 +1259,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordHash?: boolean
   role?: boolean
   status?: boolean
+  employeeSessionVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   employeeProfile?: boolean | Prisma.User$employeeProfileArgs<ExtArgs>
@@ -963,6 +1267,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   donationsReviewed?: boolean | Prisma.User$donationsReviewedArgs<ExtArgs>
   assignmentsCreated?: boolean | Prisma.User$assignmentsCreatedArgs<ExtArgs>
   pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
+  employeePin?: boolean | Prisma.User$employeePinArgs<ExtArgs>
+  employeeSessions?: boolean | Prisma.User$employeeSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -974,17 +1280,20 @@ export type UserSelectScalar = {
   passwordHash?: boolean
   role?: boolean
   status?: boolean
+  employeeSessionVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "role" | "status" | "employeeSessionVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   employeeProfile?: boolean | Prisma.User$employeeProfileArgs<ExtArgs>
   taskPhotosReviewed?: boolean | Prisma.User$taskPhotosReviewedArgs<ExtArgs>
   donationsReviewed?: boolean | Prisma.User$donationsReviewedArgs<ExtArgs>
   assignmentsCreated?: boolean | Prisma.User$assignmentsCreatedArgs<ExtArgs>
   pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
+  employeePin?: boolean | Prisma.User$employeePinArgs<ExtArgs>
+  employeeSessions?: boolean | Prisma.User$employeeSessionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -996,6 +1305,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     donationsReviewed: Prisma.$DonationPayload<ExtArgs>[]
     assignmentsCreated: Prisma.$TaskAssignmentPayload<ExtArgs>[]
     pushSubscriptions: Prisma.$StaffPushSubscriptionPayload<ExtArgs>[]
+    employeePin: Prisma.$EmployeePinCredentialPayload<ExtArgs> | null
+    employeeSessions: Prisma.$EmployeePinSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1003,6 +1314,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordHash: string
     role: $Enums.UserRole
     status: $Enums.AccountStatus
+    employeeSessionVersion: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1350,6 +1662,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   donationsReviewed<T extends Prisma.User$donationsReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$donationsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignmentsCreated<T extends Prisma.User$assignmentsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignmentsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pushSubscriptions<T extends Prisma.User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  employeePin<T extends Prisma.User$employeePinArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$employeePinArgs<ExtArgs>>): Prisma.Prisma__EmployeePinCredentialClient<runtime.Types.Result.GetResult<Prisma.$EmployeePinCredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  employeeSessions<T extends Prisma.User$employeeSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$employeeSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmployeePinSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1384,6 +1698,7 @@ export interface UserFieldRefs {
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
   readonly status: Prisma.FieldRef<"User", 'AccountStatus'>
+  readonly employeeSessionVersion: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1846,6 +2161,49 @@ export type User$pushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.StaffPushSubscriptionScalarFieldEnum | Prisma.StaffPushSubscriptionScalarFieldEnum[]
+}
+
+/**
+ * User.employeePin
+ */
+export type User$employeePinArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmployeePinCredential
+   */
+  select?: Prisma.EmployeePinCredentialSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmployeePinCredential
+   */
+  omit?: Prisma.EmployeePinCredentialOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeePinCredentialInclude<ExtArgs> | null
+  where?: Prisma.EmployeePinCredentialWhereInput
+}
+
+/**
+ * User.employeeSessions
+ */
+export type User$employeeSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmployeePinSession
+   */
+  select?: Prisma.EmployeePinSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmployeePinSession
+   */
+  omit?: Prisma.EmployeePinSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeePinSessionInclude<ExtArgs> | null
+  where?: Prisma.EmployeePinSessionWhereInput
+  orderBy?: Prisma.EmployeePinSessionOrderByWithRelationInput | Prisma.EmployeePinSessionOrderByWithRelationInput[]
+  cursor?: Prisma.EmployeePinSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmployeePinSessionScalarFieldEnum | Prisma.EmployeePinSessionScalarFieldEnum[]
 }
 
 /**

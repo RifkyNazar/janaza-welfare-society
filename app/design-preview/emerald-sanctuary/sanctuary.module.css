@@ -57,7 +57,7 @@
 .sanctuary :is(button,select) { font: inherit; }
 .sanctuary :is(img,svg) { max-width: 100%; }
 .sanctuary :is(section,main) { scroll-margin-block-start: var(--space-6); }
-.sanctuary :is(.serviceGrid,.teamGrid,.activityGrid,.footerTop)>* { min-inline-size: 0; }
+.sanctuary :is(.serviceGrid,.footerTop)>* { min-inline-size: 0; }
 .sanctuary[lang='ta'] { font-family: var(--sanctuary-tamil), sans-serif; line-height: 1.85; }
 .sanctuary[lang='ta'] :is(h2,h3) { font-family: var(--sanctuary-tamil), sans-serif; letter-spacing: normal; line-height: 1.6; }
 .sanctuary[lang='ta'] h3[lang='en'] { font-family: var(--sanctuary-outfit), sans-serif; line-height: 1.3; }
@@ -185,7 +185,6 @@
 .serviceVehicle img { object-fit: cover; object-position: center; }
 .communityService { background: linear-gradient(145deg,#174332,#0c2d24); }
 
-.teamGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: clamp(.5rem,2vw,1.25rem); max-inline-size: 60rem; margin-inline: auto; align-items: stretch; }
 .profileCard { display: flex; flex-direction: column; min-inline-size: 0; overflow: hidden; border: 1px solid #e6b6b333; border-radius: var(--radius-small); background: linear-gradient(145deg,#24392f,#11271f); }
 .profilePortrait { position: relative; aspect-ratio: 4 / 3; max-block-size: 10rem; overflow: hidden; background: #dce5d9; }
 .profilePortrait>img { object-fit: cover; object-position: center 25%; }
@@ -198,7 +197,6 @@
 .profileContact bdi { white-space: nowrap; overflow-wrap: normal; text-align: center; }
 .profileCallIcon { display: grid; place-items: center; inline-size: 1.5rem; block-size: 1.5rem; border: 0; color: #ffb4a4; }
 .profileCallIcon .icon { inline-size: .875rem; block-size: .875rem; }
-.activityGrid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: clamp(.5rem,2vw,1.25rem); }
 .activityTile { min-inline-size: 0; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-small); background: var(--surface); }
 .activityTile>a { display: block; block-size: 100%; min-block-size: var(--target); }
 .activityThumb { position: relative; aspect-ratio: 4 / 3; max-block-size: 12rem; overflow: hidden; background: var(--surface); }
@@ -311,12 +309,13 @@
 .primary:active,.outlineButton:active,.darkButton:active,.navRequest:active { transform: translateY(0); box-shadow: inset 0 2px 4px #00140f33; }
 .compactBrand,.mobileLanguage { display: none; }
 @media (max-width: 1279px) {
+
   .header,.header.solidHeader {
-    position: fixed; z-index: 50; inset-block-start: max(.5rem,env(safe-area-inset-top)); inset-inline-start: 50%;
-    inline-size: min(calc(100% - 1.5rem),40rem); margin: 0; padding: .5rem .625rem;
+    position: relative; inset: auto; transform: none; margin: 0 auto;
+    inline-size: min(calc(100% - 1.5rem),40rem); padding: .5rem .625rem;
     border: 1px solid #d7f4de40; border-radius: 1.25rem; background: var(--gradient-glass);
-    transform: translate3d(-50%,0,0); transition: transform 200ms ease,opacity 200ms ease;
   }
+  .opening,.navigationTheme { padding-block-start: max(.5rem,env(safe-area-inset-top)); }
   .header .brand { min-block-size: 2.75rem; gap: .5rem; font-size: .8125rem; line-height: 1.4; }
   .header .brandCopy small { display: none; }
   .header .logo { inline-size: 2.5rem; block-size: 2.5rem; }
@@ -325,20 +324,13 @@
   .header .mobileLanguage { display: block; }
   .header .mobileLanguage select { inline-size: 5.5rem; min-block-size: 2.75rem; padding: .25rem; font-size: .8125rem; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-control); }
   .header .drawerTrigger { inline-size: 2.75rem; block-size: 2.75rem; }
-  .header[data-scroll='compact'],.header[data-scroll='hidden'] { inline-size: min(18rem,calc(100% - 1.5rem)); border-radius: 999px; }
-  .header[data-scroll='compact'] .brandCopy,.header[data-scroll='hidden'] .brandCopy { display: none; }
-  .header[data-scroll='compact'] .compactBrand,.header[data-scroll='hidden'] .compactBrand { display: inline; }
-  .header[data-scroll='hidden'] { transform: translate3d(-50%,-160%,0); opacity: 0; pointer-events: none; }
-  .header[data-scroll='hidden']:focus-within { transform: translate3d(-50%,0,0); opacity: 1; pointer-events: auto; }
-  .navigationTheme { padding-block-start: 5rem; --jws-focus: var(--focus); }
-  .hero { padding-block-start: 7rem; }
-  .sanctuary :is(section,main) { scroll-margin-block-start: 5rem; }
+  .hero { padding-block-start: 2rem; }
 }
 @media (max-width: 639px) {
   .sanctuary { --gutter: 1rem; --section-space: 1.75rem; --grid-gap: .75rem; --text-body: .9375rem; --text-lead: 1rem; --heading-section: clamp(1.375rem,5.5vw,1.625rem); --heading-card: 1.125rem; --control-height: 2.75rem; }
   .sectionHead { gap: .375rem; margin-block-end: .875rem; }
   .sectionHead h2 { margin-block-start: .25rem; }
-  .hero { padding-block: 6.25rem 1rem; }
+  .hero { padding-block: 1.5rem 1rem; }
   .heroInner { gap: .875rem; }
   .sanctuary .quranVerse { font-size: clamp(2rem,8vw,2.625rem); line-height: 1.8; }
   .verseTranslation { font-size: 1rem; }
@@ -372,4 +364,19 @@
   .sanctuary *,.sanctuary *::before,.sanctuary *::after { animation: none !important; transition: none !important; }
   .quranIntro { display: none !important; }
   .header { transition: none !important; }
+}
+
+.cardRail { display: grid; gap: .5rem; min-inline-size: 0; }
+.railPause { justify-self: end; min-block-size: 2.75rem; padding-inline: .875rem; border: 1px solid var(--border-strong); border-radius: var(--radius-control); }
+.railViewport { container-type: inline-size; overflow-x: auto; overscroll-behavior-inline: contain; scroll-behavior: auto; }
+.railTrack,.railGroup { display: flex; gap: clamp(.75rem,2vw,1.25rem); inline-size: max-content; }
+.railTrack { position: relative; padding: .375rem 0 .75rem; }
+.railGroup > * { flex: 0 0 auto; inline-size: 72cqi; }
+.railViewport[data-count="1"] .railGroup > * { inline-size: min(100cqi,26rem); }
+@media (min-width: 640px) {
+  .railGroup > * { inline-size: 35cqi; }
+  .railViewport[data-count="2"] .railGroup > * { inline-size: 54cqi; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .railCopy { display: none; }
 }

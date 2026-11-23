@@ -398,6 +398,10 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  EmployeePinCredential: 'EmployeePinCredential',
+  EmployeePinSession: 'EmployeePinSession',
+  EmployeePhoneRegistrationLock: 'EmployeePhoneRegistrationLock',
+  EmployeeAuthThrottle: 'EmployeeAuthThrottle',
   StaffPushSubscription: 'StaffPushSubscription',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
@@ -427,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "staffPushSubscription" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "activityMedia" | "heroMedia" | "operationalTeamMember" | "operationPhoto"
+    modelProps: "user" | "employeePinCredential" | "employeePinSession" | "employeePhoneRegistrationLock" | "employeeAuthThrottle" | "staffPushSubscription" | "employeeProfile" | "serviceRequest" | "requestServiceSelection" | "vehicle" | "donation" | "taskAssignment" | "advertisement" | "taskPhoto" | "operation" | "activityMedia" | "heroMedia" | "operationalTeamMember" | "operationPhoto"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -494,6 +498,270 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmployeePinCredential: {
+      payload: Prisma.$EmployeePinCredentialPayload<ExtArgs>
+      fields: Prisma.EmployeePinCredentialFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeePinCredentialFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeePinCredentialFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeePinCredentialFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeePinCredentialFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>
+        }
+        findMany: {
+          args: Prisma.EmployeePinCredentialFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>[]
+        }
+        create: {
+          args: Prisma.EmployeePinCredentialCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>
+        }
+        createMany: {
+          args: Prisma.EmployeePinCredentialCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeePinCredentialDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>
+        }
+        update: {
+          args: Prisma.EmployeePinCredentialUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeePinCredentialDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeePinCredentialUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeePinCredentialUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinCredentialPayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeePinCredentialAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeePinCredential>
+        }
+        groupBy: {
+          args: Prisma.EmployeePinCredentialGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeePinCredentialGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeePinCredentialCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeePinCredentialCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmployeePinSession: {
+      payload: Prisma.$EmployeePinSessionPayload<ExtArgs>
+      fields: Prisma.EmployeePinSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeePinSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeePinSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeePinSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeePinSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>
+        }
+        findMany: {
+          args: Prisma.EmployeePinSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>[]
+        }
+        create: {
+          args: Prisma.EmployeePinSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>
+        }
+        createMany: {
+          args: Prisma.EmployeePinSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeePinSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>
+        }
+        update: {
+          args: Prisma.EmployeePinSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeePinSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeePinSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeePinSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePinSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeePinSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeePinSession>
+        }
+        groupBy: {
+          args: Prisma.EmployeePinSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeePinSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeePinSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeePinSessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmployeePhoneRegistrationLock: {
+      payload: Prisma.$EmployeePhoneRegistrationLockPayload<ExtArgs>
+      fields: Prisma.EmployeePhoneRegistrationLockFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeePhoneRegistrationLockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeePhoneRegistrationLockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeePhoneRegistrationLockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeePhoneRegistrationLockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>
+        }
+        findMany: {
+          args: Prisma.EmployeePhoneRegistrationLockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>[]
+        }
+        create: {
+          args: Prisma.EmployeePhoneRegistrationLockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>
+        }
+        createMany: {
+          args: Prisma.EmployeePhoneRegistrationLockCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeePhoneRegistrationLockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>
+        }
+        update: {
+          args: Prisma.EmployeePhoneRegistrationLockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeePhoneRegistrationLockDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeePhoneRegistrationLockUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeePhoneRegistrationLockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePhoneRegistrationLockPayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeePhoneRegistrationLockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeePhoneRegistrationLock>
+        }
+        groupBy: {
+          args: Prisma.EmployeePhoneRegistrationLockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeePhoneRegistrationLockGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeePhoneRegistrationLockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeePhoneRegistrationLockCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmployeeAuthThrottle: {
+      payload: Prisma.$EmployeeAuthThrottlePayload<ExtArgs>
+      fields: Prisma.EmployeeAuthThrottleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeeAuthThrottleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeeAuthThrottleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeeAuthThrottleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeeAuthThrottleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>
+        }
+        findMany: {
+          args: Prisma.EmployeeAuthThrottleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>[]
+        }
+        create: {
+          args: Prisma.EmployeeAuthThrottleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>
+        }
+        createMany: {
+          args: Prisma.EmployeeAuthThrottleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeeAuthThrottleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>
+        }
+        update: {
+          args: Prisma.EmployeeAuthThrottleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeeAuthThrottleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeeAuthThrottleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeeAuthThrottleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeAuthThrottlePayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeeAuthThrottleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeeAuthThrottle>
+        }
+        groupBy: {
+          args: Prisma.EmployeeAuthThrottleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeAuthThrottleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeeAuthThrottleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeAuthThrottleCountAggregateOutputType> | number
         }
       }
     }
@@ -1466,11 +1734,52 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   role: 'role',
   status: 'status',
+  employeeSessionVersion: 'employeeSessionVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const EmployeePinCredentialScalarFieldEnum = {
+  userId: 'userId',
+  phone: 'phone',
+  pinHash: 'pinHash',
+  setupDigest: 'setupDigest',
+  setupUntil: 'setupUntil',
+  setupVersion: 'setupVersion',
+  issuedById: 'issuedById',
+  issuedAt: 'issuedAt'
+} as const
+
+export type EmployeePinCredentialScalarFieldEnum = (typeof EmployeePinCredentialScalarFieldEnum)[keyof typeof EmployeePinCredentialScalarFieldEnum]
+
+
+export const EmployeePinSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  version: 'version',
+  expiresAt: 'expiresAt'
+} as const
+
+export type EmployeePinSessionScalarFieldEnum = (typeof EmployeePinSessionScalarFieldEnum)[keyof typeof EmployeePinSessionScalarFieldEnum]
+
+
+export const EmployeePhoneRegistrationLockScalarFieldEnum = {
+  phone: 'phone'
+} as const
+
+export type EmployeePhoneRegistrationLockScalarFieldEnum = (typeof EmployeePhoneRegistrationLockScalarFieldEnum)[keyof typeof EmployeePhoneRegistrationLockScalarFieldEnum]
+
+
+export const EmployeeAuthThrottleScalarFieldEnum = {
+  id: 'id',
+  attempts: 'attempts',
+  expiresAt: 'expiresAt'
+} as const
+
+export type EmployeeAuthThrottleScalarFieldEnum = (typeof EmployeeAuthThrottleScalarFieldEnum)[keyof typeof EmployeeAuthThrottleScalarFieldEnum]
 
 
 export const StaffPushSubscriptionScalarFieldEnum = {
@@ -1727,6 +2036,36 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const EmployeePinCredentialOrderByRelevanceFieldEnum = {
+  phone: 'phone',
+  pinHash: 'pinHash',
+  setupDigest: 'setupDigest'
+} as const
+
+export type EmployeePinCredentialOrderByRelevanceFieldEnum = (typeof EmployeePinCredentialOrderByRelevanceFieldEnum)[keyof typeof EmployeePinCredentialOrderByRelevanceFieldEnum]
+
+
+export const EmployeePinSessionOrderByRelevanceFieldEnum = {
+  id: 'id'
+} as const
+
+export type EmployeePinSessionOrderByRelevanceFieldEnum = (typeof EmployeePinSessionOrderByRelevanceFieldEnum)[keyof typeof EmployeePinSessionOrderByRelevanceFieldEnum]
+
+
+export const EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum = {
+  phone: 'phone'
+} as const
+
+export type EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum = (typeof EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum)[keyof typeof EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum]
+
+
+export const EmployeeAuthThrottleOrderByRelevanceFieldEnum = {
+  id: 'id'
+} as const
+
+export type EmployeeAuthThrottleOrderByRelevanceFieldEnum = (typeof EmployeeAuthThrottleOrderByRelevanceFieldEnum)[keyof typeof EmployeeAuthThrottleOrderByRelevanceFieldEnum]
 
 
 export const StaffPushSubscriptionOrderByRelevanceFieldEnum = {
@@ -2130,6 +2469,10 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  employeePinCredential?: Prisma.EmployeePinCredentialOmit
+  employeePinSession?: Prisma.EmployeePinSessionOmit
+  employeePhoneRegistrationLock?: Prisma.EmployeePhoneRegistrationLockOmit
+  employeeAuthThrottle?: Prisma.EmployeeAuthThrottleOmit
   staffPushSubscription?: Prisma.StaffPushSubscriptionOmit
   employeeProfile?: Prisma.EmployeeProfileOmit
   serviceRequest?: Prisma.ServiceRequestOmit

@@ -30,7 +30,7 @@ function plainText(title: string, rows: Array<[string, string]>, buttonLabel: st
 export function employeeRegistrationEmail(data: EmployeeRegistrationNotification, dashboardUrl: string) {
   const rows: Array<[string, string]> = [
     ["Employee Name", data.fullName],
-    ["Employee Email", data.email],
+    ...(data.email ? [["Employee Email", data.email] as [string, string]] : []),
     ...(data.employeeCode ? [["Employee Code", data.employeeCode] as [string, string]] : []),
     ["Registration Date/Time", formatDate(data.registeredAt)],
     ["Status", "Pending Approval"],

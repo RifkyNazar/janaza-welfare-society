@@ -4,14 +4,11 @@ import { T } from "@/components/public-language";
 import { useActionState } from "react";
 import Link from "next/link";
 import { registerEmployee, type AuthActionState } from "@/app/actions/auth";
-import { PasswordField } from "@/components/employee/password-field";
 
 const fields = [
   { id: "full-name", name: "fullName", label: "Full Name", type: "text", autoComplete: "name" },
-  { id: "employee-code", name: "employeeCode", label: "Employee / Staff ID", type: "text", autoComplete: "off" },
-  { id: "position", name: "position", label: "Position / Role", type: "text", autoComplete: "organization-title" },
   { id: "phone", name: "phone", label: "Phone Number", type: "tel", autoComplete: "tel" },
-  { id: "email", name: "email", label: "Email Address", type: "email", autoComplete: "email" },
+  { id: "position", name: "position", label: "Position", type: "text", autoComplete: "organization-title" },
 ] as const;
 
 const initialState: AuthActionState = {};
@@ -24,19 +21,13 @@ export function RegistrationForm() {
       <form action={formAction}>
         <div className="grid gap-5 sm:grid-cols-2">
           {fields.map((field) => (
-            <div key={field.id} className={field.id === "email" ? "sm:col-span-2" : ""}>
+            <div key={field.id} className={field.id === "position" ? "sm:col-span-2" : ""}>
               <label htmlFor={field.id} className="block text-sm font-semibold text-foreground"><T text={field.label} /></label>
-              <input key={`${field.name}-${state.values?.[field.name] ?? ""}`} id={field.id} name={field.name} type={field.type} autoComplete={field.autoComplete} required defaultValue={state.values?.[field.name] as string | undefined} className="employee-form-input mt-2" />
+              <input key={`${field.name}-${state.values?.[field.name] ?? ""}`} id={field.id} name={field.name} type={field.type} autoComplete={field.autoComplete} maxLength={field.type === "tel" ? 32 : 150} required defaultValue={state.values?.[field.name] as string | undefined} className="employee-form-input mt-2" />
             </div>
           ))}
-          <PasswordField id="registration-password" name="password" label="Password" autoComplete="new-password" />
-          <PasswordField id="confirm-password" name="confirmPassword" label="Confirm Password" autoComplete="new-password" />
         </div>
 
-        <label className="mt-6 flex cursor-pointer items-start gap-3 text-sm leading-6 text-muted">
-          <input key={`confirmation-${state.values?.confirmation ?? false}`} type="checkbox" name="confirmation" required defaultChecked={state.values?.confirmation} className="mt-1 size-5 shrink-0 rounded border-border accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" />
-          <T text="I confirm that the information provided is correct." />
-        </label>
 
         {state.error && (
           <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><T text={state.error} /></p>

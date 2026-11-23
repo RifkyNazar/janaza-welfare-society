@@ -18,6 +18,7 @@ test("public vehicle and advertisement images require a fresh visibility check a
       assert.equal(where.AND.length, 2);
       return visible ? { id: "ad" } : null;
     } } } },
+    "@/lib/advertisement-schedule": loadServerModule("lib/advertisement-schedule.ts"),
     "@/lib/advertisement-image-storage": { readAdvertisementImage: async () => bytes, advertisementImageMime: () => "image/webp" },
   });
   const request = new Request("http://localhost");
@@ -38,7 +39,11 @@ test("the public homepage supplies scheduled advertisements and active hero imag
     "@/components/emerald-sanctuary": { EmeraldSanctuary },
     "@/components/advertisement-banners": { AdvertisementBanners },
     "@/components/hero-carousel": { HeroCarousel },
-    "@/lib/prisma": { prisma: { heroMedia: { findMany: async ({ where, orderBy }) => {
+    "@/lib/prisma": { prisma: { operationalTeamMember: { findMany: async ({ select, take }) => {
+      assert.deepEqual(select, { id: true, fullName: true });
+      assert.equal(take, undefined);
+      return [{ id: 21, fullName: "Test operational member" }];
+    } }, heroMedia: { findMany: async ({ where, orderBy }) => {
       assert.deepEqual(where, { isActive: true });
       assert.deepEqual(orderBy, [{ displayOrder: "asc" }, { id: "asc" }]);
       return [{ id: 7, altText: "JWS fleet", caption: "Fleet" }];
@@ -46,6 +51,7 @@ test("the public homepage supplies scheduled advertisements and active hero imag
   });
   const home = await page();
   assert.equal(home.type, EmeraldSanctuary);
+  assert.deepEqual(home.props.operationalMembers, [{ id: 21, fullName: "Test operational member" }]);
   assert.equal(home.props.announcements.type, AdvertisementBanners);
   assert.equal(home.props.heroMedia.type, HeroCarousel);
   assert.deepEqual(home.props.heroMedia.props.images, [{ src: "/public-media/hero/7", altText: "JWS fleet", caption: "Fleet" }]);

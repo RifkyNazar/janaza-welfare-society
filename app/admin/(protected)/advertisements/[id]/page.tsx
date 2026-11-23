@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
 import { advertisementImageExists } from "@/lib/advertisement-image-storage";
 
-const local = (date: Date | null) => date ? new Date(date.getTime() + 330 * 60_000).toISOString().slice(0, 16) : "";
+import { advertisementDateInput } from "@/lib/advertisement-schedule";
 
 export default async function AdvertisementDetails({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
   await requireAdmin();
@@ -31,6 +31,6 @@ export default async function AdvertisementDetails({ params, searchParams }: { p
         {advertisement.description && <p className="p-4 text-sm text-muted">{advertisement.description}</p>}
       </div>
     </section>
-    <AdvertisementForm action={saveAdvertisement.bind(null, advertisement.id)} initial={{ title: advertisement.title, description: advertisement.description ?? "", startsAt: local(advertisement.startsAt), endsAt: local(advertisement.endsAt), displayOrder: advertisement.displayOrder, isActive: advertisement.isActive, hasImage, imageUrl: hasImage ? `/advertisement-images/${advertisement.imageUrl}` : undefined }}/>
+    <AdvertisementForm action={saveAdvertisement.bind(null, advertisement.id)} initial={{ title: advertisement.title, description: advertisement.description ?? "", startsAt: advertisementDateInput(advertisement.startsAt), endsAt: advertisementDateInput(advertisement.endsAt), isActive: advertisement.isActive, hasImage, imageUrl: hasImage ? `/advertisement-images/${advertisement.imageUrl}` : undefined }}/>
   </div>;
 }

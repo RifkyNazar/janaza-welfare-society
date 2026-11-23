@@ -12,52 +12,6 @@ export function PreviewNavigation({ locale, role, homeHref = "/design-preview/em
   const t = previewCopy(locale);
   const drawer = useRef<HTMLDialogElement>(null);
   const staff = useRef<HTMLDetailsElement>(null);
-  const header = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const node = header.current;
-    if (!node) return;
-    const compactViewport = window.matchMedia("(max-width: 1279px)");
-    let lastY = Math.max(0, window.scrollY);
-    let downward = 0;
-    let upward = 0;
-    let frame = 0;
-    let hidden = false;
-    const update = () => {
-      frame = 0;
-      const y = Math.max(0, window.scrollY);
-      const delta = y - lastY;
-      lastY = y;
-      if (!compactViewport.matches || y < 24) {
-        downward = upward = 0;
-        hidden = false;
-        node.dataset.scroll = "top";
-        return;
-      }
-      if (delta > 0) { downward += delta; upward = 0; }
-      else if (delta < 0) { upward -= delta; downward = 0; }
-      if (upward >= 12 || y < 180) hidden = false;
-      else if (downward >= 72 && y > 260) hidden = true;
-      if (node.contains(document.activeElement) || drawer.current?.open) hidden = false;
-      const state = hidden ? "hidden" : y > 72 ? "compact" : "top";
-      if (node.dataset.scroll !== state) node.dataset.scroll = state;
-    };
-    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
-    const reveal = () => {
-      hidden = false;
-      downward = 0;
-      node.dataset.scroll = window.scrollY > 72 ? "compact" : "top";
-    };
-    window.addEventListener("scroll", schedule, { passive: true });
-    compactViewport.addEventListener("change", schedule);
-    node.addEventListener("focusin", reveal);
-    update();
-    return () => {
-      window.removeEventListener("scroll", schedule);
-      compactViewport.removeEventListener("change", schedule);
-      node.removeEventListener("focusin", reveal);
-      window.cancelAnimationFrame(frame);
-    };
-  }, [locale]);
   useEffect(() => {
     const outside = (event: PointerEvent) => {
       if (event.target instanceof Node && !staff.current?.contains(event.target)) staff.current?.removeAttribute("open");
@@ -77,7 +31,7 @@ export function PreviewNavigation({ locale, role, homeHref = "/design-preview/em
   }, []);
   const publicLinks = [{ href: "/", label: t.home }, { href: "/services", label: t.services }, { href: "/team", label: t.team }, { href: "/operations", label: t.activities }, { href: "/contact", label: t.contact }];
   const staffLinks = [{ href: role === "EMPLOYEE" ? "/employee" : "/employee-access/login", label: role === "EMPLOYEE" ? t.employeePortal : t.employeeLogin }, { href: role === "ADMIN" ? "/admin" : "/admin/login", label: role === "ADMIN" ? t.adminDashboard : t.adminLogin }, { href: "/supervisor", label: t.supervisor }];
-  return <header ref={header} className={`${styles.header} ${solid ? styles.solidHeader : ""}`} lang={locale} data-scroll="top">
+  return <header className={`${styles.header} ${solid ? styles.solidHeader : ""}`} lang={locale}>
     <Link className={styles.brand} href={homeHref} aria-label={t.brand}><span className={styles.logo}><Image src="/images/jws/logo.png" alt="JWS" width={54} height={54} /></span><span className={styles.brandCopy}>{t.brand}<small>{t.town}</small></span><span className={styles.compactBrand} aria-hidden="true">JWS</span></Link>
     <nav className={styles.desktopNav} aria-label={t.navigation}>{publicLinks.map(link => <Link key={link.href} href={link.href}>{link.label}</Link>)}</nav>
     <div className={styles.navTools}>

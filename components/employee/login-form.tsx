@@ -2,7 +2,6 @@
 import { T } from "@/components/public-language";
 
 import { useActionState } from "react";
-import Link from "next/link";
 import { login, type AuthActionState } from "@/app/actions/auth";
 import { PasswordField } from "@/components/employee/password-field";
 
@@ -30,10 +29,6 @@ export function LoginForm() {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted">
-        <T text="Don't have an account?" />{" "}
-        <Link href="/employee-access/register" className="font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"><T text="Register" /></Link>
-      </p>
     </div>
   );
 }

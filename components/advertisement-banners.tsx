@@ -1,3 +1,4 @@
+import { liveAdvertisementFilter } from "@/lib/advertisement-schedule";
 import { getPortalTranslation } from "@/lib/portal-language";
 import { AdvertisementCarousel } from "@/components/advertisement-carousel";
 import { advertisementImageExists } from "@/lib/advertisement-image-storage";
@@ -6,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 export async function AdvertisementBanners() {
   const now = new Date();
   const records = await prisma.advertisement.findMany({
-    where: { isActive: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gte: now } }] }] },
+    where: liveAdvertisementFilter(now),
     orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
     select: { id: true, title: true, imageUrl: true, description: true },
   });

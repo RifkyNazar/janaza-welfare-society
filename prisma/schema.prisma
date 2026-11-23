@@ -64,6 +64,7 @@ model User {
   passwordHash       String
   role               UserRole         @default(EMPLOYEE)
   status             AccountStatus    @default(PENDING)
+  employeeSessionVersion Int         @default(0)
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   employeeProfile    EmployeeProfile?
@@ -71,6 +72,43 @@ model User {
   donationsReviewed  Donation[]       @relation("DonationReviewer")
   assignmentsCreated TaskAssignment[] @relation("TaskAssignedBy")
   pushSubscriptions  StaffPushSubscription[]
+  employeePin        EmployeePinCredential?
+  employeeSessions   EmployeePinSession[]
+}
+
+model EmployeePinCredential {
+  userId       Int       @id
+  phone        String    @unique @db.VarChar(12)
+  pinHash      String?   @db.VarChar(255)
+  setupDigest  String?   @unique @db.Char(64)
+  setupUntil   DateTime?
+  setupVersion Int
+  issuedById   Int
+  issuedAt     DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmployeePinSession {
+  id           String   @id @db.Char(64)
+  userId       Int
+  version      Int
+  expiresAt    DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model EmployeePhoneRegistrationLock {
+  phone String @id @db.VarChar(12)
+}
+
+model EmployeeAuthThrottle {
+  id           String   @id @db.Char(64)
+  attempts     Int
+  expiresAt    DateTime
+
+  @@index([expiresAt])
 }
 
 model StaffPushSubscription {

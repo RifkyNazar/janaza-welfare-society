@@ -1,14 +1,66 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { loadServerModule } from "./load-server-module.mjs";
 
+const phoneTools = loadServerModule("lib/employee-phone.ts");
 const matrix = { ADMIN: "/admin", EMPLOYEE: "/employee", SUPERVISOR: "/supervisor" };
+
+test("registration and success pages remain on the registration flow with an admin session", async () => {
+  const doubles = {
+    "@/lib/permissions": { redirectAuthenticatedUser: async roles => {
+      if (roles.includes("ADMIN")) assert.fail("The registration flow redirected to the admin dashboard");
+    } },
+    "@/components/employee/employee-auth-layout": { EmployeeAuthLayout: ({ title, children }) => React.createElement("section", null, title, children) },
+    "@/components/employee/registration-form": { RegistrationForm: () => null },
+    "@/components/public-language": { T: ({ text }) => text },
+    "next/link": ({ href, children }) => React.createElement("a", { href }, children),
+  };
+  for (const [path, title] of [["register", "Employee Registration"], ["register/success", "Registration Submitted"]]) {
+    const { default: Page } = loadServerModule(`app/(public)/employee-access/${path}/page.tsx`, doubles);
+    const html = renderToStaticMarkup(await Page());
+    assert.ok(html.includes(title));
+    assert.ok(!html.includes('href="/admin"'));
+  }
+});
+
+test("successful credentials actions use role-specific landing pages and ignore submitted redirects", async () => {
+  const calls = [];
+  const { login, adminLogin, employeeLogin } = loadServerModule("app/actions/auth.ts", {
+    "next-auth": { AuthError: class extends Error {} },
+    "@/auth": { signIn: async (_provider, options) => { calls.push(options); } },
+    "@/lib/employee-phone": phoneTools,
+    "@/lib/employee-pin": {},
+    "@/lib/employee-phone-registration": {},
+    "@/generated/prisma/client": {},
+    "@/lib/prisma": {},
+    "@/lib/notifications": {},
+    "@/lib/rate-limit": {},
+  });
+  const form = new FormData();
+  form.set("identifier", "JWS-12");
+  form.set("email", "admin@example.invalid");
+  form.set("password", "Test password");
+  form.set("role", "ADMIN");
+  form.set("redirectTo", "/admin");
+  await login({}, form);
+  await adminLogin({}, form);
+  form.set("phone", "0771234567");
+  form.set("pin", "001234");
+  await employeeLogin({}, form);
+  assert.deepEqual(calls.map(({ portal, redirectTo }) => [portal, redirectTo]), [
+    ["staff", "/supervisor-login"],
+    ["admin", "/admin/login"],
+    ["employee", "/employee"],
+  ]);
+});
 
 for (const [role, destination] of Object.entries(matrix)) {
   test(`login redirects follow the current ${role} role only at its own entry point`, async () => {
     const account = { role, status: "APPROVED" };
     const { redirectAuthenticatedUser } = loadServerModule("lib/permissions.ts", {
-      "@/auth": { auth: async () => ({ user: { id: "7", role: "ADMIN" } }) },
+      "@/auth": { auth: async () => ({ user: { id: "7", role } }) },
       "@/lib/prisma": { prisma: { user: { findUnique: async () => account } } },
       "next/navigation": { redirect: path => { throw new Error(path); } },
     });
@@ -25,6 +77,61 @@ test("an employee cannot use an admin JWT claim to pass the admin guard", async 
     }) } } },
     "next/navigation": { redirect: path => { throw new Error(path); } },
   });
-  await assert.rejects(requireAdmin(), { message: "/employee" });
-  assert.equal((await requireEmployee()).user.role, "EMPLOYEE");
+  await assert.rejects(requireAdmin(), { message: "/admin/login" });
+  await assert.rejects(requireEmployee(), { message: "/employee-access/login" });
+});
+
+test("credentials only authenticate the requested portal's approved roles", async () => {
+  let config;
+  const accounts = [
+    { id: 1, role: "ADMIN", status: "APPROVED", email: "admin@example.invalid" },
+    { id: 2, role: "EMPLOYEE", status: "APPROVED", email: "staff@example.invalid", employeeProfile: { id: 12, employeeCode: "JWS-12" } },
+    { id: 3, role: "EMPLOYEE", status: "PENDING", email: "pending@example.invalid" },
+    { id: 4, role: "SUPERVISOR", status: "APPROVED", email: "supervisor@example.invalid" },
+  ];
+  loadServerModule("auth.ts", {
+    "next-auth": settings => { config = settings; return {}; },
+    "next-auth/providers/credentials": provider => provider,
+    "next-auth/jwt": {},
+    "@/lib/employee-session-cookie": {},
+    "bcryptjs": { compare: async (input, stored) => input === stored },
+    "@/lib/rate-limit": { consumeRateLimit: async () => ({ allowed: true }) },
+    "@/lib/employee-pin": { authenticateEmployee: async (phone, pin) => phone === "0771234567" && pin === "001234" ? accounts[1] : null },
+    "@/lib/prisma": { prisma: { user: { findFirst: async ({ where, select }) => {
+      assert.deepEqual(select, {
+        id: true,
+        email: true,
+        role: true,
+        status: true,
+        passwordHash: true,
+        employeeProfile: { select: { id: true, fullName: true } },
+      });
+      const roles = typeof where.role === "string" ? [where.role] : where.role.in;
+      const account = accounts.find(row => roles.includes(row.role) && where.OR.some(condition =>
+        condition.email !== undefined ? condition.email === row.email :
+          condition.employeeProfile.is.employeeCode === row.employeeProfile?.employeeCode,
+      ));
+      return account && { ...account, passwordHash: " Test password " };
+    } } } },
+  });
+  const authorize = config.providers[0].authorize;
+  const attempt = (identifier, portal) => authorize({ identifier, portal, password: " Test password " });
+  assert.equal(await attempt("JWS-12", "staff"), null);
+  assert.equal(await attempt("STAFF@example.invalid", "staff"), null);
+  assert.equal((await authorize({ portal: "employee", phone: "0771234567", pin: "001234" })).role, "EMPLOYEE");
+  assert.equal(await authorize({ portal: "admin", phone: "0771234567", pin: "001234" }), null);
+  assert.equal(await authorize({ portal: "staff", phone: "0771234567", pin: "001234" }), null);
+  assert.equal((await attempt("supervisor@example.invalid", "staff")).role, "SUPERVISOR");
+  assert.equal((await attempt("admin@example.invalid", "admin")).role, "ADMIN");
+  assert.equal(await attempt("staff@example.invalid", "admin"), null);
+  assert.equal(await attempt("JWS-12", "admin"), null);
+  assert.equal(await attempt("admin@example.invalid", "staff"), null);
+  assert.equal(await attempt("pending@example.invalid", "staff"), null);
+  const baseUrl = "https://jws.example";
+  assert.equal(config.callbacks.redirect({ url: "/admin/employees", baseUrl }), baseUrl + "/employee-access");
+  assert.equal(config.callbacks.redirect({ url: "https://external.example/admin", baseUrl }), baseUrl);
+  assert.equal(config.callbacks.redirect({ url: "/admin/login", baseUrl }), baseUrl + "/admin/login");
+  const protectedRequest = pathname => ({ request: { nextUrl: new URL(pathname, baseUrl) } });
+  assert.equal(config.callbacks.authorized(protectedRequest("/admin/employees")).headers.get("location"), baseUrl + "/admin/login");
+  assert.equal(config.callbacks.authorized(protectedRequest("/supervisor")).headers.get("location"), baseUrl + "/supervisor-login");
 });

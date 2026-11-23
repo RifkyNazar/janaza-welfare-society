@@ -9,6 +9,10 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/EmployeePinCredential'
+export type * from './models/EmployeePinSession'
+export type * from './models/EmployeePhoneRegistrationLock'
+export type * from './models/EmployeeAuthThrottle'
 export type * from './models/StaffPushSubscription'
 export type * from './models/EmployeeProfile'
 export type * from './models/ServiceRequest'

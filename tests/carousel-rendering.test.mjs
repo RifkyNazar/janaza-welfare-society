@@ -12,6 +12,54 @@ const doubles = {
   "@/components/public-language": language,
   "@/components/use-showcase-motion": motion,
 };
+
+test("the card rail wraps at the repeated group and suppresses the copy for reduced motion", () => {
+  let effect, observeResize, observeVisibility, frame;
+  const viewport = { scrollLeft: 99.5 };
+  const refs = [viewport, { getBoundingClientRect: () => ({ left: 0 }) }, { getBoundingClientRect: () => ({ left: 100 }) }];
+  const globals = {
+    requestAnimationFrame: callback => { frame = callback; return 1; },
+    cancelAnimationFrame: () => { frame = undefined; },
+    ResizeObserver: class { constructor(callback) { observeResize = callback; } observe() {} disconnect() {} },
+    IntersectionObserver: class { constructor(callback) { observeVisibility = callback; } observe() {} disconnect() {} },
+  };
+  const previous = Object.fromEntries(Object.keys(globals).map(key => [key, globalThis[key]]));
+  Object.assign(globalThis, globals);
+  try {
+    for (const reduced of [false, true]) {
+      let ref = 0;
+      const { LoopingCardRail } = loadServerModule("components/looping-card-rail.tsx", {
+        react: { ...React, useRef: () => ({ current: refs[ref++] }), useId: () => "rail", useState: value => [value, () => {}], useEffect: callback => { effect = callback; } },
+        "@/components/public-language": language,
+        "@/components/use-showcase-motion": { useShowcaseMotion: () => ({ stopped: reduced, reduced, interaction: {} }) },
+        "@/app/design-preview/emerald-sanctuary/sanctuary.module.css": {},
+      });
+      const rendered = renderToStaticMarkup(LoopingCardRail({ label: "Team", count: 2, children: "Original cards", repeat: "Repeated cards", pixelsPerSecond: 66, pauseButtonOnFocusOnly: true }));
+      assert.match(rendered, /sr-only focus:not-sr-only/);
+      assert.equal(rendered.includes('aria-hidden="true"'), !reduced);
+      assert.equal(rendered.includes("Repeated cards"), !reduced);
+      const cleanup = effect();
+      if (reduced) {
+        assert.equal(cleanup, undefined);
+        assert.equal(frame, undefined);
+        continue;
+      }
+      observeResize();
+      observeVisibility([{ isIntersecting: true }]);
+      frame(100);
+      frame(125);
+      assert.ok(Math.abs(viewport.scrollLeft - 1.15) < 0.001);
+      observeVisibility([{ isIntersecting: false }]);
+      assert.equal(frame, undefined);
+      cleanup();
+    }
+  } finally {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete globalThis[key];
+      else globalThis[key] = value;
+    }
+  }
+});
 test("60 supplied employee profiles render only three cards and image requests initially", () => {
   const { TeamCarousel } = loadServerModule("components/team-carousel.tsx", doubles);
   // Synthetic test inputs only; no employee rows are created in any database.

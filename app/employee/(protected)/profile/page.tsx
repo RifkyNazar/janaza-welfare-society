@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { requireEmployee } from "@/lib/permissions";
 import { profilePhotoSrc } from "@/lib/profile-photo-storage";
 import { updateOwnProfile } from "./actions";
+import { PIN_ONLY_EMAIL_SUFFIX } from "@/lib/employee-phone";
 
 export const metadata: Metadata = { title: "My Profile" };
 export default async function EmployeeProfilePage() {
@@ -16,6 +17,6 @@ export default async function EmployeeProfilePage() {
   const initials = profile.fullName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   return <div className="mx-auto max-w-4xl"><BackButton fallbackHref="/employee" label="Back to Dashboard"/><div className="mt-6"><p className="text-sm font-semibold text-primary"><T text="Account" /></p><h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl"><T text="My Profile" /></h1><p className="mt-2 text-sm text-muted"><T text="Update your contact details and profile photo. Account controls remain managed by JWS administrators." /></p></div>
     <div className="mt-6 grid gap-3 rounded-2xl border border-border bg-light-background p-5 text-sm sm:grid-cols-3"><p><span className="block text-xs font-semibold uppercase tracking-wider text-muted"><T text="Employee code" /></span><span className="mt-1 block font-semibold">{profile.employeeCode}</span></p><p><span className="block text-xs font-semibold uppercase tracking-wider text-muted"><T text="Position" /></span><span className="mt-1 block font-semibold">{profile.position}</span></p><p><span className="block text-xs font-semibold uppercase tracking-wider text-muted"><T text="Visibility" /></span><span className="mt-1 block font-semibold"><T text={profile.isPublicProfile ? "Public profile enabled" : "Private profile"} /></span></p></div>
-    <ProfileForm action={updateOwnProfile} initial={{ fullName: profile.fullName, email: employee.email, phone: profile.phone, duty: profile.duty ?? "" }} photoSrc={profilePhotoSrc(profile.photoUrl)} initials={initials}/>
+    <ProfileForm action={updateOwnProfile} initial={{ fullName: profile.fullName, email: employee.email.endsWith(PIN_ONLY_EMAIL_SUFFIX) ? "" : employee.email, phone: profile.phone, duty: profile.duty ?? "" }} photoSrc={profilePhotoSrc(profile.photoUrl)} initials={initials}/>
   </div>;
 }

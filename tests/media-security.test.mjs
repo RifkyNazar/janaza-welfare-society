@@ -77,6 +77,11 @@ test("hero upload and replacement serve new bytes without restoring a stale stor
   const heroMedia = {
     create: async ({ data }) => { current = { ...data, id: 1 }; },
     findUnique: async () => current,
+    deleteMany: async ({ where }) => {
+      assert.equal(where.storageKey, current.storageKey);
+      current = null;
+      return { count: 1 };
+    },
     findFirst: async () => current?.isActive ? current : null,
     updateMany: async ({ where, data }) => {
       assert.equal(where.storageKey, current.storageKey);
@@ -92,9 +97,12 @@ test("hero upload and replacement serve new bytes without restoring a stale stor
   const get = () => GET(new Request("http://localhost"), { params: Promise.resolve({ kind: "hero", id: "1" }) });
   const data = new FormData();
   data.set("altText", "JWS photograph");
-  data.set("enabled", "on");
   data.set("image", new File([image], "first.png", { type: "image/png" }));
   assert.equal((await saveMedia("hero", null, null, {}, data)).success, "Image saved.");
+  assert.equal(current.altText, "Janaza Welfare Society");
+  assert.equal(current.displayOrder, 0);
+  assert.equal(current.isActive, true);
+  current = { ...current, altText: "Existing description", caption: "Existing caption", displayOrder: 42 };
   const first = await (await get()).arrayBuffer();
   const replacement = await sharp({ create: { width: 2, height: 2, channels: 3, background: "red" } }).png().toBuffer();
   data.set("image", new File([replacement], "second.png", { type: "image/png" }));
@@ -102,9 +110,13 @@ test("hero upload and replacement serve new bytes without restoring a stale stor
   assert.notDeepEqual(await (await get()).arrayBuffer(), first);
   const replacementKey = current.storageKey;
   data.delete("image");
-  data.delete("enabled");
-  assert.equal((await saveMedia("hero", null, 1, {}, data)).success, "Image saved.");
+  assert.equal((await saveMedia("hero", null, 1, {}, data)).error, "Choose an image.");
   assert.equal(current.storageKey, replacementKey);
+  assert.equal(current.altText, "Existing description");
+  assert.equal(current.caption, "Existing caption");
+  assert.equal(current.displayOrder, 42);
+  data.set("intent", "remove");
+  assert.equal((await saveMedia("hero", null, 1, {}, data)).success, "Image removed.");
   assert.equal((await get()).status, 404);
 });
 test("admin preview and upload mutations authorize before any database or storage work", async () => {

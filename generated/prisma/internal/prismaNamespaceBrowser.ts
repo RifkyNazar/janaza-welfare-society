@@ -52,6 +52,10 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  EmployeePinCredential: 'EmployeePinCredential',
+  EmployeePinSession: 'EmployeePinSession',
+  EmployeePhoneRegistrationLock: 'EmployeePhoneRegistrationLock',
+  EmployeeAuthThrottle: 'EmployeeAuthThrottle',
   StaffPushSubscription: 'StaffPushSubscription',
   EmployeeProfile: 'EmployeeProfile',
   ServiceRequest: 'ServiceRequest',
@@ -90,11 +94,52 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   role: 'role',
   status: 'status',
+  employeeSessionVersion: 'employeeSessionVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const EmployeePinCredentialScalarFieldEnum = {
+  userId: 'userId',
+  phone: 'phone',
+  pinHash: 'pinHash',
+  setupDigest: 'setupDigest',
+  setupUntil: 'setupUntil',
+  setupVersion: 'setupVersion',
+  issuedById: 'issuedById',
+  issuedAt: 'issuedAt'
+} as const
+
+export type EmployeePinCredentialScalarFieldEnum = (typeof EmployeePinCredentialScalarFieldEnum)[keyof typeof EmployeePinCredentialScalarFieldEnum]
+
+
+export const EmployeePinSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  version: 'version',
+  expiresAt: 'expiresAt'
+} as const
+
+export type EmployeePinSessionScalarFieldEnum = (typeof EmployeePinSessionScalarFieldEnum)[keyof typeof EmployeePinSessionScalarFieldEnum]
+
+
+export const EmployeePhoneRegistrationLockScalarFieldEnum = {
+  phone: 'phone'
+} as const
+
+export type EmployeePhoneRegistrationLockScalarFieldEnum = (typeof EmployeePhoneRegistrationLockScalarFieldEnum)[keyof typeof EmployeePhoneRegistrationLockScalarFieldEnum]
+
+
+export const EmployeeAuthThrottleScalarFieldEnum = {
+  id: 'id',
+  attempts: 'attempts',
+  expiresAt: 'expiresAt'
+} as const
+
+export type EmployeeAuthThrottleScalarFieldEnum = (typeof EmployeeAuthThrottleScalarFieldEnum)[keyof typeof EmployeeAuthThrottleScalarFieldEnum]
 
 
 export const StaffPushSubscriptionScalarFieldEnum = {
@@ -351,6 +396,36 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const EmployeePinCredentialOrderByRelevanceFieldEnum = {
+  phone: 'phone',
+  pinHash: 'pinHash',
+  setupDigest: 'setupDigest'
+} as const
+
+export type EmployeePinCredentialOrderByRelevanceFieldEnum = (typeof EmployeePinCredentialOrderByRelevanceFieldEnum)[keyof typeof EmployeePinCredentialOrderByRelevanceFieldEnum]
+
+
+export const EmployeePinSessionOrderByRelevanceFieldEnum = {
+  id: 'id'
+} as const
+
+export type EmployeePinSessionOrderByRelevanceFieldEnum = (typeof EmployeePinSessionOrderByRelevanceFieldEnum)[keyof typeof EmployeePinSessionOrderByRelevanceFieldEnum]
+
+
+export const EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum = {
+  phone: 'phone'
+} as const
+
+export type EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum = (typeof EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum)[keyof typeof EmployeePhoneRegistrationLockOrderByRelevanceFieldEnum]
+
+
+export const EmployeeAuthThrottleOrderByRelevanceFieldEnum = {
+  id: 'id'
+} as const
+
+export type EmployeeAuthThrottleOrderByRelevanceFieldEnum = (typeof EmployeeAuthThrottleOrderByRelevanceFieldEnum)[keyof typeof EmployeeAuthThrottleOrderByRelevanceFieldEnum]
 
 
 export const StaffPushSubscriptionOrderByRelevanceFieldEnum = {

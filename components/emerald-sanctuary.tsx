@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
-import { auth } from "@/auth";
+import { currentStaffRole } from "@/lib/permissions";
 import { PublicLanguage } from "@/components/public-language";
 import { leadershipTeam } from "@/lib/leadership-team";
+import { LoopingCardRail } from "@/components/looping-card-rail";
 import { LatestActivities } from "@/app/design-preview/emerald-sanctuary/latest-activities";
 import { PreviewMotion } from "@/app/design-preview/emerald-sanctuary/preview-motion";
 import { PreviewNavigation } from "@/app/design-preview/emerald-sanctuary/preview-navigation";
@@ -15,21 +16,31 @@ import styles from "@/app/design-preview/emerald-sanctuary/sanctuary.module.css"
 
 
 
-export async function EmeraldSanctuary({ preview = false, announcements, heroMedia }: {
+export async function EmeraldSanctuary({ preview = false, announcements, heroMedia, operationalMembers = [] }: {
   preview?: boolean;
   announcements?: ReactNode;
   heroMedia?: ReactNode;
+  operationalMembers?: { id: number; fullName: string }[];
 }) {
-  const [cookieStore, session] = await Promise.all([cookies(), auth()]);
+  const [cookieStore, role] = await Promise.all([cookies(), currentStaffRole()]);
   const locale = cookieStore.get("jws-language")?.value === "ta" ? "ta" : "en";
   const t = previewCopy(locale);
-  const role = session?.user.status === "APPROVED" ? session.user.role : null;
   const services = [
     { title: t.janaza, description: t.janazaText, action: t.request, href: "/request-service", className: styles.featuredService },
     { title: t.transport, description: t.transportText, action: t.fleet, href: "/vehicles", className: styles.transportService },
     { title: t.people, description: t.peopleText, action: t.meet, href: "/team", className: styles.communityService },
   ];
   const roles: Record<string, string> = { President: t.president, Secretary: t.secretary, Treasurer: t.treasurer };
+  const teamCards = (repeat = false) => [
+    ...leadershipTeam.map(member => <article className={styles.profileCard} key={member.position}>
+      <div className={styles.profilePortrait}><div className={styles.profileHalo} aria-hidden="true" />{member.photoSrc && <Image src={member.photoSrc} alt="" fill loading="lazy" sizes="(min-width: 900px) 35vw, 72vw" />}</div>
+      <div className={styles.profileInfo}><span className={styles.profileRole}>{roles[member.position] ?? member.position}</span><h3 lang="en"><Link href={`/team#leader-${member.position.toLowerCase()}`} tabIndex={repeat ? -1 : undefined}>{member.name}</Link></h3><a className={styles.profileContact} href={`tel:${member.contact}`} tabIndex={repeat ? -1 : undefined} aria-label={`${t.call} ${member.name}: ${member.contact}`}><bdi dir="ltr">{member.contact}</bdi><span className={styles.profileCallIcon}><PhoneIcon /></span></a></div>
+    </article>),
+    ...operationalMembers.map(member => <article className={styles.profileCard} key={member.id}>
+      <div className={styles.profilePortrait}><Image unoptimized src={`/team-member-photos/${member.id}`} alt="" fill loading="lazy" sizes="(min-width: 900px) 35vw, 72vw" /></div>
+      <div className={styles.profileInfo}><span className={styles.profileRole}>{t.operationalTeam}</span><h3>{member.fullName}</h3></div>
+    </article>),
+  ];
   return <PublicLanguage locale={locale}><div id={preview ? "emerald-preview" : "emerald-home"} className={`${styles.sanctuary} jws-public-theme`} lang={locale}>
     <PreviewMotion rootId={preview ? "emerald-preview" : "emerald-home"} />
     <a className={styles.skip} href="#main-content">{t.skip}</a>
@@ -59,6 +70,7 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
           </div>
           {preview && <QuranIntro />}
         </section>
+        <LatestActivities locale={locale} />
         <section id="services" className={styles.services} aria-labelledby="services-title">
           <div className={styles.sectionHead}><div><p className={styles.eyebrow}>{t.services}</p><h2 id="services-title">{t.serviceTitle}</h2></div><Link href="/services" className={styles.textLink}>{t.services}<Arrow /></Link></div>
           <div className={styles.serviceGrid}>{services.map((service, index) => <Link className={`${styles.serviceCard} ${service.className}`} href={service.href} key={service.href}>
@@ -70,13 +82,12 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
           </Link>)}</div>
         </section>
         <section id="our-team" className={styles.team} aria-labelledby="team-title">
-          <div className={styles.sectionHead}><div><p className={styles.teamEyebrow}>{t.leadership}</p><h2 id="team-title">{t.leadershipTitle}</h2></div><Link className={styles.textLink} href="/team#administration-team">{t.meet}<Arrow /></Link></div>
-          <div className={styles.teamGrid}>{leadershipTeam.map(member => <article className={styles.profileCard} key={member.position}>
-            <div className={styles.profilePortrait}><div className={styles.profileHalo} aria-hidden="true" />{member.photoSrc && <Image src={member.photoSrc} alt={`${member.name}, ${roles[member.position] ?? member.position}`} fill loading="lazy" sizes="(min-width: 1280px) 280px, 30vw" />}</div>
-            <div className={styles.profileInfo}><span className={styles.profileRole}>{roles[member.position] ?? member.position}</span><h3 lang="en"><Link href={`/team#leader-${member.position.toLowerCase()}`}>{member.name}</Link></h3><a className={styles.profileContact} href={`tel:${member.contact}`} aria-label={`${t.call} ${member.name}: ${member.contact}`}><bdi dir="ltr">{member.contact}</bdi><span className={styles.profileCallIcon}><PhoneIcon /></span></a></div>
-          </article>)}</div>
+          <div className={styles.sectionHead}><div><p className={styles.teamEyebrow}>{t.team}</p><h2 id="team-title">{t.leadershipTitle}</h2></div><Link className={styles.textLink} href="/team">{t.meet}<Arrow /></Link></div>
+          <LoopingCardRail label={t.team} count={leadershipTeam.length + operationalMembers.length}
+            repeat={teamCards(true)} pixelsPerSecond={66} pauseButtonOnFocusOnly>
+            {teamCards()}
+          </LoopingCardRail>
         </section>
-        <LatestActivities locale={locale} />
         {announcements}
         <section id="our-story" className={styles.story} aria-labelledby="story-title"><div className={styles.storyLabel}><p className={styles.eyebrow}>{t.about}</p></div><div className={styles.storyCopy}><h2 id="story-title">{t.purpose}</h2><div className={styles.storyDetails}><p>{t.aboutText}</p><Link href="/about" className={styles.textLink}>{t.learn}<Arrow /></Link></div></div></section>
         <section className={styles.journey} aria-labelledby="journey-title"><div><p className={styles.eyebrow}>{t.guidance}</p><h2 id="journey-title">{t.guidanceTitle}</h2><Link className={styles.textLink} href="/request-service">{t.request}<Arrow /></Link></div><ol>{[{ title: t.step1, text: t.step1Text }, { title: t.step2, text: t.step2Text }, { title: t.step3, text: t.step3Text }].map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol></section>

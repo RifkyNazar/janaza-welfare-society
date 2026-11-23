@@ -47,6 +47,26 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model EmployeePinCredential
+ *
+ */
+export type EmployeePinCredential = Prisma.EmployeePinCredentialModel
+/**
+ * Model EmployeePinSession
+ *
+ */
+export type EmployeePinSession = Prisma.EmployeePinSessionModel
+/**
+ * Model EmployeePhoneRegistrationLock
+ *
+ */
+export type EmployeePhoneRegistrationLock = Prisma.EmployeePhoneRegistrationLockModel
+/**
+ * Model EmployeeAuthThrottle
+ *
+ */
+export type EmployeeAuthThrottle = Prisma.EmployeeAuthThrottleModel
+/**
  * Model StaffPushSubscription
  * 
  */
