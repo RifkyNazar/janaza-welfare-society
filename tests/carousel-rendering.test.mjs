@@ -60,6 +60,55 @@ test("the card rail wraps at the repeated group and suppresses the copy for redu
     }
   }
 });
+
+test("the activity rail repeats only when the original cards overflow the viewport", () => {
+  const viewport = { clientWidth: 900 };
+  const original = { offsetWidth: 880 };
+  const copy = {};
+  let overflows = false;
+  let measure;
+  let refIndex;
+  let stateIndex;
+  let effects;
+  const { LoopingCardRail } = loadServerModule("components/looping-card-rail.tsx", {
+    react: {
+      ...React,
+      useRef: () => ({ current: [viewport, original, copy][refIndex++] }),
+      useId: () => "rail",
+      useState: value => stateIndex++ === 0 ? [value, () => {}] : [overflows, next => { overflows = next; }],
+      useEffect: effect => effects.push(effect),
+    },
+    "@/components/use-showcase-motion": { useShowcaseMotion: () => ({ stopped: true, reduced: false, interaction: {} }) },
+    "@/app/design-preview/emerald-sanctuary/sanctuary.module.css": {},
+  });
+  const render = () => {
+    refIndex = stateIndex = 0;
+    effects = [];
+    return renderToStaticMarkup(LoopingCardRail({ label: "Recent Operations", count: 3, overflowOnly: true, children: "Original cards", repeat: "Repeated cards" }));
+  };
+  const previous = globalThis.ResizeObserver;
+  globalThis.ResizeObserver = class {
+    constructor(callback) { measure = callback; }
+    observe() {}
+    disconnect() {}
+  };
+  try {
+    assert.doesNotMatch(render(), /Repeated cards/);
+    const cleanup = effects[0]();
+    assert.doesNotMatch(render(), /Repeated cards/);
+    viewport.clientWidth = 390;
+    measure();
+    assert.match(render(), /Repeated cards/);
+    viewport.clientWidth = 900;
+    measure();
+    assert.doesNotMatch(render(), /Repeated cards/);
+    cleanup();
+  } finally {
+    if (previous === undefined) delete globalThis.ResizeObserver;
+    else globalThis.ResizeObserver = previous;
+  }
+});
+
 test("60 supplied employee profiles render only three cards and image requests initially", () => {
   const { TeamCarousel } = loadServerModule("components/team-carousel.tsx", doubles);
   // Synthetic test inputs only; no employee rows are created in any database.

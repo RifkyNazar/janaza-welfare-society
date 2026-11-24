@@ -199,11 +199,11 @@
 .profileCallIcon .icon { inline-size: .875rem; block-size: .875rem; }
 .activityTile { min-inline-size: 0; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-small); background: var(--surface); }
 .activityTile>a { display: block; block-size: 100%; min-block-size: var(--target); }
-.activityThumb { position: relative; aspect-ratio: 4 / 3; max-block-size: 12rem; overflow: hidden; background: var(--surface); }
-.activityThumb img { object-fit: cover; }
+.activityThumb { position: relative; inline-size: 100%; aspect-ratio: 3 / 2; overflow: hidden; background: var(--surface); }
+.activityThumb img { object-fit: contain; object-position: center; }
 .activityTileCopy { padding: clamp(.5rem,1.5vw,1rem); }
-.activityTileCopy time { display: block; color: var(--muted); font-size: clamp(.6875rem,1vw,.8125rem); line-height: 1.5; }
-.sanctuary .activityTile h3 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; font-size: clamp(.875rem,1.6vw,1.125rem); line-height: 1.5; margin-block-start: .25rem; }
+.activityTileCopy time { display: block; color: var(--muted); font-size: clamp(.75rem,1vw,.8125rem); line-height: 1.5; }
+.sanctuary .activityTile h3 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; font-size: clamp(.9375rem,1.6vw,1.125rem); line-height: 1.5; margin-block-start: .25rem; }
 .activityPlaceholder { position: absolute; inset: 0; display: grid; place-items: center; padding: .5rem; text-align: center; background: var(--gradient-surface); }
 .activityPlaceholder>span:first-child { font-size: 1.5rem; color: var(--warm); }
 .activityPlaceholder>span:last-child { font-size: .75rem; color: var(--muted); }
@@ -379,6 +379,7 @@
 }
 .railViewport[data-count="2"] .railGroup > * { inline-size: 100cqi; }
 .railViewport[data-count="3"] .railGroup > * { inline-size: 50cqi; }
+.activities .railViewport .railGroup > .activityTile { inline-size: min(85cqi,18rem); }
 
 @media (prefers-reduced-motion: reduce) {
   .railCopy { display: none; }

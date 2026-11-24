@@ -79,5 +79,5 @@ export async function deleteAdvertisement(id: string, _state: AdState, _form: Fo
     return { error: "Advertisement deletion failed. Please try again." };
   }
   refresh(id);
-  redirect(`/admin/advertisements?deleted=1&change=${encodeURIComponent(id)}`);
+  redirect("/admin/advertisements?deleted=1");
 }

@@ -5,7 +5,7 @@ import { T } from "@/components/public-language";
 
 
 import Image from "next/image";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState } from "react";
 import { trackServiceRequest, type TrackRequestActionState } from "@/app/actions/track-request";
 
 const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-base text-foreground outline-none transition placeholder:text-muted/60 focus:border-primary focus:ring-4 focus:ring-primary/20 motion-reduce:transition-none";
@@ -38,37 +38,9 @@ export function RequestTracker() {
           <T text={isPending ? "Checking..." : "Track Request"} />
         </button>
       </form>
-      {submission.showFeedback && state.result && state.values && <LiveTracking key={state.result.requestCode} initial={state.result} credentials={state.values} />}
+      {submission.showFeedback && state.result && <TrackingResult result={state.result} />}
     </div>
   );
-}
-
-function LiveTracking({ initial, credentials }: {
-  initial: NonNullable<TrackRequestActionState["result"]>;
-  credentials: NonNullable<TrackRequestActionState["values"]>;
-}) {
-  const [result, setResult] = useState<typeof initial | null>(initial);
-  useEffect(() => {
-    let active = true;
-    let pending = false;
-    const refresh = async () => {
-      if (!active || pending || document.hidden) return;
-      pending = true;
-      try {
-        const form = new FormData();
-        form.set("requestCode", credentials.requestCode);
-        form.set("mobileNumber", credentials.mobileNumber);
-        const next = await trackServiceRequest({}, form);
-        if (active && next.result) setResult(next.result);
-        if (active && next.error === "We could not find a request matching those details.") setResult(null);
-      } catch {
-        // A later poll can recover from a transient connection failure.
-      } finally { pending = false; }
-    };
-    const timer = window.setInterval(refresh, 60_000);
-    return () => { active = false; window.clearInterval(timer); };
-  }, [credentials]);
-  return result ? <TrackingResult result={result} /> : <p role="status"><T text="We could not find a request matching those details." /></p>;
 }
 
 function TrackingResult({ result }: { result: NonNullable<TrackRequestActionState["result"]> }) {

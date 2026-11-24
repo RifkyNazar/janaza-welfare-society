@@ -10,12 +10,10 @@ import styles from "./sanctuary.module.css";
 
 function ActivityImage({ operation, locale }: { operation: PublicOperation; locale: Locale }) {
   const photo = publicOperationImages(operation)[0];
-  return photo ? <Image unoptimized src={photo.src} alt={photo.altText} fill loading="lazy" sizes="(min-width: 1280px) 384px, 30vw" /> : <div className={styles.activityPlaceholder}><span aria-hidden="true">✧</span><span>{previewCopy(locale).noPhoto}</span></div>;
+  return photo ? <Image unoptimized src={photo.src} alt={photo.altText} fill loading="lazy" sizes="(max-width: 360px) 85vw, 288px" /> : <div className={styles.activityPlaceholder}><span aria-hidden="true">✧</span><span>{previewCopy(locale).noPhoto}</span></div>;
 }
 
 export async function LatestActivities({ locale = "en" }: { locale?: Locale }) {
-  const t = previewCopy(locale);
-  const date = new Intl.DateTimeFormat(locale === "ta" ? "ta-LK" : "en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Colombo" });
   let operations: PublicOperation[] = [];
   let unavailable = false;
   try {
@@ -24,6 +22,12 @@ export async function LatestActivities({ locale = "en" }: { locale?: Locale }) {
     console.error("[operations] Could not load recent published operations.", error instanceof Error ? error.name : "Unknown error");
     unavailable = true;
   }
+  return <RecentOperations operations={operations} locale={locale} unavailable={unavailable} />;
+}
+
+export function RecentOperations({ operations, locale, unavailable = false }: { operations: PublicOperation[]; locale: Locale; unavailable?: boolean }) {
+  const t = previewCopy(locale);
+  const date = new Intl.DateTimeFormat(locale === "ta" ? "ta-LK" : "en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Colombo" });
   const cards = (repeat = false) => operations.map(operation => <article className={styles.activityTile} key={operation.id}>
     <Link href={`/operations/${operation.id}`} tabIndex={repeat ? -1 : undefined} prefetch={false}>
       <div className={styles.activityThumb}><ActivityImage operation={operation} locale={locale} /></div>
@@ -32,7 +36,7 @@ export async function LatestActivities({ locale = "en" }: { locale?: Locale }) {
   </article>);
   return <section id="latest-activities" className={styles.activities} aria-labelledby="activities-title">
     <div className={styles.sectionHead}><div><p className={styles.eyebrow}>{t.latest}</p><h2 id="activities-title">{t.activityTitle}</h2></div><Link className={styles.textLink} href="/operations">{t.allActivities} <ArrowIcon /></Link></div>
-    {operations.length ? <LoopingCardRail label={t.latest} count={operations.length} repeat={cards(true)}>{cards()}</LoopingCardRail>
+    {operations.length ? <LoopingCardRail label={t.latest} count={operations.length} repeat={cards(true)} overflowOnly>{cards()}</LoopingCardRail>
       : <div className={styles.activityEmpty}><h3>{unavailable ? t.unavailable : t.emptyTitle}</h3><p>{unavailable ? t.retry : t.emptyText}</p></div>}
   </section>;
 }

@@ -4,11 +4,12 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useShowcaseMotion } from "@/components/use-showcase-motion";
 import styles from "@/app/design-preview/emerald-sanctuary/sanctuary.module.css";
 
-export function LoopingCardRail({ label, count, children, repeat }: {
+export function LoopingCardRail({ label, count, children, repeat, overflowOnly = false }: {
   label: string;
   count: number;
   children: ReactNode;
   repeat: ReactNode;
+  overflowOnly?: boolean;
 }) {
   const id = useId();
   const viewport = useRef<HTMLDivElement>(null);
@@ -16,6 +17,22 @@ export function LoopingCardRail({ label, count, children, repeat }: {
   const copy = useRef<HTMLDivElement>(null);
   const motion = useShowcaseMotion(count, 1000, false);
   const [touching, setTouching] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+  const loops = count > 1 && (!overflowOnly || overflows);
+
+  useEffect(() => {
+    const element = viewport.current;
+    const group = original.current;
+    if (!overflowOnly || count < 2 || !element || !group) return;
+
+    // Measure only the original group so the loop copy cannot trigger overflow.
+    const measure = () => setOverflows(group.offsetWidth > element.clientWidth);
+    const resize = new ResizeObserver(measure);
+    resize.observe(element);
+    resize.observe(group);
+    measure();
+    return () => resize.disconnect();
+  }, [count, overflowOnly]);
 
   useEffect(() => {
     const element = viewport.current;
@@ -52,12 +69,12 @@ export function LoopingCardRail({ label, count, children, repeat }: {
       visibility.disconnect();
       resize.disconnect();
     };
-  }, [count, motion.stopped, touching]);
+  }, [count, loops, motion.stopped, touching]);
 
   return <div className={styles.cardRail}>
 
     <div id={id} ref={viewport} className={styles.railViewport} role="region" aria-label={label}
-      tabIndex={count > 1 ? 0 : undefined} data-count={count}
+      tabIndex={loops ? 0 : undefined} data-count={count}
       onMouseEnter={motion.interaction.onMouseEnter} onMouseLeave={motion.interaction.onMouseLeave}
       onFocusCapture={motion.interaction.onFocusCapture} onBlurCapture={motion.interaction.onBlurCapture}
       onTouchStart={() => setTouching(true)}
@@ -65,7 +82,7 @@ export function LoopingCardRail({ label, count, children, repeat }: {
       onTouchCancel={() => setTouching(false)}>
       <div className={styles.railTrack}>
         <div ref={original} className={styles.railGroup}>{children}</div>
-        {count > 1 && !motion.reduced && <div ref={copy} className={`${styles.railGroup} ${styles.railCopy}`}
+        {loops && !motion.reduced && <div ref={copy} className={`${styles.railGroup} ${styles.railCopy}`}
           aria-hidden="true" onMouseDown={event => event.preventDefault()}>{repeat}</div>}
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { AdvertisementMutationNotice } from "@/components/advertisement-refresh";
 import { T } from "@/components/public-language";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +21,6 @@ export default async function AdvertisementDetails({ params, searchParams }: { p
 
   return <div className="mx-auto max-w-4xl">
     <Link href="/admin/advertisements" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold"><T text="Back to Advertisements" /></Link>
-    {created && <AdvertisementMutationNotice mutation={id} />}
     {created && <p role="status" aria-live="polite" className="mt-5 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm font-semibold"><T text="✓ Advertisement created successfully." /></p>}
     <h1 className="mt-6 text-3xl font-semibold">{advertisement.title}</h1>
     <section id="preview" className="mt-5 rounded-2xl border border-border bg-light-background p-4 sm:p-6">

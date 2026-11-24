@@ -22,7 +22,7 @@ const { PreviewNavigation } = loadServerModule("app/design-preview/emerald-sanct
   "./preview-copy": copy, "./sanctuary.module.css": styles,
 });
 
-async function homepage({ locale = "en", session = null, preview = false, operationalMembers = [] } = {}) {
+async function homepageElement({ locale = "en", session = null, preview = false, operationalMembers = [] } = {}) {
   const { EmeraldSanctuary } = loadServerModule("components/emerald-sanctuary.tsx", {
     "next/image": Image, "next/link": Link,
     "next/headers": { cookies: async () => ({ get: () => ({ value: locale }) }) },
@@ -38,8 +38,28 @@ async function homepage({ locale = "en", session = null, preview = false, operat
     [`${base}preview-copy`]: copy,
     [`${base}sanctuary.module.css`]: styles,
   });
-  return renderToStaticMarkup(await EmeraldSanctuary({ preview, operationalMembers }));
+  return EmeraldSanctuary({ preview, operationalMembers });
 }
+
+async function homepage(options) {
+  return renderToStaticMarkup(await homepageElement(options));
+}
+
+test("service cards retain unique keys across languages even when destinations are shared", async () => {
+  function findServiceGrid(node) {
+    if (!React.isValidElement(node)) return undefined;
+    if (node.props.className === styles.serviceGrid) return node;
+    let grid;
+    React.Children.forEach(node.props.children, child => { grid ??= findServiceGrid(child); });
+    return grid;
+  }
+  for (const locale of ["en", "ta"]) {
+    const grid = findServiceGrid(await homepageElement({ locale }));
+    const cards = grid.props.children;
+    assert.deepEqual(cards.map(card => card.key), ["janaza", "transport", "community"]);
+    assert.deepEqual(cards.map(card => card.props.href), ["/request-service", "/request-service", "/team"]);
+  }
+});
 
 test("live homepage preserves Quran, branding and service destinations without preview labels", async () => {
   const html = await homepage();

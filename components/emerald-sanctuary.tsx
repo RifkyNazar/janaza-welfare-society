@@ -26,9 +26,9 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
   const locale = cookieStore.get("jws-language")?.value === "ta" ? "ta" : "en";
   const t = previewCopy(locale);
   const services = [
-    { title: t.janaza, description: t.janazaText, action: t.request, href: "/request-service", className: styles.featuredService },
-    { title: t.transport, description: t.transportText, action: t.request, href: "/request-service", className: styles.transportService },
-    { title: t.people, description: t.peopleText, action: t.meet, href: "/team", className: styles.communityService },
+    { id: "janaza", title: t.janaza, description: t.janazaText, action: t.request, href: "/request-service", className: styles.featuredService },
+    { id: "transport", title: t.transport, description: t.transportText, action: t.request, href: "/request-service", className: styles.transportService },
+    { id: "community", title: t.people, description: t.peopleText, action: t.meet, href: "/team", className: styles.communityService },
   ];
   const roles: Record<string, string> = { President: t.president, Secretary: t.secretary, Treasurer: t.treasurer };
   const teamCards = (repeat = false) => [
@@ -72,7 +72,7 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
         <LatestActivities locale={locale} />
         <section id="services" className={styles.services} aria-labelledby="services-title">
           <div className={styles.sectionHead}><div><p className={styles.eyebrow}>{t.services}</p><h2 id="services-title">{t.serviceTitle}</h2></div><Link href="/services" className={styles.textLink}>{t.services}<Arrow /></Link></div>
-          <div className={styles.serviceGrid}>{services.map((service, index) => <Link className={`${styles.serviceCard} ${service.className}`} href={service.href} key={service.href}>
+          <div className={styles.serviceGrid}>{services.map((service, index) => <Link className={`${styles.serviceCard} ${service.className}`} href={service.href} key={service.id}>
             <div className={styles.cardTop}><span>0{index + 1}</span><Arrow /></div>
             <div className={styles.serviceContent}><h3>{service.title}</h3><p>{service.description}</p></div>
             {index === 0 && <div className={styles.serviceAura} aria-hidden="true" />}

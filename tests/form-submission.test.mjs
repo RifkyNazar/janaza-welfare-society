@@ -70,7 +70,6 @@ test("advertisement preview and filename belong only to the matching response", 
     "@/components/public-language": { T: ({ text }) => text, useTranslation: () => ({ t: text => text }) },
     "@/components/use-form-submission": { useFormSubmission: () => ({ showFeedback: true }) },
     "@/lib/image-upload-limits": {},
-    "@/components/advertisement-refresh": { AdvertisementMutationNotice: () => null },
   });
   const render = () => renderToStaticMarkup(React.createElement(AdvertisementForm, {
     action() {},

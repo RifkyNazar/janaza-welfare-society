@@ -95,85 +95,34 @@ test("tracking maps completed assignments and returns only assigned employee dat
   assert.equal((await trackServiceRequest({}, form)).result.employee, null);
 });
 
-test("an open notices page schedules a known boundary even when it is more than one poll away", () => {
-  let effect, timeout, refreshed = 0, now = 1000;
-  const previous = { window: globalThis.window, document: globalThis.document, now: Date.now };
-  globalThis.window = {
-    setTimeout: (run, delay) => { timeout = { run, delay }; return 1; },
-    clearTimeout() {}, setInterval: () => 2, clearInterval() {},
-  };
-  globalThis.document = { hidden: false, addEventListener() {}, removeEventListener() {} };
+
+test("notice expiry wakes only at known deadlines and removes elapsed notices locally", () => {
+  let effect, timeout, expiredThrough = 0, now = 1000;
+  const previous = { window: globalThis.window, now: Date.now };
+  globalThis.window = { setTimeout: (run, delay) => { timeout = { run, delay }; return 1; }, clearTimeout() {} };
   Date.now = () => now;
   try {
-    const { AdvertisementRefresh } = loadServerModule("components/advertisement-refresh.tsx", {
-      react: { useEffect: run => { effect = run; }, useState: () => [undefined, () => {}] },
-      "next/navigation": { useRouter: () => ({ refresh() { refreshed++; } }) },
+    const { useAdvertisementExpiry } = loadServerModule("components/advertisement-expiry.tsx", {
+      react: { useEffect: run => { effect = run; }, useState: () => [expiredThrough, time => { expiredThrough = time; }] },
     });
-    AdvertisementRefresh({ nextChange: now + 90_000 });
+    const deadlines = [null, now + 90_000, now + 125_000];
+    assert.equal(useAdvertisementExpiry(deadlines), 0);
     const cleanup = effect();
     assert.equal(timeout.delay, 90_000);
-    assert.equal(refreshed, 0);
     now += 90_000;
     timeout.run();
-    assert.equal(refreshed, 1);
+    assert.equal(useAdvertisementExpiry(deadlines), now);
     cleanup();
+    const stop = effect();
+    assert.equal(timeout.delay, 35_000);
+    now += 35_000;
+    timeout.run();
+    assert.equal(useAdvertisementExpiry(deadlines), now);
+    assert.equal(effect(), undefined);
+    stop();
   } finally {
     Date.now = previous.now;
     if (previous.window === undefined) delete globalThis.window;
     else globalThis.window = previous.window;
-    if (previous.document === undefined) delete globalThis.document;
-    else globalThis.document = previous.document;
-  }
-});
-
-test("advertisement mutations notify open views and the refresh listener releases its channel", () => {
-  const oldWindow = globalThis.window;
-  const oldDocument = globalThis.document;
-  const open = new Set();
-  const pendingEffects = [];
-  const published = { current: undefined };
-  let refreshes = 0;
-  let messages = 0;
-  class Channel {
-    constructor(name) { this.name = name; open.add(this); }
-    postMessage(data) {
-      messages++;
-      for (const peer of open) {
-        if (peer !== this && peer.name === this.name) peer.listener?.({ data });
-      }
-    }
-    addEventListener(_event, listener) { this.listener = listener; }
-    close() { open.delete(this); }
-  }
-  globalThis.window = { BroadcastChannel: Channel, setInterval: () => 1, clearInterval() {}, clearTimeout() {} };
-  globalThis.document = { hidden: false, addEventListener() {}, removeEventListener() {} };
-  try {
-    const { AdvertisementRefresh, AdvertisementMutationNotice } = loadServerModule("components/advertisement-refresh.tsx", {
-      react: { useEffect: effect => pendingEffects.push(effect), useState: () => [], useRef: () => published },
-      "next/navigation": { useRouter: () => ({ refresh() { refreshes++; } }) },
-    });
-    AdvertisementRefresh({ nextChange: null });
-    const stop = pendingEffects.shift()();
-    AdvertisementMutationNotice({});
-    pendingEffects.shift()();
-    assert.equal(messages, 0);
-    AdvertisementMutationNotice({ mutation: "saved" });
-    const notify = pendingEffects.shift();
-    notify();
-    notify();
-    assert.equal(messages, 1);
-    assert.equal(refreshes, 1);
-    globalThis.document.hidden = true;
-    AdvertisementMutationNotice({ mutation: "deleted" });
-    pendingEffects.shift()();
-    assert.equal(messages, 2);
-    assert.equal(refreshes, 1);
-    stop();
-    assert.equal(open.size, 0);
-  } finally {
-    if (oldWindow === undefined) delete globalThis.window;
-    else globalThis.window = oldWindow;
-    if (oldDocument === undefined) delete globalThis.document;
-    else globalThis.document = oldDocument;
   }
 });
