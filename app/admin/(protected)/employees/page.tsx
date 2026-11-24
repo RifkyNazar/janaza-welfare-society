@@ -30,7 +30,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
     ? "ALL"
     : requestedStatus && accountStatuses.has(requestedStatus as AccountStatus)
       ? requestedStatus as AccountStatus
-      : "PENDING";
+      : "ALL";
   const query = parameters.q?.trim().slice(0, 100) ?? "";
 
   const employees = await prisma.user.findMany({
@@ -71,9 +71,10 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
         <div>
           <p className="text-sm font-semibold text-primary"><T text="Administration" /></p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl"><T text="Employees" /></h1>
-          <p className="mt-2 text-sm text-muted"><T text="Review registrations and manage employee account access." /></p>
+          <p className="mt-2 text-sm text-muted"><T text="Manage employee accounts and login access." /></p>
         </div>
         <div className="space-y-2">
+          <Link href="/admin/employees/new" className="mr-2 inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-semibold"><T text="Add Employee" /></Link>
           <Link href="/admin/employees/phone-conflicts" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 text-sm font-semibold"><T text="Review duplicate phone numbers" /></Link>
           <p className="text-sm text-muted"><span className="font-semibold text-foreground">{employees.length}</span> <T text={employees.length === 1 ? "result" : "results"} /></p>
         </div>
@@ -121,7 +122,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted"><T text="Position" /></p>
                   <p className="mt-1 text-sm">{profile?.position ?? "—"}</p>
-                  <p className="mt-1 text-xs text-muted"><T text="Registered" /> {dateFormatter.format(employee.createdAt)}</p>
+                  <p className="mt-1 text-xs text-muted"><T text="Created" /> {dateFormatter.format(employee.createdAt)}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 lg:block">
                   <EmployeeStatusBadge status={employee.status} />

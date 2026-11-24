@@ -1,20 +1,30 @@
 "use client";
-import { T, useTranslation } from "@/components/public-language";
+
 import Image from "next/image";
 import Link from "next/link";
-import { MotionControls, useShowcaseMotion } from "@/components/use-showcase-motion";
-type Banner = {
-    id: string;
-    title: string;
-    imageUrl: string;
-    description: string | null;
-};
-export function AdvertisementCarousel({ banners }: {
-    banners: Banner[];
-}) {
-    const m = useShowcaseMotion(banners.length);
-    const { t } = useTranslation();
-    if (!banners.length)
-        return null;
-    return <div className="mx-auto max-w-7xl" {...m.interaction}><div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="jws-eyebrow"><T text="From our community" /></p><h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl"><T text="Community notices" /></h2></div><MotionControls motion={m} count={banners.length} label="Community notices"/></div><div className="glass-panel overflow-hidden rounded-[1.75rem]">{banners.map((b, i) => <article hidden={i !== m.index} key={b.id} className="notice-slide"><Link href={'/advertisements/' + b.id} className="block bg-white"><Image unoptimized src={'/advertisement-images/' + b.imageUrl} alt={b.title} width={1600} height={700} className="h-[240px] w-full object-contain sm:h-[360px]"/></Link><div className="flex min-h-32 flex-wrap items-center justify-between gap-3 border-t border-border p-5"><div className="min-w-0 flex-1"><h3 className="line-clamp-1 font-semibold">{b.title}</h3><p className="mt-1 line-clamp-2 text-sm leading-6 text-muted">{b.description}</p></div><Link href={'/advertisements/' + b.id} className="jws-text-link"><T text="View notice" /> &#8599;</Link></div></article>)}</div><div className="mt-2 flex flex-wrap justify-center">{banners.length > 1 && banners.map((b, i) => <button type="button" key={b.id} onClick={() => m.setIndex(i)} aria-label={t("Show {title}").replace("{title}", () => b.title)} aria-current={i === m.index ? 'true' : undefined} className="flex size-11 items-center justify-center"><span className={'h-1.5 rounded-full ' + (i === m.index ? 'w-6 bg-foreground' : 'w-2 bg-foreground/20')}/></button>)}</div></div>;
+import { T, useTranslation } from "@/components/public-language";
+import { LoopingCardRail } from "@/components/looping-card-rail";
+
+type Banner = { id: string; title: string; imageUrl: string; description: string | null };
+
+export function AdvertisementCarousel({ banners }: { banners: Banner[] }) {
+  const { t } = useTranslation();
+  const cards = (repeat = false) => banners.map(banner => <article key={banner.id}
+    className="overflow-hidden rounded-2xl border border-border bg-white">
+    <Link href={`/advertisements/${banner.id}`} tabIndex={repeat ? -1 : undefined} prefetch={false} className="flex h-[clamp(11rem,36vw,20rem)] items-center justify-center bg-light-background">
+      <Image unoptimized src={`/advertisement-images/${banner.imageUrl}`} alt={banner.title} width={800} height={600} className="h-full w-full object-contain" />
+    </Link>
+    <div className="border-t border-border p-4">
+      <h3 className="break-words font-semibold text-foreground">{banner.title}</h3>
+      {banner.description && <p className="mt-1 line-clamp-2 text-sm text-muted">{banner.description}</p>}
+      <Link href={`/advertisements/${banner.id}`} tabIndex={repeat ? -1 : undefined} prefetch={false} className="mt-2 inline-flex min-h-11 items-center font-semibold text-foreground underline underline-offset-4"><T text="View notice" /></Link>
+    </div>
+  </article>);
+  if (!banners.length) return null;
+  return <section aria-label={t("Community notices")} className="bg-white px-4 py-7 text-foreground sm:px-8">
+    <div className="mx-auto max-w-7xl">
+      <h2 className="mb-5 text-2xl font-semibold text-foreground sm:text-3xl"><T text="Community notices" /></h2>
+      <LoopingCardRail label={t("Community notices")} count={banners.length} repeat={cards(true)}>{cards()}</LoopingCardRail>
+    </div>
+  </section>;
 }

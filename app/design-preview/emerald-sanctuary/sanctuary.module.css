@@ -368,15 +368,18 @@
 
 .cardRail { display: grid; gap: .5rem; min-inline-size: 0; }
 .railPause { justify-self: end; min-block-size: 2.75rem; padding-inline: .875rem; border: 1px solid var(--border-strong); border-radius: var(--radius-control); }
-.railViewport { container-type: inline-size; overflow-x: auto; overscroll-behavior-inline: contain; scroll-behavior: auto; }
+.railViewport { scrollbar-width: none; container-type: inline-size; overflow-x: auto; overscroll-behavior-inline: contain; scroll-behavior: auto; }
 .railTrack,.railGroup { display: flex; gap: clamp(.75rem,2vw,1.25rem); inline-size: max-content; }
 .railTrack { position: relative; padding: .375rem 0 .75rem; }
 .railGroup > * { flex: 0 0 auto; inline-size: 72cqi; }
 .railViewport[data-count="1"] .railGroup > * { inline-size: min(100cqi,26rem); }
 @media (min-width: 640px) {
   .railGroup > * { inline-size: 35cqi; }
-  .railViewport[data-count="2"] .railGroup > * { inline-size: 54cqi; }
+
 }
+.railViewport[data-count="2"] .railGroup > * { inline-size: 100cqi; }
+.railViewport[data-count="3"] .railGroup > * { inline-size: 50cqi; }
+
 @media (prefers-reduced-motion: reduce) {
   .railCopy { display: none; }
 }

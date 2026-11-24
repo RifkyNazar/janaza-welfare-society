@@ -7,7 +7,7 @@ const copy = loadServerModule('app/design-preview/emerald-sanctuary/preview-copy
 const { translate } = loadServerModule('lib/i18n.ts');
 const { leadershipTeam } = loadServerModule('lib/leadership-team.ts');
 for (const locale of ['en', 'ta']) {
-  for (const path of ['/', '/about', '/services', '/vehicles', '/team', '/operations', '/contact', '/request-service', '/track-request', '/support', '/employee-access', '/employee-access/login', '/employee-access/register', '/employee-access/register/success', '/admin/login']) {
+  for (const path of ['/', '/about', '/services', '/vehicles', '/team', '/operations', '/contact', '/request-service', '/track-request', '/support', '/employee-access/login', '/admin/login']) {
     const response = await fetch(base + path, { headers: { cookie: 'jws-language=' + locale } });
     assert.equal(response.status, 200, path);
     const body = await response.text();
@@ -33,7 +33,6 @@ for (const locale of ['en', 'ta']) {
     if (path === '/track-request') for (const name of ['requestCode', 'mobileNumber']) assert.ok(body.includes('name="' + name + '"'));
     const localizedLabels = {
       '/support': ['Bank Transfer Details', 'Submit Transfer Confirmation'],
-      '/employee-access': ['Employee Login', 'Employee Registration'],
       '/employee-access/login': ['Employee Login'],
       '/admin/login': ['Admin Login'],
     };

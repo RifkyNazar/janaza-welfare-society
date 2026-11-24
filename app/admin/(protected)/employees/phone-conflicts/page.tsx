@@ -17,7 +17,7 @@ export default async function EmployeePhoneConflictsPage() {
         <T text="Back to Employees" />
       </Link>
       <h1 className="text-3xl font-semibold"><T text="Duplicate Employee Phone Numbers" /></h1>
-      <p className="text-sm text-muted"><T text="Verify who controls each number before changing access. Open the account to reject a duplicate pending registration or disable a duplicate approved account. Both actions preserve the account and its phone details." /></p>
+      <p className="text-sm text-muted"><T text="Verify who controls each number, then open the account to update its phone or deactivate access." /></p>
       <p className="text-sm text-muted"><T text="If two approved accounts belong to different people, verify a different number with one employee and use PIN setup or reset on their account. This replaces that account’s sign-in number and revokes its PIN and sessions." /></p>
       {conflicts.length === 0 && <p className="rounded-2xl border border-border bg-white p-5"><T text="No duplicate phone numbers among pending and approved employees." /></p>}
       {conflicts.map(([phone, accounts]) => (

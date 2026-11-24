@@ -45,14 +45,14 @@ export default async function AdminDashboardPage() {
   ]);
 
   const summaries = [
-    ["Pending Employees", pending, "/admin/employees?status=PENDING"],
+    ["Legacy Inactive Accounts", pending, "/admin/employees?status=PENDING"],
     ["Approved Employees", approved, "/admin/employees?status=APPROVED"],
     ["New Service Requests", newRequests, "/admin/service-requests?status=NEW"],
     ["Active Tasks", activeTasks, "/admin/task-assignments"],
   ] as const;
 
   const queues = [
-    { title: "Recent Employee Registrations", empty: "No employee registrations yet.", rows: registrations.map(({ user, fullName, employeeCode, createdAt }) => ({
+    { title: "Recent Employee Accounts", empty: "No employee accounts yet.", rows: registrations.map(({ user, fullName, employeeCode, createdAt }) => ({
       href: `/admin/employees/${user.id}`, name: fullName, details: employeeCode, date: createdAt, badge: <EmployeeStatusBadge status={user.status} />,
     })) },
     { title: "Recent Service Requests", empty: "No service requests yet.", rows: requests.map((request) => ({
@@ -67,7 +67,7 @@ export default async function AdminDashboardPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <div className="portal-overview-banner">
         <h1 className="font-semibold"><T text="Dashboard" /></h1>
-        <p className="mt-1 text-sm"><T text="Review requests, employee registrations, and active assignments." /></p>
+        <p className="mt-1 text-sm"><T text="Review requests, employee accounts, and active assignments." /></p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

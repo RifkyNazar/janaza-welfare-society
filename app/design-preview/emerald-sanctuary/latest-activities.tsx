@@ -15,11 +15,11 @@ function ActivityImage({ operation, locale }: { operation: PublicOperation; loca
 
 export async function LatestActivities({ locale = "en" }: { locale?: Locale }) {
   const t = previewCopy(locale);
-  const date = new Intl.DateTimeFormat(locale === "ta" ? "ta-LK" : "en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+  const date = new Intl.DateTimeFormat(locale === "ta" ? "ta-LK" : "en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Colombo" });
   let operations: PublicOperation[] = [];
   let unavailable = false;
   try {
-    operations = await prisma.operation.findMany({ where: { isPublished: true }, orderBy: [{ operationDate: "desc" }, { id: "desc" }], take: 6, select: publicOperationSelect });
+    operations = await prisma.operation.findMany({ where: { isPublished: true }, orderBy: [{ publishedAt: "desc" }, { operationDate: "desc" }, { id: "desc" }], take: 6, select: publicOperationSelect });
   } catch (error) {
     console.error("[operations] Could not load recent published operations.", error instanceof Error ? error.name : "Unknown error");
     unavailable = true;

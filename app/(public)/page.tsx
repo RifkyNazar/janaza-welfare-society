@@ -13,7 +13,7 @@ export default async function HomePage() {
     orderBy: [{ displayOrder: "asc" }, { id: "asc" }],
     select: { id: true, altText: true, caption: true },
   }), prisma.operationalTeamMember.findMany({
-    select: { id: true, fullName: true },
+    select: { id: true, fullName: true, version: true },
     orderBy: [{ fullName: "asc" }, { id: "asc" }],
   })]);
   const images = media.map(({ id, altText, caption }) => ({

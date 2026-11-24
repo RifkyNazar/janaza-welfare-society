@@ -6,12 +6,11 @@ import { getEmailAppBaseUrl, sendEmailNotification } from "@/lib/notifications/e
 import { PIN_ONLY_EMAIL_SUFFIX } from "@/lib/employee-phone";
 import { sendPushToApprovedUser, sendPushToApprovedUsers } from "@/lib/notifications/push";
 import { getSmsAppBaseUrl, sendSmsNotification } from "@/lib/notifications/sms";
-import { employeeRegistrationEmail, serviceRequestEmail, taskAssignmentEmail } from "@/lib/notifications/templates";
-import type { EmployeeRegistrationNotification, ServiceRequestNotification } from "@/lib/notifications/types";
+import { serviceRequestEmail, taskAssignmentEmail } from "@/lib/notifications/templates";
+import type { ServiceRequestNotification } from "@/lib/notifications/types";
 import { translate } from "@/lib/i18n";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const STAFF_REGISTRATION_SMS = "JWS: New employee registration received. Please sign in to review.";
 const STAFF_REQUEST_SMS = "JWS: New service request received. Please sign in to review.";
 const ASSIGNMENT_SMS = "JWS: A new task has been assigned to you. Please sign in to view details.";
 
@@ -60,23 +59,6 @@ export async function notifyAssignedEmployee(taskAssignmentId: number) {
     if (appBaseUrl && !task.employee.user.email.endsWith(PIN_ONLY_EMAIL_SUFFIX) && emailPattern.test(task.employee.user.email)) deliveries.push(sendEmailNotification({ to: task.employee.user.email, ...taskAssignmentEmail(data, `${appBaseUrl}/employee/my-tasks/${task.id}`) }));
     await Promise.allSettled(deliveries);
   } catch { console.error("[notifications] Task assignment notification could not be completed."); }
-}
-
-export async function notifyAdminsOfEmployeeRegistration(data: EmployeeRegistrationNotification) {
-  try {
-    const admins = await approvedStaff(["ADMIN"]);
-    const deliveries: Promise<unknown>[] = [
-      sendPushToApprovedUsers(admins.map(({ id }) => id), {
-        title: "New Employee Registration", body: "A new employee registration requires administrator approval.",
-        ta: { title: "புதிய ஊழியர் பதிவு", body: "புதிய ஊழியர் பதிவுக்கு நிர்வாக அங்கீகாரம் தேவை." },
-        url: `/admin/employees/${data.employeeId}`, tag: `employee-registration-${data.employeeId}`,
-      }),
-      deliverSms(admins, STAFF_REGISTRATION_SMS),
-    ];
-    const appBaseUrl = getEmailAppBaseUrl();
-    if (appBaseUrl) deliveries.push(deliverEmails(admins, employeeRegistrationEmail(data, `${appBaseUrl}/admin/employees/${data.employeeId}`)));
-    await Promise.allSettled(deliveries);
-  } catch { console.error("[notifications] Employee registration notification could not be completed."); }
 }
 
 export async function notifyStaffOfNewServiceRequest(data: ServiceRequestNotification, customerMobile: string) {

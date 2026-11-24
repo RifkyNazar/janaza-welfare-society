@@ -54,34 +54,10 @@ function authActions(extra = {}) {
   });
 }
 
-test("registration uses only name, phone and position and creates a private pending employee", async () => {
-  let inserted;
-  const { registerEmployee } = authActions({
-    "@/lib/employee-pin": { allowEmployeeAuthAttempt: async (operation, subject) => operation === "register" && subject === phone },
-    "@/lib/employee-phone-registration": { assertEmployeePhonesAvailable: async () => {}, employeePhoneTransaction: run => run({ user: { create: async ({ data }) => {
-      inserted = data;
-      return { id: 6, createdAt: new Date(), employeeProfile: data.employeeProfile.create };
-    } } }) },
-  });
-  await assert.rejects(registerEmployee({}, form({ fullName: "Test Employee", phone: "(077) 123-4567", position: "Coordinator",
-    email: "ignored@example.invalid", password: "ignored", role: "ADMIN", status: "APPROVED" })), { message: "/employee-access/register/success" });
-  assert.equal(inserted.role, "EMPLOYEE");
-  assert.equal(inserted.status, "PENDING");
-  assert.equal(inserted.passwordHash, "!");
-  assert.ok(inserted.email.endsWith("@employee.invalid"));
-  assert.equal(inserted.employeeProfile.create.phone, phone);
-  assert.equal(inserted.employeeProfile.create.position, "Coordinator");
-  assert.equal(inserted.employeeProfile.create.isPublicProfile, false);
-  assert.ok((await registerEmployee({}, form({ fullName: "Test", phone }))).error);
-  assert.ok((await registerEmployee({}, form({ fullName: "Test", phone: "+44771234567", position: "Coordinator" }))).error);
-
-  const { RegistrationForm } = loadServerModule("components/employee/registration-form.tsx", {
-    react: { ...React, useActionState: () => [{}, () => {}, false] },
-    "@/components/public-language": { T: ({ text }) => text },
-    "@/app/actions/auth": {},
-  });
-  const html = renderToStaticMarkup(React.createElement(RegistrationForm));
-  assert.deepEqual([...html.matchAll(/<input[^>]*name="([^"]+)"/g)].map(match => match[1]).filter(name => !name.startsWith("$")), ["fullName", "phone", "position"]);
+test("public auth exposes neither registration nor token enrollment", () => {
+  const actions = authActions();
+  assert.equal(actions.registerEmployee, undefined);
+  assert.equal(actions.setupEmployeePin, undefined);
 });
 
 test("normalizes Sri Lankan phone variants and treats leading zeroes as PIN digits", () => {
@@ -98,6 +74,7 @@ function pinHarness() {
   const sessions = new Map();
   const user = { id: 7, role: "EMPLOYEE", status: "PENDING", employeeSessionVersion: 0, employeeProfile: { id: 20, fullName: "Test Employee" } };
   let credential;
+  const assign = pinHash => { credential = { phone, pinHash, user }; };
   let ip = "192.0.2.1";
   const db = {
     $transaction: async callback => callback(db),
@@ -147,32 +124,21 @@ function pinHarness() {
     "@/lib/prisma": { prisma: db },
     "@/lib/employee-phone-registration": { assertEmployeePhonesAvailable: async () => {}, employeePhoneTransaction: run => run(db) },
   });
-  return { ...pinAuth, user, sessions, buckets, changeIp: value => { ip = value; }, credential: () => credential };
+  return { ...pinAuth, assign, user, sessions, buckets, changeIp: value => { ip = value; }, credential: () => credential };
 }
 
-test("approved enrollment requires a matching unexpired token and consumes it once; Argon2id protects the PIN", async () => {
+test("assigned six-digit codes use Argon2id and preserve leading zeroes", async () => {
   const auth = pinHarness();
-  assert.equal(await auth.issuePinSetup(7, 1, phone), null);
-  auth.user.status = "APPROVED";
-  const first = await auth.issuePinSetup(7, 1, phone);
-  assert.notEqual(auth.credential().setupDigest, first.token);
-  auth.credential().setupUntil = new Date(0);
-  assert.equal(await auth.enrollEmployeePin(phone, first.token, pin), false);
-  const issued = await auth.issuePinSetup(7, 1, phone);
-  assert.equal(await auth.enrollEmployeePin("+94771234568", issued.token, pin), false);
-  const redemptions = await Promise.all([auth.enrollEmployeePin(phone, issued.token, pin), auth.enrollEmployeePin(phone, issued.token, pin)]);
-  assert.deepEqual(redemptions.sort(), [false, true]);
-  assert.match(auth.credential().pinHash, /^\$argon2id\$/);
-  assert.notEqual(auth.credential().pinHash, pin);
-  assert.equal(auth.credential().setupDigest, null);
-  assert.equal(await auth.enrollEmployeePin(phone, issued.token, pin), false);
+  const hashed = await auth.hashEmployeeCode(pin);
+  assert.match(hashed, /^\$argon2id\$/);
+  assert.notEqual(hashed, pin);
+  assert.throws(() => auth.hashEmployeeCode("12345"), /Invalid/);
 });
 
 test("PIN login handles invalid PINs, device duration, logout, disable/reactivate and role isolation", async () => {
   const auth = pinHarness();
   auth.user.status = "APPROVED";
-  const { token } = await auth.issuePinSetup(7, 1, phone);
-  assert.equal(await auth.enrollEmployeePin(phone, token, pin), true);
+  auth.assign(await auth.hashEmployeeCode(pin));
   assert.equal(await auth.authenticateEmployee(phone, "123456", true), null);
   const short = await auth.authenticateEmployee(phone, pin, false);
   const remembered = await auth.authenticateEmployee("0771234567", pin, true);
@@ -216,37 +182,52 @@ test("account lockout spans IP addresses, IP limits span accounts, and expired c
   assert.equal(await auth.allowEmployeeAuthAttempt("login", "+94770000001"), false);
 });
 
-test("admin approval and verified identity are required for token issuance; disabling increments the session version", async () => {
-  let issued = 0;
-  let status = "PENDING";
-  let authorized = false;
+test("admin-created employees get a hashed code and deactivation revokes sessions", async () => {
+  let authorized = false, created, revoked;
+  const credential = pinHarness();
   const db = { user: {
-    findUnique: async () => ({ role: "EMPLOYEE", status }),
+    create: async ({ data }) => { created = data; },
+    findUnique: async () => ({ role: "EMPLOYEE", status: "APPROVED" }),
     updateMany: async ({ data }) => {
       assert.deepEqual(data.employeeSessionVersion, { increment: 1 });
-      status = data.status;
+      assert.equal(data.status, "DISABLED");
       return { count: 1 };
     },
-  } };
+  }, employeePinSession: { deleteMany: async ({ where }) => { revoked = where.userId; } } };
   const action = loadServerModule("app/admin/(protected)/employees/actions.ts", {
     "next/cache": { revalidatePath() {} },
+    "next/navigation": { redirect: path => { throw new Error(path); } },
     "@/generated/prisma/client": { Prisma: { PrismaClientKnownRequestError: class extends Error {} } },
     "@/lib/permissions": { requireAdmin: async () => {
       if (!authorized) throw new Error("ADMIN_REQUIRED");
       return { user: { id: "1" } };
     } },
     "@/lib/employee-phone": phones,
-    "@/lib/employee-pin": { issuePinSetup: async () => status === "APPROVED" ? { token: "issued-" + ++issued } : null },
+    "@/lib/employee-pin": { hashEmployeeCode: credential.hashEmployeeCode, clearEmployeeLoginThrottle: async () => {} },
     "@/lib/prisma": { prisma: db },
-    "@/lib/employee-phone-registration": { assertEmployeeAccountPhonesAvailable: async () => {}, employeePhoneTransaction: run => run(db) },
+    "@/lib/employee-phone-registration": { assertEmployeePhonesAvailable: async (_tx, values) => assert.deepEqual(values, [phone]), employeePhoneTransaction: run => run(db) },
   });
-  const verified = form({ phone, identityVerified: "on" });
-  await assert.rejects(action.issueEmployeePinSetup(7, {}, verified), /ADMIN_REQUIRED/);
+  const data = form({ fullName: "Test Employee", phone: "077 123 4567", position: "Coordinator", code: pin, role: "ADMIN" });
+  await assert.rejects(action.saveEmployee(null, {}, data), /ADMIN_REQUIRED/);
   authorized = true;
-  assert.ok((await action.issueEmployeePinSetup(7, {}, verified)).error);
-  assert.ok((await action.updateEmployeeStatus(7, "approve", {}, new FormData())).success);
-  assert.ok((await action.issueEmployeePinSetup(7, {}, form({ phone }))).error);
-  assert.equal((await action.issueEmployeePinSetup(7, {}, verified)).token, "issued-1");
+  await assert.rejects(action.saveEmployee(null, {}, data), /admin\/employees/);
+  assert.equal(created.role, "EMPLOYEE");
+  assert.equal(created.status, "APPROVED");
+  assert.equal(created.employeeProfile.create.phone, phone);
+  assert.match(created.employeePin.create.pinHash, /^\$argon2id\$/);
+  assert.equal(created.employeePin.create.setupDigest, null);
   assert.ok((await action.updateEmployeeStatus(7, "disable", {}, new FormData())).success);
-  assert.ok((await action.issueEmployeePinSetup(7, {}, verified)).error);
+  assert.equal(revoked, 7);
+  assert.equal(action.issueEmployeePinSetup, undefined);
+});
+
+test("admin create form contains only profile details and a masked code", () => {
+  const { AdminEmployeeForm } = loadServerModule("components/admin/employee-form.tsx", {
+    "@/components/use-form-submission": { useFormSubmission: () => ({ showFeedback: true }) },
+    react: { ...React, useActionState: () => [{}, () => {}, false] },
+    "@/components/public-language": { T: ({ text }) => text },
+  });
+  const html = renderToStaticMarkup(React.createElement(AdminEmployeeForm));
+  assert.deepEqual([...html.matchAll(/<input[^>]*name="([^"]+)"/g)].map(match => match[1]), ["fullName", "phone", "position", "code"]);
+  assert.match(html, /type="password"/);
 });

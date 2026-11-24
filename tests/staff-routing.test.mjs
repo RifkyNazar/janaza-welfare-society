@@ -1,27 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import { existsSync } from "node:fs";
 import { loadServerModule } from "./load-server-module.mjs";
 
 const phoneTools = loadServerModule("lib/employee-phone.ts");
 const matrix = { ADMIN: "/admin", EMPLOYEE: "/employee", SUPERVISOR: "/supervisor" };
 
-test("registration and success pages remain on the registration flow with an admin session", async () => {
-  const doubles = {
-    "@/lib/permissions": { redirectAuthenticatedUser: async roles => {
-      if (roles.includes("ADMIN")) assert.fail("The registration flow redirected to the admin dashboard");
-    } },
-    "@/components/employee/employee-auth-layout": { EmployeeAuthLayout: ({ title, children }) => React.createElement("section", null, title, children) },
-    "@/components/employee/registration-form": { RegistrationForm: () => null },
-    "@/components/public-language": { T: ({ text }) => text },
-    "next/link": ({ href, children }) => React.createElement("a", { href }, children),
-  };
-  for (const [path, title] of [["register", "Employee Registration"], ["register/success", "Registration Submitted"]]) {
-    const { default: Page } = loadServerModule(`app/(public)/employee-access/${path}/page.tsx`, doubles);
-    const html = renderToStaticMarkup(await Page());
-    assert.ok(html.includes(title));
-    assert.ok(!html.includes('href="/admin"'));
+test("public registration and login-code enrollment routes have been removed", () => {
+  for (const path of ["register", "register/success", "pin-setup", "pin-reset"]) {
+    assert.equal(existsSync(`app/(public)/employee-access/${path}/page.tsx`), false);
   }
 });
 

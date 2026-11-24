@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { randomBytes } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -41,6 +42,7 @@ export async function submitDonationConfirmation(_state: DonationActionState, fo
       const code = referenceCode();
       try {
         const donation = await prisma.donation.create({ data: { referenceCode: code, fullName, mobileNumber, amount: amountInput, transferDate, bankReference: bankReference || null, note: note || null, receiptFileName, receiptStorageKey: stored.storageKey, receiptMimeType: stored.mimeType, status: "PENDING" } });
+        revalidatePath("/admin/donations");
         try { const pdf = await createDonationConfirmationPdf({ referenceCode: code, fullName, mobileNumber, amount: donation.amount.toFixed(2), transferDate, bankReference: bankReference || null, createdAt: donation.createdAt }); return { referenceCode: code, pdfBase64: Buffer.from(pdf).toString("base64") }; }
         catch (pdfError) { console.error("Unable to generate donation confirmation PDF", pdfError); return { referenceCode: code }; }
       } catch (error) {

@@ -9,6 +9,7 @@ function form(values) { const data = new FormData(); for (const [key, value] of 
 
 test("tracking uses BOTH credentials and exposes only its existing public projection", async () => {
   const actions = loadServerModule("app/actions/track-request.ts", {
+    "@/lib/profile-photo-storage": { readProfilePhoto: async () => assert.fail("unauthorized photo read") },
     "@/lib/rate-limit": { consumeRateLimit: async () => ({ allowed: true }) },
     "@/lib/prisma": { prisma: { serviceRequest: { findFirst: async ({ where, select }) => {
       assert.deepEqual(where, { requestCode: "JWS-REQ-TEST", mobileNumber: "0771234567" });
@@ -29,6 +30,7 @@ test("public submission still generates unique codes and records NEW requests", 
   } } };
   prisma.$transaction = callback => callback(prisma);
   const actions = loadServerModule("app/actions/service-request.ts", {
+    "next/cache": cache,
     "@/generated/prisma/client": { Prisma: {} }, "@/lib/prisma": { prisma },
     "@/lib/service-options": serviceOptions,
     "@/lib/rate-limit": { consumeRateLimit: async () => ({ allowed: true }) },
@@ -42,34 +44,45 @@ test("public submission still generates unique codes and records NEW requests", 
   assert.notEqual(first.requestCode, second.requestCode);
   assert.ok(records.every(record => record.status === "NEW"));
 });
-test("manual activity is an admin-only draft with no fabricated task/photos", async () => {
+test("admin and employee can publish standalone activities immediately with a photo", async () => {
+  const fields = loadServerModule("lib/operation-fields.ts");
   let created;
-  const actions = loadServerModule("app/admin/(protected)/operations/actions.ts", {
-    "@/lib/permissions": admin, "next/cache": cache, "next/navigation": navigation,
-    "@/lib/prisma": { prisma: { operation: { create: async ({ data }) => { created = data; return { id: 12 }; } } } },
+  const checked = [];
+  const refreshed = [];
+  const { addOperation } = loadServerModule("app/actions/public-operation.ts", {
+    "@/lib/permissions": { requireAdmin: async () => checked.push("admin"), requireEmployee: async () => checked.push("employee") },
+    "next/cache": { revalidatePath: path => refreshed.push(path) }, "next/navigation": navigation,
+    "@/lib/operation-fields": fields,
+    "@/lib/public-media-storage": { storePublicMedia: async () => "new.webp" },
+    "@/lib/prisma": { prisma: { operation: { create: async ({ data }) => { created = data; } } } },
   });
-  const data = form({ title: "Test draft", shortDescription: "Test", description: "", serviceType: "Community", area: "Public venue", operationDate: "2026-11-16" });
-  await assert.rejects(actions.createManualActivity({}, data), /REDIRECT:\/admin\/operations\/12\?created=1#activity-photos$/);
-  assert.equal(created.source, "MANUAL"); assert.equal(created.isPublished, false);
-  assert.equal(created.taskAssignmentId, undefined); assert.equal(created.photos, undefined);
+  for (const portal of ["admin", "employee"]) {
+    const data = form({ title: "Community activity", photo: new File(["test"], "photo.webp"), taskAssignmentId: "42", isPublished: "false" });
+    await assert.rejects(addOperation(portal, {}, data), /REDIRECT/);
+    assert.equal(created.source, "MANUAL");
+    assert.equal(created.isPublished, true);
+    assert.equal(created.taskAssignmentId, undefined);
+    assert.equal(created.media.create.isPublic, true);
+    assert.equal(created.publishedAt, created.operationDate);
+  }
+  assert.deepEqual(checked, ["admin", "employee"]);
+  assert.ok(refreshed.includes("/") && refreshed.includes("/operations"));
+  assert.ok((await addOperation("employee", {}, form({ title: "Missing photo" }))).error);
 });
-test("task-based draft eligibility still requires completed task and request with approved photos", async () => {
-  const actions = loadServerModule("app/admin/(protected)/operations/actions.ts", {
+
+test("legacy private activities remain private when edited", async () => {
+  const { updateOperation, setOperationPublished } = loadServerModule("app/admin/(protected)/operations/actions.ts", {
     "@/lib/permissions": admin, "next/cache": cache, "next/navigation": navigation,
-    "@/lib/prisma": { prisma: { taskAssignment: { findFirst: async ({ where, select }) => {
-      assert.equal(where.status, "COMPLETED"); assert.equal(where.request.is.status, "COMPLETED");
-      assert.equal(select.photos.where.isApprovedForPublic, true); return null;
+    "@/lib/operation-fields": loadServerModule("lib/operation-fields.ts"),
+    "@/lib/public-media-storage": {},
+    "@/lib/prisma": { prisma: { operation: { updateMany: async ({ data }) => {
+      assert.equal(Object.hasOwn(data, "isPublished"), false);
+      assert.equal(Object.hasOwn(data, "taskAssignmentId"), false);
+      return { count: 1 };
     } } } },
   });
-  const result = await actions.createOperation(5, {}, form({ title: "Title", shortDescription: "Summary", serviceType: "Service", area: "Public area", operationDate: "2026-11-16" }));
-  assert.match(result.error, /not eligible/);
-});
-test("task-based publishing still rejects unapproved selected photos", async () => {
-  const actions = loadServerModule("app/admin/(protected)/operations/actions.ts", {
-    "@/lib/permissions": admin, "next/cache": cache, "next/navigation": navigation,
-    "@/lib/prisma": { prisma: { operation: { findUnique: async () => ({ title: "Title", shortDescription: "Summary", serviceType: "Service", area: "Area", operationDate: new Date(), photos: [{ taskPhoto: { isApprovedForPublic: false } }] }) } } },
-  });
-  assert.match((await actions.setOperationPublished(1, true, {}, new FormData())).error, /unapproved/);
+  assert.equal(setOperationPublished, undefined);
+  assert.ok((await updateOperation(1, {}, form({ title: "Reviewed heading" }))).success);
 });
 test("existing employee task transitions retain ownership and expected prior state", async () => {
   let status = "ACKNOWLEDGED";

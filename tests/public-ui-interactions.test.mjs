@@ -12,6 +12,7 @@ test('service form category/service progression retains its submission fields an
       useState: initial => { const index = hook++; if (!(index in values)) values[index] = initial; return [values[index], next => { values[index] = typeof next === 'function' ? next(values[index]) : next; }]; },
       useActionState: () => [{}, () => { throw new Error('No server submission is permitted in this UI test'); }, false],
     },
+    '@/components/use-form-submission': { useFormSubmission: () => ({ showFeedback: true, onChange() {} }) },
     '@/components/public-language': { T: ({ text }) => text },
     'next/link': ({ href, children }) => React.createElement('a', { href }, children),
     'next/dynamic': () => () => null,

@@ -25,5 +25,5 @@ export function MotionControls({ motion: m, label, count }: {
     const { t } = useTranslation();
     if (count < 2)
         return null;
-    return <div className="motion-controls" role="group" aria-label={t(label)}><button type="button" onClick={() => m.move(-1)} aria-label={t("Previous")}>&larr;</button><button type="button" disabled={m.reduced} aria-pressed={m.paused || m.reduced} onClick={() => m.setPaused(!m.paused)} aria-label={t(m.reduced ? "Automatic motion disabled by your preference" : m.paused ? "Play" : "Pause")}>{t(m.paused || m.reduced ? "Play" : "Pause")}</button><span className="text-xs tabular-nums">{String(m.index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}</span><button type="button" onClick={() => m.move(1)} aria-label={t("Next")}>&rarr;</button></div>;
+    return <div className="motion-controls" role="group" aria-label={t(label)}><button type="button" onClick={() => m.move(-1)} aria-label={t("Previous")}>&larr;</button><span className="text-xs tabular-nums">{String(m.index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}</span><button type="button" onClick={() => m.move(1)} aria-label={t("Next")}>&rarr;</button></div>;
 }

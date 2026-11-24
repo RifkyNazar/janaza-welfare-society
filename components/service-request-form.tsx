@@ -1,4 +1,6 @@
 "use client";
+
+import { useFormSubmission } from "@/components/use-form-submission";
 import { T } from "@/components/public-language";
 
 
@@ -21,9 +23,11 @@ export function ServiceRequestForm() {
   const [selected, setSelected] = useState<string[]>([]);
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [submission, formAction, isPending] = useActionState<ServiceRequestActionState, FormData>(submitServiceRequest, {});
+  const form = useFormSubmission(submission, isPending);
+  const fieldErrors = form.showFeedback ? submission.fieldErrors : undefined;
   const [details, setDetails] = useState({ requesterName: "", mobileNumber: "", area: "", note: "" });
   const options = category === "JANAZAH" ? JANAZAH_SERVICE_OPTIONS : VEHICLE_SERVICE_OPTIONS;
-  const chooseCategory = (value: PublicServiceCategory) => { setCategory(value); setSelected([]); };
+  const chooseCategory = (value: PublicServiceCategory) => { form.onChange(); setCategory(value); setSelected([]); };
   const chooseService = (code: string) => setSelected((current) => category === "VEHICLE" ? [code] : current.includes(code) ? current.filter((item) => item !== code) : [...current, code]);
 
   if (submission.requestCode) return (
@@ -37,12 +41,12 @@ export function ServiceRequestForm() {
     </div>
   );
 
-  return <form action={formAction} noValidate className="jws-card p-4 sm:p-6">
+  return <form action={formAction} onSubmit={form.onSubmit} onChange={form.onChange} noValidate className="jws-card p-4 sm:p-6">
     <fieldset className="min-w-0">
       <legend className="text-xl font-semibold"><T text="Choose Service Category" /></legend>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {([{ value: "JANAZAH", title: "Janazah Services", summary: "Kafan, Grave, Manji, Chair, Ghusl, Lighting" }, { value: "VEHICLE", title: "Vehicle Services", summary: "Janazah, Patient, Hospital Transportation" }] as const).map((item) => (
-          <button key={item.value} type="button" className="jws-choice w-full text-start" aria-pressed={category === item.value} onClick={() => chooseCategory(item.value)}>
+          <button key={item.value} type="button" disabled={isPending} className="jws-choice w-full text-start" aria-pressed={category === item.value} onClick={() => chooseCategory(item.value)}>
             <span aria-hidden="true" className="jws-choice-indicator" />
             <span><span className="block font-semibold"><T text={item.title} /></span><span className="block text-sm text-muted"><T text={item.summary} /></span></span>
           </button>
@@ -55,7 +59,7 @@ export function ServiceRequestForm() {
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {options.map((option) => (
           <label key={option.code} className="jws-choice">
-            <input type={category === "JANAZAH" ? "checkbox" : "radio"} name="serviceCodes" value={option.code} checked={selected.includes(option.code)} onChange={() => chooseService(option.code)} />
+            <input disabled={isPending} type={category === "JANAZAH" ? "checkbox" : "radio"} name="serviceCodes" value={option.code} checked={selected.includes(option.code)} onChange={() => chooseService(option.code)} />
             <span><span className="block font-semibold"><T text={option.label} /></span><span className="block text-sm text-muted"><T text={option.description} /></span></span>
           </label>
         ))}
@@ -65,14 +69,14 @@ export function ServiceRequestForm() {
     {category && selected.length > 0 && <section className="mt-6 border-t border-border pt-5" aria-labelledby="details-heading"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary"><T text="Step 3" /></p><h2 id="details-heading" className="mt-2 text-2xl font-semibold"><T text="Contact & Location" /></h2><p className="mt-2 text-sm text-muted"><T text="Only the essentials are required." /></p>
       <input type="hidden" name="serviceCategory" value={category} />
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
-        <div className="sm:col-span-2"><label htmlFor="requesterName" className="text-sm font-semibold"><T text="Name *" /></label><input id="requesterName" name="requesterName" required maxLength={150} autoComplete="name" value={details.requesterName} onChange={(e)=>setDetails({...details,requesterName:e.target.value})} aria-invalid={Boolean(submission.fieldErrors?.requesterName)} aria-describedby={submission.fieldErrors?.requesterName ? "requesterName-error" : undefined} className={inputClass} />{submission.fieldErrors?.requesterName && <p id="requesterName-error" className="mt-2 text-sm text-red-700"><T text={submission.fieldErrors.requesterName} /></p>}</div>
-        <div><label htmlFor="mobileNumber" className="text-sm font-semibold"><T text="Contact Number *" /></label><input id="mobileNumber" name="mobileNumber" required maxLength={30} type="tel" inputMode="tel" enterKeyHint="next" autoComplete="tel" placeholder="e.g. 077 123 4567" value={details.mobileNumber} onChange={(e)=>setDetails({...details,mobileNumber:e.target.value})} aria-invalid={Boolean(submission.fieldErrors?.mobileNumber)} aria-describedby={submission.fieldErrors?.mobileNumber ? "mobileNumber-error" : undefined} className={inputClass} />{submission.fieldErrors?.mobileNumber && <p id="mobileNumber-error" className="mt-2 text-sm text-red-700"><T text={submission.fieldErrors.mobileNumber} /></p>}</div>
-        <div><label htmlFor="area" className="text-sm font-semibold"><T text="Location / Area *" /></label><input id="area" name="area" required maxLength={150} autoComplete="address-level2" enterKeyHint="next" value={details.area} onChange={(e)=>setDetails({...details,area:e.target.value})} aria-invalid={Boolean(submission.fieldErrors?.area)} aria-describedby={submission.fieldErrors?.area ? "area-error" : undefined} className={inputClass} />{submission.fieldErrors?.area && <p id="area-error" className="mt-2 text-sm text-red-700"><T text={submission.fieldErrors.area} /></p>}</div>
-        <div className="sm:col-span-2"><label htmlFor="note" className="text-sm font-semibold"><T text="Additional Note" /> <span className="font-normal text-muted"><T text="(optional)" /></span></label><textarea id="note" name="note" maxLength={191} rows={3} value={details.note} onChange={(e)=>setDetails({...details,note:e.target.value})} className={`${inputClass} min-h-24 resize-y`} /></div>
-        <LocationPicker value={coordinates} onChange={setCoordinates} />
+        <div className="sm:col-span-2"><label htmlFor="requesterName" className="text-sm font-semibold"><T text="Name *" /></label><input disabled={isPending} id="requesterName" name="requesterName" required maxLength={150} autoComplete="name" value={details.requesterName} onChange={(e)=>setDetails({...details,requesterName:e.target.value})} aria-invalid={Boolean(fieldErrors?.requesterName)} aria-describedby={fieldErrors?.requesterName ? "requesterName-error" : undefined} className={inputClass} />{fieldErrors?.requesterName && <p id="requesterName-error" className="mt-2 text-sm text-red-700"><T text={fieldErrors.requesterName} /></p>}</div>
+        <div><label htmlFor="mobileNumber" className="text-sm font-semibold"><T text="Contact Number *" /></label><input disabled={isPending} id="mobileNumber" name="mobileNumber" required maxLength={30} type="tel" inputMode="tel" enterKeyHint="next" autoComplete="tel" placeholder="e.g. 077 123 4567" value={details.mobileNumber} onChange={(e)=>setDetails({...details,mobileNumber:e.target.value})} aria-invalid={Boolean(fieldErrors?.mobileNumber)} aria-describedby={fieldErrors?.mobileNumber ? "mobileNumber-error" : undefined} className={inputClass} />{fieldErrors?.mobileNumber && <p id="mobileNumber-error" className="mt-2 text-sm text-red-700"><T text={fieldErrors.mobileNumber} /></p>}</div>
+        <div><label htmlFor="area" className="text-sm font-semibold"><T text="Location / Area *" /></label><input disabled={isPending} id="area" name="area" required maxLength={150} autoComplete="address-level2" enterKeyHint="next" value={details.area} onChange={(e)=>setDetails({...details,area:e.target.value})} aria-invalid={Boolean(fieldErrors?.area)} aria-describedby={fieldErrors?.area ? "area-error" : undefined} className={inputClass} />{fieldErrors?.area && <p id="area-error" className="mt-2 text-sm text-red-700"><T text={fieldErrors.area} /></p>}</div>
+        <div className="sm:col-span-2"><label htmlFor="note" className="text-sm font-semibold"><T text="Additional Note" /> <span className="font-normal text-muted"><T text="(optional)" /></span></label><textarea disabled={isPending} id="note" name="note" maxLength={191} rows={3} value={details.note} onChange={(e)=>setDetails({...details,note:e.target.value})} className={`${inputClass} min-h-24 resize-y`} /></div>
+        <LocationPicker value={coordinates} onChange={value => { if (isPending) return; form.onChange(); setCoordinates(value); }} />
         <input type="hidden" name="latitude" value={coordinates?.latitude ?? ""} /><input type="hidden" name="longitude" value={coordinates?.longitude ?? ""} />
       </div>
-      {submission.error && <p role="alert" aria-live="assertive" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><T text={submission.error} /></p>}
+      {form.showFeedback && submission.error && <p role="alert" aria-live="assertive" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><T text={submission.error} /></p>}
       <button type="submit" disabled={isPending} className="mt-7 min-h-12 w-full rounded-full bg-primary px-6 py-3 font-semibold shadow-[0_8px_24px_rgba(8,127,35,0.25)] transition hover:bg-[var(--primary)] disabled:opacity-60 motion-reduce:transition-none sm:w-auto"><T text={isPending ? "Submitting..." : "Submit Request"} /></button>
     </section>}
   </form>;

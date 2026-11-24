@@ -2,16 +2,13 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useShowcaseMotion } from "@/components/use-showcase-motion";
-import { T } from "@/components/public-language";
 import styles from "@/app/design-preview/emerald-sanctuary/sanctuary.module.css";
 
-export function LoopingCardRail({ label, count, children, repeat, pixelsPerSecond = 24, pauseButtonOnFocusOnly = false }: {
+export function LoopingCardRail({ label, count, children, repeat }: {
   label: string;
   count: number;
   children: ReactNode;
   repeat: ReactNode;
-  pixelsPerSecond?: number;
-  pauseButtonOnFocusOnly?: boolean;
 }) {
   const id = useId();
   const viewport = useRef<HTMLDivElement>(null);
@@ -32,7 +29,7 @@ export function LoopingCardRail({ label, count, children, repeat, pixelsPerSecon
     let cycle = 0;
     const tick = (now: number) => {
       if (cycle > 0 && previous) {
-        position = (position + Math.min(now - previous, 50) * pixelsPerSecond / 1000) % cycle;
+        position = (position + Math.min(now - previous, 50) * 66 / 1000) % cycle;
         element.scrollLeft = position;
       }
       previous = now;
@@ -55,22 +52,17 @@ export function LoopingCardRail({ label, count, children, repeat, pixelsPerSecon
       visibility.disconnect();
       resize.disconnect();
     };
-  }, [count, motion.stopped, pixelsPerSecond, touching]);
+  }, [count, motion.stopped, touching]);
 
   return <div className={styles.cardRail}>
-    {count > 1 && <button className={pauseButtonOnFocusOnly ? `${styles.railPause} sr-only focus:not-sr-only` : styles.railPause}
-      type="button" aria-controls={id}
-      disabled={motion.reduced} onClick={() => motion.setPaused(!motion.paused)}>
-      <T text={motion.reduced ? "Automatic motion disabled by your preference" : motion.paused ? "Play" : "Pause"} />
-    </button>}
+
     <div id={id} ref={viewport} className={styles.railViewport} role="region" aria-label={label}
       tabIndex={count > 1 ? 0 : undefined} data-count={count}
       onMouseEnter={motion.interaction.onMouseEnter} onMouseLeave={motion.interaction.onMouseLeave}
       onFocusCapture={motion.interaction.onFocusCapture} onBlurCapture={motion.interaction.onBlurCapture}
-      onTouchStart={() => pauseButtonOnFocusOnly ? setTouching(true) : motion.setPaused(true)}
+      onTouchStart={() => setTouching(true)}
       onTouchEnd={event => { if (!event.touches.length) setTouching(false); }}
-      onTouchCancel={() => setTouching(false)}
-      onWheel={pauseButtonOnFocusOnly ? undefined : () => motion.setPaused(true)}>
+      onTouchCancel={() => setTouching(false)}>
       <div className={styles.railTrack}>
         <div ref={original} className={styles.railGroup}>{children}</div>
         {count > 1 && !motion.reduced && <div ref={copy} className={`${styles.railGroup} ${styles.railCopy}`}

@@ -7,7 +7,7 @@ type BackButtonProps = {
   className?: string;
 };
 
-const fallbackLabels: Record<string, string> = { "/": "Back to Home", "/admin/operations": "Back to Operations", "/admin/vehicles": "Back to Vehicles", "/admin/donations": "Back to Donations", "/admin/advertisements": "Back to Advertisements", "/admin/supervisors": "Back to Supervisors", "/admin/task-assignments": "Back to Task Assignments", "/admin/employees": "Back to Employees", "/admin/service-requests": "Back to Requests", "/employee": "Back to Dashboard", "/employee/tasks": "Back to Available Tasks", "/employee/my-tasks": "Back to My Tasks", "/employee/completed": "Back to Completed Tasks" };
+const fallbackLabels: Record<string, string> = { "/": "Back to Home", "/admin/operations": "Back to Operations", "/admin/donations": "Back to Donations", "/admin/advertisements": "Back to Advertisements", "/admin/supervisors": "Back to Supervisors", "/admin/task-assignments": "Back to Task Assignments", "/admin/employees": "Back to Employees", "/admin/service-requests": "Back to Requests", "/employee": "Back to Dashboard", "/employee/tasks": "Back to Available Tasks", "/employee/my-tasks": "Back to My Tasks", "/employee/completed": "Back to Completed Tasks" };
 
 export function BackButton({ fallbackHref, label, className = "" }: BackButtonProps) {
   const resolvedLabel = label ?? fallbackLabels[fallbackHref] ?? "Back";

@@ -20,12 +20,14 @@ test("advertisement dates include the entire Colombo calendar day", () => {
   assert.equal(schedule.advertisementDateBoundary(""), null);
 });
 
-test("advertisement edits preserve existing schedule times and ordering unless a date changes", async () => {
+test("advertisement edits use whole Colombo dates and preserve unrelated ordering", async () => {
   const existing = { imageUrl: "banner.webp", startsAt: new Date("2026-11-23T12:00Z"), endsAt: new Date("2026-11-24T12:00Z") };
   let saved;
+  const invalidated = [];
   const { saveAdvertisement } = loadServerModule("app/admin/(protected)/advertisements/actions.ts", {
-    "next/cache": { revalidatePath() {} },
+    "next/cache": { revalidatePath: path => invalidated.push(path) },
     "@/lib/advertisement-schedule": schedule,
+    "@/lib/advertisement-cleanup": {},
     "@/lib/permissions": { requireAdmin: async () => {} },
     "@/lib/advertisement-image-storage": { advertisementImageExists: async () => true },
     "@/lib/prisma": { prisma: { advertisement: {
@@ -39,12 +41,19 @@ test("advertisement edits preserve existing schedule times and ordering unless a
   form.set("endsAt", "2026-11-24");
   form.set("displayOrder", "999");
   assert.ok((await saveAdvertisement("banner", {}, form)).success);
-  assert.equal(saved.startsAt, existing.startsAt);
-  assert.equal(saved.endsAt, existing.endsAt);
+  assert.equal(saved.startsAt.toISOString(), "2026-11-22T18:30:00.000Z");
+  assert.equal(saved.endsAt.toISOString(), "2026-11-24T18:29:59.999Z");
+  assert.equal(saved.isActive, true);
   assert.equal(Object.hasOwn(saved, "displayOrder"), false);
   form.set("endsAt", "2026-11-25");
   assert.ok((await saveAdvertisement("banner", {}, form)).success);
   assert.equal(saved.endsAt.toISOString(), "2026-11-25T18:29:59.999Z");
+  const paths = ["/", "/admin/advertisements", "/admin/advertisements/banner", "/advertisements/banner"];
+  assert.deepEqual(invalidated, [...paths, ...paths]);
+  invalidated.length = 0;
+  form.set("endsAt", "");
+  assert.ok((await saveAdvertisement("banner", {}, form)).error);
   form.set("endsAt", "2026-11-22");
   assert.ok((await saveAdvertisement("banner", {}, form)).error);
+  assert.deepEqual(invalidated, []);
 });

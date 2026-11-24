@@ -40,9 +40,9 @@ test("the public homepage supplies scheduled advertisements and active hero imag
     "@/components/advertisement-banners": { AdvertisementBanners },
     "@/components/hero-carousel": { HeroCarousel },
     "@/lib/prisma": { prisma: { operationalTeamMember: { findMany: async ({ select, take }) => {
-      assert.deepEqual(select, { id: true, fullName: true });
+      assert.deepEqual(select, { id: true, fullName: true, version: true });
       assert.equal(take, undefined);
-      return [{ id: 21, fullName: "Test operational member" }];
+      return [{ id: 21, fullName: "Test operational member", version: 1 }];
     } }, heroMedia: { findMany: async ({ where, orderBy }) => {
       assert.deepEqual(where, { isActive: true });
       assert.deepEqual(orderBy, [{ displayOrder: "asc" }, { id: "asc" }]);
@@ -51,7 +51,7 @@ test("the public homepage supplies scheduled advertisements and active hero imag
   });
   const home = await page();
   assert.equal(home.type, EmeraldSanctuary);
-  assert.deepEqual(home.props.operationalMembers, [{ id: 21, fullName: "Test operational member" }]);
+  assert.deepEqual(home.props.operationalMembers, [{ id: 21, fullName: "Test operational member", version: 1 }]);
   assert.equal(home.props.announcements.type, AdvertisementBanners);
   assert.equal(home.props.heroMedia.type, HeroCarousel);
   assert.deepEqual(home.props.heroMedia.props.images, [{ src: "/public-media/hero/7", altText: "JWS fleet", caption: "Fleet" }]);

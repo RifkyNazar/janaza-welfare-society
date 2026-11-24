@@ -5,14 +5,6 @@ export type EmailMessage = {
   text: string;
 };
 
-export type EmployeeRegistrationNotification = {
-  employeeId: number;
-  fullName: string;
-  email?: string;
-  employeeCode?: string | null;
-  registeredAt: Date;
-};
-
 export type ServiceRequestNotification = {
   requestId: number;
   requestCode: string;

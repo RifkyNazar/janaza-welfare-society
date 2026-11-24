@@ -20,14 +20,14 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
   preview?: boolean;
   announcements?: ReactNode;
   heroMedia?: ReactNode;
-  operationalMembers?: { id: number; fullName: string }[];
+  operationalMembers?: { id: number; fullName: string; version: number }[];
 }) {
   const [cookieStore, role] = await Promise.all([cookies(), currentStaffRole()]);
   const locale = cookieStore.get("jws-language")?.value === "ta" ? "ta" : "en";
   const t = previewCopy(locale);
   const services = [
     { title: t.janaza, description: t.janazaText, action: t.request, href: "/request-service", className: styles.featuredService },
-    { title: t.transport, description: t.transportText, action: t.fleet, href: "/vehicles", className: styles.transportService },
+    { title: t.transport, description: t.transportText, action: t.request, href: "/request-service", className: styles.transportService },
     { title: t.people, description: t.peopleText, action: t.meet, href: "/team", className: styles.communityService },
   ];
   const roles: Record<string, string> = { President: t.president, Secretary: t.secretary, Treasurer: t.treasurer };
@@ -37,7 +37,7 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
       <div className={styles.profileInfo}><span className={styles.profileRole}>{roles[member.position] ?? member.position}</span><h3 lang="en"><Link href={`/team#leader-${member.position.toLowerCase()}`} tabIndex={repeat ? -1 : undefined}>{member.name}</Link></h3><a className={styles.profileContact} href={`tel:${member.contact}`} tabIndex={repeat ? -1 : undefined} aria-label={`${t.call} ${member.name}: ${member.contact}`}><bdi dir="ltr">{member.contact}</bdi><span className={styles.profileCallIcon}><PhoneIcon /></span></a></div>
     </article>),
     ...operationalMembers.map(member => <article className={styles.profileCard} key={member.id}>
-      <div className={styles.profilePortrait}><Image unoptimized src={`/team-member-photos/${member.id}`} alt="" fill loading="lazy" sizes="(min-width: 900px) 35vw, 72vw" /></div>
+      <div className={styles.profilePortrait}><Image unoptimized src={`/team-member-photos/${member.id}?v=${member.version}`} alt="" fill loading="lazy" sizes="(min-width: 900px) 35vw, 72vw" /></div>
       <div className={styles.profileInfo}><span className={styles.profileRole}>{t.operationalTeam}</span><h3>{member.fullName}</h3></div>
     </article>),
   ];
@@ -65,7 +65,6 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
               <div><Image src="/images/jws/vehicles/vehicle-01.png" alt={locale === "ta" ? "JWS சேவை வாகனம் — Toyota" : "JWS Toyota service vehicle"} fill loading="eager" sizes="(min-width: 1024px) 464px, calc((100vw - 3rem) / 2)" /></div>
               <div><Image src="/images/jws/vehicles/vehicle-02.png" alt={locale === "ta" ? "JWS சேவை வாகனம் — Mahindra" : "JWS Mahindra service vehicle"} fill loading="lazy" sizes="(min-width: 1024px) 464px, calc((100vw - 3rem) / 2)" /></div>
             </div>}
-            {preview && <Link href="/vehicles" className={styles.fleetCaption}>{t.fleet}<Arrow /></Link>}
           </div>
           </div>
           {preview && <QuranIntro />}
@@ -84,7 +83,7 @@ export async function EmeraldSanctuary({ preview = false, announcements, heroMed
         <section id="our-team" className={styles.team} aria-labelledby="team-title">
           <div className={styles.sectionHead}><div><p className={styles.teamEyebrow}>{t.team}</p><h2 id="team-title">{t.leadershipTitle}</h2></div><Link className={styles.textLink} href="/team">{t.meet}<Arrow /></Link></div>
           <LoopingCardRail label={t.team} count={leadershipTeam.length + operationalMembers.length}
-            repeat={teamCards(true)} pixelsPerSecond={66} pauseButtonOnFocusOnly>
+            repeat={teamCards(true)}>
             {teamCards()}
           </LoopingCardRail>
         </section>

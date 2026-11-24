@@ -54,6 +54,8 @@ export async function updateOwnProfile(_state: ProfileActionState, formData: For
   }
   if (newKey) await removeProfilePhoto(profile.photoUrl);
   revalidatePath("/employee/profile"); revalidatePath("/team"); revalidatePath("/");
-  revalidatePath("/admin/employees/phone-conflicts");
+  revalidatePath("/admin/employees", "layout");
+  revalidatePath("/supervisor/employees");
+  revalidatePath("/supervisor/requests", "layout");
   return { success: "Profile saved.", values };
 }

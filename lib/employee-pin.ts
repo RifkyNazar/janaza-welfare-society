@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { isEmployeePin, normalizeEmployeePhone } from "@/lib/employee-phone";
 import { employeeSessionExpiry } from "@/lib/employee-session-duration";
-import { assertEmployeePhonesAvailable, employeePhoneTransaction } from "@/lib/employee-phone-registration";
 
 const minute = 60_000;
 const pinOptions = { memoryCost: 19_456, timeCost: 2, parallelism: 1 }; // The library defaults to Argon2id.
@@ -38,56 +37,24 @@ async function consume(scope: string, subject: string, limit: number, period: nu
   return !!bucket && bucket.attempts <= limit;
 }
 
-export async function allowEmployeeAuthAttempt(operation: "login" | "setup" | "register", subject: string) {
+export async function allowEmployeeAuthAttempt(operation: "login", subject: string) {
   // The trusted proxy must replace this header with the actual client address.
   const ip = (await headers()).get("x-real-ip")?.slice(0, 64) || "unknown";
-  const registration = operation === "register";
-  if (!(await consume(`${operation}:ip`, ip, registration ? 10 : 30, registration ? 60 * minute : 15 * minute))) return false;
+  if (!(await consume(`${operation}:ip`, ip, 30, 15 * minute))) return false;
   if (randomInt(64) === 0) {
     await prisma.$executeRaw`DELETE FROM EmployeeAuthThrottle WHERE expiresAt <= NOW(3) LIMIT 1000`;
     await prisma.$executeRaw`DELETE FROM EmployeePinSession WHERE expiresAt <= NOW(3) LIMIT 1000`;
   }
-  return consume(`${operation}:account`, subject, registration ? 3 : 5, registration ? 60 * minute : 15 * minute);
+  return consume(`${operation}:account`, subject, 5, 15 * minute);
 }
 
-export async function issuePinSetup(userId: number, adminId: number, phone: string) {
-  pepper();
-  const token = newSecret();
-  const issuedAt = new Date();
-  const expiresAt = new Date(issuedAt.getTime() + 15 * minute);
-  return employeePhoneTransaction(async tx => {
-    const changed = await tx.user.updateMany({
-      where: { id: userId, role: "EMPLOYEE", status: "APPROVED", employeeProfile: { isNot: null } },
-      data: { employeeSessionVersion: { increment: 1 } },
-    });
-    if (!changed.count) return null;
-    await assertEmployeePhonesAvailable(tx, [phone], userId);
-    const account = await tx.user.findUniqueOrThrow({ where: { id: userId }, select: { employeeSessionVersion: true } });
-    const data = { phone, pinHash: null, setupDigest: digest(token), setupUntil: expiresAt, setupVersion: account.employeeSessionVersion, issuedById: adminId, issuedAt };
-    await tx.employeePinCredential.upsert({ where: { userId }, create: { userId, ...data }, update: data });
-    await tx.employeeProfile.update({ where: { userId }, data: { phone } });
-    await tx.employeePinSession.deleteMany({ where: { userId } });
-    return { token, expiresAt: expiresAt.toISOString() };
-  });
+export function hashEmployeeCode(pin: string) {
+  if (!isEmployeePin(pin)) throw new Error("Invalid login code.");
+  return hash(keyedDigest("pin", pin), pinOptions);
 }
 
-export async function enrollEmployeePin(phone: string, token: string, pin: string) {
-  if (!isEmployeePin(pin) || !/^[\w-]{43}$/.test(token)) return false;
-  if (!(await allowEmployeeAuthAttempt("setup", phone))) return false;
-  const setupDigest = digest(token);
-  const matching = await prisma.employeePinCredential.findUnique({
-    where: { setupDigest },
-    select: { userId: true, phone: true, setupUntil: true, setupVersion: true, user: { select: { role: true, status: true, employeeSessionVersion: true } } },
-  });
-  if (!matching || matching.phone !== phone || !matching.setupUntil || matching.setupUntil <= new Date() ||
-    matching.user.role !== "EMPLOYEE" || matching.user.status !== "APPROVED" || matching.user.employeeSessionVersion !== matching.setupVersion) return false;
-  const pinHash = await hash(keyedDigest("pin", pin), pinOptions);
-  const changed = await prisma.employeePinCredential.updateMany({
-    where: { userId: matching.userId, setupDigest, setupUntil: { gt: new Date() },
-      user: { role: "EMPLOYEE", status: "APPROVED", employeeSessionVersion: matching.setupVersion } },
-    data: { pinHash, setupDigest: null, setupUntil: null },
-  });
-  return changed.count === 1;
+export async function clearEmployeeLoginThrottle(phone: string) {
+  await prisma.employeeAuthThrottle.deleteMany({ where: { id: keyedDigest("login:account", phone) } });
 }
 
 export async function authenticateEmployee(phoneInput: string, pin: string, remember: boolean) {

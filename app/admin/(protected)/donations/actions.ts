@@ -18,6 +18,7 @@ export async function reviewDonation(donationId: number, decision: string, _stat
   if (reviewNote.length > 191) return { error: "Review note must be 191 characters or fewer.", reviewNote };
   const result = await prisma.donation.updateMany({ where: { id: donationId, status: "PENDING" }, data: { status: decision, reviewedAt: new Date(), reviewedByUserId: reviewerId, reviewNote: reviewNote || null } });
   if (result.count !== 1) return { error: "This donation is no longer pending or was reviewed by another administrator.", reviewNote };
+  revalidatePath("/admin");
   revalidatePath("/admin/donations");
   revalidatePath(`/admin/donations/${donationId}`);
   return { success: decision === "VERIFIED" ? "Donation marked as verified." : "Donation confirmation rejected." };

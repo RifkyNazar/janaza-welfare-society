@@ -34,8 +34,8 @@ test("the card rail wraps at the repeated group and suppresses the copy for redu
         "@/components/use-showcase-motion": { useShowcaseMotion: () => ({ stopped: reduced, reduced, interaction: {} }) },
         "@/app/design-preview/emerald-sanctuary/sanctuary.module.css": {},
       });
-      const rendered = renderToStaticMarkup(LoopingCardRail({ label: "Team", count: 2, children: "Original cards", repeat: "Repeated cards", pixelsPerSecond: 66, pauseButtonOnFocusOnly: true }));
-      assert.match(rendered, /sr-only focus:not-sr-only/);
+      const rendered = renderToStaticMarkup(LoopingCardRail({ label: "Team", count: 2, children: "Original cards", repeat: "Repeated cards" }));
+      assert.doesNotMatch(rendered, /<button|Play|Pause/);
       assert.equal(rendered.includes('aria-hidden="true"'), !reduced);
       assert.equal(rendered.includes("Repeated cards"), !reduced);
       const cleanup = effect();

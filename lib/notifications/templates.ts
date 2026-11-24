@@ -1,4 +1,4 @@
-import type { EmployeeRegistrationNotification, ServiceRequestNotification, TaskAssignmentNotification } from "@/lib/notifications/types";
+import type { ServiceRequestNotification, TaskAssignmentNotification } from "@/lib/notifications/types";
 
 const colors = { primary: "#45E8CD", light: "#A8F5E8", dark: "#102A2A", muted: "#5F6F6D" };
 
@@ -25,18 +25,6 @@ function layout(title: string, rows: Array<[string, string]>, buttonLabel: strin
 
 function plainText(title: string, rows: Array<[string, string]>, buttonLabel: string, dashboardUrl: string) {
   return ["Janaza Welfare Society", "", title, "", ...rows.map(([label, value]) => `${label}: ${value}`), "", `${buttonLabel}: ${dashboardUrl}`, "", "The dashboard remains the source of full details.", "This is an automated operational notification from Janaza Welfare Society."].join("\n");
-}
-
-export function employeeRegistrationEmail(data: EmployeeRegistrationNotification, dashboardUrl: string) {
-  const rows: Array<[string, string]> = [
-    ["Employee Name", data.fullName],
-    ...(data.email ? [["Employee Email", data.email] as [string, string]] : []),
-    ...(data.employeeCode ? [["Employee Code", data.employeeCode] as [string, string]] : []),
-    ["Registration Date/Time", formatDate(data.registeredAt)],
-    ["Status", "Pending Approval"],
-  ];
-  const title = "New Employee Registration - Approval Required";
-  return { subject: title, html: layout(title, rows, "Open Admin Dashboard", dashboardUrl), text: plainText(title, rows, "Open Admin Dashboard", dashboardUrl) };
 }
 
 export function serviceRequestEmail(data: ServiceRequestNotification, dashboardUrl: string) {

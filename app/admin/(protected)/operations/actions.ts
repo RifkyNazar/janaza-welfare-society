@@ -4,112 +4,75 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/permissions";
+import { operationFields, type OperationActionState } from "@/lib/operation-fields";
+import { removePublicMedia, storePublicMedia } from "@/lib/public-media-storage";
 
-export type OperationFormStateValues = { title: string; shortDescription: string; description: string; serviceType: string; area: string; operationDate: string; photoIds: number[] };
-export type OperationActionState = { error?: string; success?: string; values?: OperationFormStateValues };
-const limits = { title: 191, shortDescription: 500, description: 10000, serviceType: 191, area: 191 } as const;
-
-function text(formData: FormData, name: string) {
-  const entry = formData.get(name);
-  return typeof entry === "string" ? entry.trim() : "";
-}
-
-function values(formData: FormData) {
-  const title = text(formData, "title");
-  const shortDescription = text(formData, "shortDescription");
-  const description = text(formData, "description");
-  const serviceType = text(formData, "serviceType");
-  const area = text(formData, "area");
-  const operationDateInput = text(formData, "operationDate");
-  const formValues = { title, shortDescription, description, serviceType, area, operationDate: operationDateInput, photoIds: photoIds(formData) };
-  if (!title || !shortDescription || !serviceType || !area || !operationDateInput) return { error: "Please complete all required fields.", values: formValues } as const;
-  if (title.length > limits.title || shortDescription.length > limits.shortDescription || description.length > limits.description || serviceType.length > limits.serviceType || area.length > limits.area) return { error: "One or more fields exceed the allowed length.", values: formValues } as const;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(operationDateInput)) return { error: "Please enter a valid operation date.", values: formValues } as const;
-  const operationDate = new Date(`${operationDateInput}T00:00:00.000Z`);
-  if (Number.isNaN(operationDate.getTime()) || operationDate.toISOString().slice(0, 10) !== operationDateInput) return { error: "Please enter a valid operation date.", values: formValues } as const;
-  return { data: { title, shortDescription, description: description || null, serviceType, area, operationDate } } as const;
-}
-
-function photoIds(formData: FormData) {
-  return [...new Set(formData.getAll("photoIds").map(Number).filter((id) => Number.isSafeInteger(id) && id > 0))];
-}
-
-export async function createOperation(taskId: number, _state: OperationActionState, formData: FormData): Promise<OperationActionState> {
-  void _state;
-  await requireAdmin();
-  if (!Number.isSafeInteger(taskId) || taskId <= 0) return { error: "Invalid task assignment." };
-  const parsed = values(formData);
-  if ("error" in parsed) return { error: parsed.error, values: parsed.values };
-  const selectedIds = photoIds(formData);
-  const preserved = { title: parsed.data.title, shortDescription: parsed.data.shortDescription, description: parsed.data.description ?? "", serviceType: parsed.data.serviceType, area: parsed.data.area, operationDate: text(formData, "operationDate"), photoIds: selectedIds };
-  const task = await prisma.taskAssignment.findFirst({
-    where: { id: taskId, status: "COMPLETED", request: { is: { status: "COMPLETED" } }, operation: null },
-    select: { id: true, photos: { where: { id: { in: selectedIds }, isApprovedForPublic: true }, select: { id: true } } },
-  });
-  if (!task) return { error: "This task is not eligible for a public operation.", values: preserved };
-  if (task.photos.length !== selectedIds.length) return { error: "One or more selected photos are no longer approved for public use.", values: preserved };
-
-  const operation = await prisma.$transaction(async (transaction) => {
-    const created = await transaction.operation.create({ data: { taskAssignmentId: task.id, ...parsed.data, isPublished: false } });
-    if (selectedIds.length) await transaction.operationPhoto.createMany({ data: selectedIds.map((taskPhotoId, displayOrder) => ({ operationId: created.id, taskPhotoId, displayOrder })) });
-    return created;
-  });
-  revalidatePath("/admin/operations");
-  revalidatePath(`/admin/task-assignments/${taskId}`);
-  redirect(`/admin/operations/${operation.id}?created=1`);
-}
-
-export async function createManualActivity(_state: OperationActionState, formData: FormData): Promise<OperationActionState> {
-  await requireAdmin();
-  const parsed = values(formData);
-  if ("error" in parsed) return { error: parsed.error, values: parsed.values };
-  if (photoIds(formData).length) return { error: "Task photos cannot be attached to a manual activity." };
-  const operation = await prisma.operation.create({ data: { ...parsed.data, source: "MANUAL", isPublished: false } });
-  revalidatePath("/admin/operations");
-  redirect(`/admin/operations/${operation.id}?created=1#activity-photos`);
-}
-
-export async function updateOperation(operationId: number, _state: OperationActionState, formData: FormData): Promise<OperationActionState> {
-  void _state;
-  await requireAdmin();
-  if (!Number.isSafeInteger(operationId) || operationId <= 0) return { error: "Invalid operation." };
-  const parsed = values(formData);
-  if ("error" in parsed) return { error: parsed.error, values: parsed.values };
-  const selectedIds = photoIds(formData);
-  const preserved = { title: parsed.data.title, shortDescription: parsed.data.shortDescription, description: parsed.data.description ?? "", serviceType: parsed.data.serviceType, area: parsed.data.area, operationDate: text(formData, "operationDate"), photoIds: selectedIds };
-  const operation = await prisma.operation.findUnique({ where: { id: operationId }, select: { taskAssignmentId: true } });
-  if (!operation) return { error: "Operation not found.", values: preserved };
-  const allowed = operation.taskAssignmentId ? await prisma.taskPhoto.findMany({ where: { taskAssignmentId: operation.taskAssignmentId, id: { in: selectedIds }, isApprovedForPublic: true }, select: { id: true } }) : [];
-  if (allowed.length !== selectedIds.length) return { error: "One or more selected photos are no longer approved for public use.", values: preserved };
-  await prisma.$transaction(async (transaction) => {
-    await transaction.operation.update({ where: { id: operationId }, data: parsed.data });
-    await transaction.operationPhoto.deleteMany({ where: { operationId } });
-    if (selectedIds.length) await transaction.operationPhoto.createMany({ data: selectedIds.map((taskPhotoId, displayOrder) => ({ operationId, taskPhotoId, displayOrder })) });
-  });
-  revalidateOperationPaths(operationId);
-  return { success: "Operation updated successfully." };
-}
-
-export async function setOperationPublished(operationId: number, publish: boolean, _state: OperationActionState, _formData: FormData): Promise<OperationActionState> {
-  void _state; void _formData;
-  await requireAdmin();
-  if (!Number.isSafeInteger(operationId) || operationId <= 0) return { error: "Invalid operation." };
-  const operation = await prisma.operation.findUnique({
-    where: { id: operationId },
-    select: { title: true, shortDescription: true, serviceType: true, area: true, operationDate: true, photos: { select: { taskPhoto: { select: { isApprovedForPublic: true } } } } },
-  });
-  if (!operation) return { error: "Operation not found." };
-  if (publish && (!operation.title.trim() || !operation.shortDescription.trim() || !operation.serviceType.trim() || !operation.area.trim() || !operation.operationDate)) return { error: "Complete all required public fields before publishing." };
-  if (publish && operation.photos.some(({ taskPhoto }) => !taskPhoto.isApprovedForPublic)) return { error: "Remove or re-approve unapproved selected photos before publishing." };
-  await prisma.operation.update({ where: { id: operationId }, data: { isPublished: publish, publishedAt: publish ? new Date() : null } });
-  revalidateOperationPaths(operationId);
-  return { success: publish ? "Operation published successfully." : "Operation unpublished successfully." };
-}
-
-function revalidateOperationPaths(operationId: number) {
+function refresh(id: number) {
   revalidatePath("/");
   revalidatePath("/operations");
-  revalidatePath(`/operations/${operationId}`);
+  revalidatePath(`/operations/${id}`);
   revalidatePath("/admin/operations");
-  revalidatePath(`/admin/operations/${operationId}`);
+  revalidatePath(`/admin/operations/${id}`);
+  revalidatePath("/admin/task-assignments", "layout");
+}
+
+export async function updateOperation(id: number, _state: OperationActionState, form: FormData): Promise<OperationActionState> {
+  await requireAdmin();
+  if (!Number.isSafeInteger(id) || id < 1) return { error: "Invalid operation." };
+  const values = operationFields(form);
+  if (!values.title || values.title.length > 191 || values.description.length > 10000) return { error: "Check the heading and description.", values };
+  const { title, description } = values;
+  const entry = form.get("photo");
+  const replacement = entry instanceof File && entry.size > 0;
+  const fields = { title, description: description || null, shortDescription: description.slice(0, 500) };
+  if (replacement) {
+    const operation = await prisma.operation.findFirst({
+      where: { id, source: "MANUAL", taskAssignmentId: null },
+      select: { updatedAt: true, media: { where: { isPublic: true }, orderBy: [{ displayOrder: "asc" }, { id: "asc" }], take: 1, select: { id: true, storageKey: true, altText: true, caption: true, displayOrder: true } } },
+    });
+    if (!operation) return { error: "This operation cannot use an uploaded replacement photo.", values };
+    let key: string | undefined;
+    const previous = operation.media[0];
+    try {
+      const storageKey = await storePublicMedia("activity", entry);
+      key = storageKey;
+      await prisma.operation.update({
+        where: { id, updatedAt: operation.updatedAt },
+        data: { ...fields, media: previous
+          ? { delete: { id: previous.id, storageKey: previous.storageKey }, create: { storageKey, isPublic: true, altText: previous.altText, caption: previous.caption, displayOrder: previous.displayOrder } }
+          : { create: { storageKey, isPublic: true, altText: "Operation photo" } },
+        },
+      });
+    } catch {
+      if (key) await removePublicMedia("activity", key);
+      return { error: "Could not replace the photo. Check the image or whether the operation has changed.", values };
+    }
+    if (previous) await removePublicMedia("activity", previous.storageKey);
+  } else {
+    const result = await prisma.operation.updateMany({ where: { id }, data: fields });
+    if (!result.count) return { error: "Operation not found." };
+  }
+  refresh(id);
+  return { success: "Operation updated." };
+}
+
+export async function deleteOperation(id: number, _state: OperationActionState, _form: FormData): Promise<OperationActionState> {
+  void _form;
+  await requireAdmin();
+  if (!Number.isSafeInteger(id) || id < 1) return { error: "Invalid operation." };
+  let media;
+  try {
+    media = await prisma.$transaction(async tx => {
+      const current = await tx.operation.findUnique({ where: { id }, select: { updatedAt: true, media: { select: { storageKey: true } } } });
+      if (!current) return null;
+      await tx.operation.delete({ where: { id, updatedAt: current.updatedAt } });
+      return current.media;
+    });
+  } catch {
+    return { error: "Could not delete the operation. Check whether it has changed and try again." };
+  }
+  if (!media) return { error: "Operation not found." };
+  await Promise.all(media.map(({ storageKey }) => removePublicMedia("activity", storageKey)));
+  refresh(id);
+  redirect("/admin/operations");
 }

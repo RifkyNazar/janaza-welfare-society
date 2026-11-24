@@ -6,10 +6,11 @@ import { requireAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { prepareMemberPhoto } from "@/lib/operational-member-photo";
 
-export type MemberState = { error?: string; success?: string; fullName?: string };
+export type MemberState = { error?: string; success?: string; fullName?: string; addedMember?: { id: number; fullName: string } };
 const validId = (id: number) => Number.isSafeInteger(id) && id > 0;
 const validVersion = (version: number | null) => version !== null && Number.isSafeInteger(version) && version >= 0;
 function refresh(id?: number) {
+  revalidatePath("/");
   revalidatePath("/team");
   revalidatePath("/admin/operational-team");
   if (id) { revalidatePath(`/admin/operational-team/${id}`); revalidatePath(`/team-member-photos/${id}`); }
@@ -29,9 +30,11 @@ export async function saveOperationalMember(id: number | null, expectedVersion: 
     try { photo = await prepareMemberPhoto(file); }
     catch (error) { return { error: error instanceof Error ? error.message : "Choose a valid member photo.", fullName }; }
   }
+  let createdId: number | undefined;
   try {
     if (id === null) {
-      await prisma.operationalTeamMember.create({ data: { fullName, photo: photo! }, select: { id: true } });
+      const created = await prisma.operationalTeamMember.create({ data: { fullName, photo: photo! }, select: { id: true } });
+      createdId = created.id;
     } else {
       const result = await prisma.operationalTeamMember.updateMany({ where: { id, version: expectedVersion! }, data: { fullName, version: { increment: 1 }, ...(photo ? { photo } : {}) } });
       if (result.count !== 1) return { error: "This member changed or was deleted. Refresh before editing again.", fullName };
@@ -39,8 +42,8 @@ export async function saveOperationalMember(id: number | null, expectedVersion: 
   } catch {
     return { error: "Unable to save this member. Please try again.", fullName };
   }
-  refresh(id ?? undefined);
-  return { success: id === null ? "Member added." : "Member updated." };
+  refresh(createdId ?? id ?? undefined);
+  return createdId === undefined ? { success: "Member updated." } : { success: "Member added.", addedMember: { id: createdId, fullName } };
 }
 
 export async function deleteOperationalMember(id: number, expectedVersion: number, _state: MemberState, form: FormData): Promise<MemberState> {

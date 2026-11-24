@@ -5,7 +5,6 @@ const items = [
   ["Requests / Dispatch", "/supervisor/requests"],
   ["Tasks", "/supervisor/tasks"],
   ["Employees", "/supervisor/employees"],
-  ["Vehicles", "/supervisor/vehicles"],
 ] as const;
 
 export function SupervisorNavigation() {

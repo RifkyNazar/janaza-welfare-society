@@ -55,4 +55,4 @@ export async function reassignEmployee(requestId: number, _state: DispatchState,
   refresh(requestId); return { success: "Task reassigned and prior history retained." };
 }
 
-function refresh(requestId: number) { revalidatePath("/supervisor"); revalidatePath("/supervisor/requests"); revalidatePath("/supervisor/tasks"); revalidatePath(`/supervisor/requests/${requestId}`); revalidatePath("/employee"); revalidatePath("/employee/my-tasks"); revalidatePath("/admin"); revalidatePath("/admin/service-requests"); }
+function refresh(requestId: number) { revalidatePath("/supervisor"); revalidatePath("/supervisor/requests"); revalidatePath("/supervisor/tasks"); revalidatePath(`/supervisor/requests/${requestId}`); revalidatePath("/employee"); revalidatePath("/employee/my-tasks"); revalidatePath("/admin"); revalidatePath("/admin/service-requests"); revalidatePath(`/admin/service-requests/${requestId}`); revalidatePath("/admin/task-assignments"); revalidatePath("/employee/my-tasks/[id]", "page"); }

@@ -95,7 +95,10 @@ export async function startTask(
   revalidatePath("/employee/my-tasks");
   revalidatePath(`/employee/my-tasks/${taskId}`);
   revalidatePath("/admin");
-  revalidatePath("/admin/service-requests");
+  revalidatePath("/admin/service-requests", "layout");
+  revalidatePath("/admin/task-assignments", "layout");
+  revalidatePath("/supervisor/requests", "layout");
+  revalidatePath("/supervisor/tasks", "layout");
   return {};
 }
 

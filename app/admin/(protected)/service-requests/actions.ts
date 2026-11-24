@@ -46,6 +46,12 @@ export async function cancelServiceRequest(
   revalidatePath("/admin");
   revalidatePath("/admin/service-requests");
   revalidatePath(`/admin/service-requests/${requestId}`);
+  revalidatePath("/admin/task-assignments", "layout");
+  revalidatePath("/supervisor");
+  revalidatePath("/supervisor/requests", "layout");
+  revalidatePath("/supervisor/tasks", "layout");
+  revalidatePath("/employee");
+  revalidatePath("/employee/my-tasks", "layout");
 
   return { success: "Service request cancelled." };
 }

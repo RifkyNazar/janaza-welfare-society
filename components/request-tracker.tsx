@@ -1,8 +1,11 @@
 "use client";
+
+import { useFormSubmission } from "@/components/use-form-submission";
 import { T } from "@/components/public-language";
 
 
-import { useActionState } from "react";
+import Image from "next/image";
+import { useActionState, useEffect, useState } from "react";
 import { trackServiceRequest, type TrackRequestActionState } from "@/app/actions/track-request";
 
 const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-border bg-white px-4 py-3 text-base text-foreground outline-none transition placeholder:text-muted/60 focus:border-primary focus:ring-4 focus:ring-primary/20 motion-reduce:transition-none";
@@ -15,32 +18,61 @@ const stages = [
 
 export function RequestTracker() {
   const [state, formAction, isPending] = useActionState<TrackRequestActionState, FormData>(trackServiceRequest, {});
+  const submission = useFormSubmission(state, isPending);
 
   return (
     <div className="space-y-7">
-      <form action={formAction} className="rounded-3xl border border-border bg-white p-5 shadow-[0_20px_60px_rgba(16,42,42,0.08)] sm:p-8" noValidate>
+      <form action={formAction} onSubmit={submission.onSubmit} onChange={submission.onChange} className="rounded-3xl border border-border bg-white p-5 shadow-[0_20px_60px_rgba(16,42,42,0.08)] sm:p-8" noValidate>
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label htmlFor="requestCode" className="block text-sm font-semibold text-foreground"><T text="Request Code" /></label>
-            <input key={state.values?.requestCode} id="requestCode" name="requestCode" className={`${inputClass} font-mono uppercase tracking-wide`} maxLength={64} autoCapitalize="characters" autoComplete="off" spellCheck={false} defaultValue={state.values?.requestCode} placeholder="JWS-REQ-..." required />
+            <input disabled={isPending} key={state.values?.requestCode} id="requestCode" name="requestCode" className={`${inputClass} font-mono uppercase tracking-wide`} maxLength={64} autoCapitalize="characters" autoComplete="off" spellCheck={false} defaultValue={state.values?.requestCode} placeholder="JWS-REQ-..." required />
           </div>
           <div>
             <label htmlFor="mobileNumber" className="block text-sm font-semibold text-foreground"><T text="Mobile Number" /></label>
-            <input key={state.values?.mobileNumber} id="mobileNumber" name="mobileNumber" type="tel" inputMode="tel" autoComplete="tel" className={inputClass} maxLength={30} defaultValue={state.values?.mobileNumber} placeholder="077 123 4567" required />
+            <input disabled={isPending} key={state.values?.mobileNumber} id="mobileNumber" name="mobileNumber" type="tel" inputMode="tel" autoComplete="tel" className={inputClass} maxLength={30} defaultValue={state.values?.mobileNumber} placeholder="077 123 4567" required />
           </div>
         </div>
-        {state.error && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><T text={state.error} /></p>}
+        {submission.showFeedback && state.error && <p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><T text={state.error} /></p>}
         <button type="submit" disabled={isPending} className="mt-6 min-h-12 w-full rounded-full bg-primary px-6 py-3 font-semibold text-foreground shadow-[0_8px_24px_rgba(8,127,35,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(8,127,35,0.35)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transform-none motion-reduce:transition-none sm:w-auto">
           <T text={isPending ? "Checking..." : "Track Request"} />
         </button>
       </form>
-      {state.result && <TrackingResult result={state.result} />}
+      {submission.showFeedback && state.result && state.values && <LiveTracking key={state.result.requestCode} initial={state.result} credentials={state.values} />}
     </div>
   );
 }
 
+function LiveTracking({ initial, credentials }: {
+  initial: NonNullable<TrackRequestActionState["result"]>;
+  credentials: NonNullable<TrackRequestActionState["values"]>;
+}) {
+  const [result, setResult] = useState<typeof initial | null>(initial);
+  useEffect(() => {
+    let active = true;
+    let pending = false;
+    const refresh = async () => {
+      if (!active || pending || document.hidden) return;
+      pending = true;
+      try {
+        const form = new FormData();
+        form.set("requestCode", credentials.requestCode);
+        form.set("mobileNumber", credentials.mobileNumber);
+        const next = await trackServiceRequest({}, form);
+        if (active && next.result) setResult(next.result);
+        if (active && next.error === "We could not find a request matching those details.") setResult(null);
+      } catch {
+        // A later poll can recover from a transient connection failure.
+      } finally { pending = false; }
+    };
+    const timer = window.setInterval(refresh, 60_000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [credentials]);
+  return result ? <TrackingResult result={result} /> : <p role="status"><T text="We could not find a request matching those details." /></p>;
+}
+
 function TrackingResult({ result }: { result: NonNullable<TrackRequestActionState["result"]> }) {
-  const date = (value: string) => new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(value));
+  const date = (value: string) => new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "Asia/Colombo" }).format(new Date(value));
   const details = [
     ["Request Code", result.requestCode],
     ["Category", result.category],
@@ -48,6 +80,7 @@ function TrackingResult({ result }: { result: NonNullable<TrackRequestActionStat
     ["Area", result.area],
     ["Current Status", statusLabel(result.status)],
     ["Submitted Date", date(result.submittedDate)],
+    ...(result.completedDate ? [["Completed Date", date(result.completedDate)]] : []),
   ];
 
   return (
@@ -56,6 +89,13 @@ function TrackingResult({ result }: { result: NonNullable<TrackRequestActionStat
       <dl className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
         {details.map(([label, value]) => <div key={label} className="bg-white p-4"><dt className="text-xs font-semibold uppercase tracking-wide text-muted"><T text={label} /></dt><dd className="mt-1 break-words text-sm font-medium text-foreground">{(label === "Current Status" || label === "Category") ? <T text={value} /> : value}</dd></div>)}
       </dl>
+      {result.employee && <section className="mt-6 flex items-center gap-4 rounded-xl border border-border p-4">
+        {result.employee.photo && <Image unoptimized src={result.employee.photo} alt="" width={80} height={80} className="size-20 rounded-xl object-cover" />}
+        <div><h3 className="text-sm font-semibold text-muted"><T text="Assigned Employee" /></h3>
+          <p className="font-semibold">{result.employee.fullName}</p><p>{result.employee.position}</p>
+          {result.employee.phone && <a className="underline" href={`tel:${result.employee.phone.replace(/[^+\d]/g, "")}`}>{result.employee.phone}</a>}
+        </div>
+      </section>}
       {result.status === "CANCELLED" ? <CancelledNotice /> : <StatusTimeline status={result.status} />}
     </section>
   );

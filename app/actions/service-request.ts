@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { randomBytes } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -53,6 +54,10 @@ export async function submitServiceRequest(_previousState: ServiceRequestActionS
         },
         include: { serviceSelections: { orderBy: { id: "asc" } } },
       }));
+      revalidatePath("/admin");
+      revalidatePath("/admin/service-requests");
+      revalidatePath("/supervisor");
+      revalidatePath("/supervisor/requests");
       try {
         await notifyStaffOfNewServiceRequest({
           requestId: created.id,

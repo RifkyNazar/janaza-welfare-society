@@ -17,7 +17,7 @@ function actions(model, permissions={requireAdmin:async()=>({user:{id:'1'}})}) {
   });
 }
 const Image = ({src,alt,loading}) => React.createElement('img',{src,alt,loading});
-const language = {T:({text})=>text};
+const language = {T:({text})=>text, useTranslation:()=>({t:text=>text})};
 
 test('member photos reject missing/oversized/unsupported/spoofed/malformed uploads and normalize valid bytes',async()=>{
   for(const file of [new File([],'empty.png',{type:'image/png'}),new File([Buffer.alloc(5*1024*1024+1)],'large.png',{type:'image/png'}),new File([image],'bad.svg',{type:'image/svg+xml'}),new File(['not png'],'bad.png',{type:'image/png'}),new File([image],'spoof.jpg',{type:'image/jpeg'})])await assert.rejects(prepare.prepareMemberPhoto(file));
@@ -44,7 +44,7 @@ test('member save validates two required values and ignores submitted employee/p
   assert.ok((await api.saveOperationalMember(null,null,{},form('Valid',null))).error);
   assert.ok((await api.saveOperationalMember(null,null,{},form('a'.repeat(151)))).error);
   const input=form();for(const key of ['position','role','phone','email','description'])input.set(key,'MUST_NOT_BE_STORED');
-  assert.equal((await api.saveOperationalMember(null,null,{},input)).success,'Member added.');
+  assert.deepEqual(await api.saveOperationalMember(null,null,{},input), { success: 'Member added.', addedMember: { id: 1, fullName: input.get('fullName') } });
   assert.deepEqual(Object.keys(data).sort(),['fullName','photo']);assert.ok(data.photo instanceof Uint8Array);
 });
 
@@ -67,8 +67,11 @@ test('deletion requires explicit confirmation and current version; only the memb
 
 test('admin editor exposes exactly fullName and photo, with existing photo satisfying required edit state',()=>{
   const {OperationalMemberForm,DeleteOperationalMember}=loadServerModule('components/admin/operational-member-form.tsx',{
+    "@/components/use-form-submission": { useFormSubmission: () => ({ showFeedback: true, onSubmit() {} }) },
     react:{...React,useActionState:()=>[{},()=>{},false]},'next/image':Image,
+    'next/link':({href,children})=>React.createElement('a',{href},children),
     '@/components/public-language':{ T:({text})=>text, useTranslation:()=>({ t:text=>text }) },
+    '@/lib/image-upload-limits':loadServerModule('lib/image-upload-limits.ts'),
     '@/app/admin/(protected)/operational-team/actions':{saveOperationalMember(){},deleteOperationalMember(){}},
   });
   for(const member of [undefined,{id:7,fullName:'Synthetic',version:0}]){

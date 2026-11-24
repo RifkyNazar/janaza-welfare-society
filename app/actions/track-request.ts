@@ -2,6 +2,8 @@
 
 import type { ServiceRequestStatus } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import sharp from "sharp";
+import { readProfilePhoto } from "@/lib/profile-photo-storage";
 import { consumeRateLimit } from "@/lib/rate-limit";
 
 export type PublicTrackingResult = {
@@ -12,6 +14,8 @@ export type PublicTrackingResult = {
   area: string;
   status: ServiceRequestStatus;
   submittedDate: string;
+  completedDate: string | null;
+  employee: { fullName: string; position: string; phone: string; photo: string | null } | null;
 };
 
 export type TrackRequestActionState = {
@@ -65,11 +69,29 @@ export async function trackServiceRequest(
       area: true,
       status: true,
       createdAt: true,
+      taskAssignments: {
+        where: { OR: [{ isActive: true }, { status: "COMPLETED" }] },
+        orderBy: [{ isActive: "desc" }, { assignedAt: "desc" }, { id: "desc" }],
+        take: 1,
+        select: { status: true, completedAt: true, isActive: true, employee: { select: { fullName: true, phone: true, position: true, photoUrl: true } } },
+      },
     },
   });
 
   if (!request) return { error: NOT_FOUND_MESSAGE, values };
 
+  const assignment = request.taskAssignments[0];
+  const completed = request.status !== "CANCELLED" && (request.status === "COMPLETED" || assignment?.status === "COMPLETED");
+  const assigned = request.status !== "CANCELLED" && (assignment?.isActive || completed) ? assignment?.employee : null;
+  let photo: string | null = null;
+  if (assigned?.photoUrl) {
+    const bytes = await readProfilePhoto(assigned.photoUrl);
+    if (bytes) {
+      const thumbnail = await sharp(bytes, { limitInputPixels: 40_000_000 }).rotate()
+        .resize(160, 160, { fit: "inside", withoutEnlargement: true }).webp().toBuffer().catch(() => null);
+      if (thumbnail) photo = "data:image/webp;base64," + thumbnail.toString("base64");
+    }
+  }
   return {
     values,
     result: {
@@ -78,7 +100,9 @@ export async function trackServiceRequest(
       category: request.serviceCategory === "JANAZAH" ? "Janazah Service" : request.serviceCategory === "VEHICLE" ? "Vehicle Service" : "Legacy Request",
       selectedServices: request.serviceSelections.length ? request.serviceSelections.map((selection) => selection.serviceLabel).join(", ") : request.serviceType,
       area: request.area,
-      status: request.status,
+      status: completed ? "COMPLETED" : request.status,
+      completedDate: completed ? assignment?.completedAt?.toISOString() ?? null : null,
+      employee: assigned ? { fullName: assigned.fullName, position: assigned.position, phone: assigned.phone, photo } : null,
       submittedDate: request.createdAt.toISOString(),
     },
   };
